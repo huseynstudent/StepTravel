@@ -1,4 +1,4 @@
-﻿namespace StoreApp.Domain.BaseEntitiy;
+﻿namespace StoreApp.Domain.BaseEntities;
 
 public class BaseEntity
 {
