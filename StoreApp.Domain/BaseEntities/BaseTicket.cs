@@ -7,8 +7,8 @@ public class BaseTicket
     public int Id { get; set; }
     //public User Customer { get; set; } //User ve Role yazanda elave edecem
 
-    //public Seat Seat { get; set; } //Seat yazanda elave edecem
     //public State State { get; set; } //State enum-"Canceled", "Delayed","Pending","Expired"
+    public Seat Seat { get; set; }
     public DateTime DueDate { get; set; }
     public DateTime BroughtDate { get; set; }
     public Location From { get; set; }
@@ -22,5 +22,5 @@ public class BaseTicket
     public bool IsRoundTrip { get; set; } = false;
     public bool IsCashPayment { get; set; } = true;
     public double Price { get; set; }
-    public string Note { get; set;
+    public string Note { get; set; }
 }
