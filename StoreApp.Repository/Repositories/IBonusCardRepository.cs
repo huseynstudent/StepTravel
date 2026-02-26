@@ -1,6 +1,6 @@
 ﻿using StoreApp.Domain.Entities;
 namespace StoreApp.Repository.Repositories;
-public interface IBonsCardRepository
+public interface IBonusCardRepository
 {
     Task AddAsync(BonusCard bounsCard);
     void UpdateAsync(BonusCard bounsCard);

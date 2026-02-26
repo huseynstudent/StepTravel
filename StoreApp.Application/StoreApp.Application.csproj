@@ -17,7 +17,40 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CQRS\" />
+    <Folder Include="CQRS\BonusCards\Handler\CommandHandler\" />
+    <Folder Include="CQRS\BonusCards\Handler\QueryHandler\" />
+    <Folder Include="CQRS\BonusCards\Query\Response\" />
+    <Folder Include="CQRS\BonusCards\Query\Request\" />
+    <Folder Include="CQRS\Countries\Command\Response\" />
+    <Folder Include="CQRS\Countries\Command\Request\" />
+    <Folder Include="CQRS\Countries\Handler\" />
+    <Folder Include="CQRS\Countries\Query\Response\" />
+    <Folder Include="CQRS\Countries\Query\Request\" />
+    <Folder Include="CQRS\Locations\Command\Response\" />
+    <Folder Include="CQRS\Locations\Command\Request\" />
+    <Folder Include="CQRS\Locations\Handler\" />
+    <Folder Include="CQRS\Locations\Query\Request\" />
+    <Folder Include="CQRS\Locations\Query\Response\" />
+    <Folder Include="CQRS\PlaneTickets\Command\Response\" />
+    <Folder Include="CQRS\PlaneTickets\Command\Request\" />
+    <Folder Include="CQRS\PlaneTickets\Handler\" />
+    <Folder Include="CQRS\PlaneTickets\Query\Response\" />
+    <Folder Include="CQRS\PlaneTickets\Query\Request\" />
+    <Folder Include="CQRS\Seats\Command\Response\" />
+    <Folder Include="CQRS\Seats\Command\Request\" />
+    <Folder Include="CQRS\Seats\Handler\" />
+    <Folder Include="CQRS\Seats\Query\Request\" />
+    <Folder Include="CQRS\Seats\Query\Response\" />
+    <Folder Include="CQRS\TrainTickets\Command\Response\" />
+    <Folder Include="CQRS\TrainTickets\Command\Request\" />
+    <Folder Include="CQRS\TrainTickets\Handler\" />
+    <Folder Include="CQRS\TrainTickets\Query\Response\" />
+    <Folder Include="CQRS\TrainTickets\Query\Request\" />
+    <Folder Include="CQRS\Variants\Command\Response\" />
+    <Folder Include="CQRS\Variants\Command\Request\" />
+    <Folder Include="CQRS\Variants\Handler\" />
+    <Folder Include="CQRS\Variants\Query\Response\" />
+    <Folder Include="CQRS\Variants\Query\Request\" />
   </ItemGroup>
 
 </Project>
