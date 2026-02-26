@@ -1,6 +1,8 @@
-﻿namespace StoreApp.Domain.Entities;
+﻿using StoreApp.Domain.BaseEntities;
 
-public class Seat
+namespace StoreApp.Domain.Entities;
+
+public class Seat : BaseEntity
 {
     public int Id { get; set; }
     public string Name { get; set; }

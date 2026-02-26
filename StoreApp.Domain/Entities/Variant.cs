@@ -1,6 +1,8 @@
-﻿namespace StoreApp.Domain.Entities;
+﻿using StoreApp.Domain.BaseEntities;
 
-public class Variant
+namespace StoreApp.Domain.Entities;
+
+public class Variant : BaseEntity
 {
     public int Id { get; set; }
     public string Name { get; set; }="economy";

@@ -2,7 +2,7 @@
 
 namespace StoreApp.Domain.Entities;
 
-public class PlaneTicket: BaseTicket
+public class PlaneTicket : BaseTicket
 {
     public string Airline { get; set; }
     public string Gate { get; set; }

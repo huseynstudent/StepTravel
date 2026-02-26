@@ -9,12 +9,11 @@ public class StoreAppDbContext:DbContext
     {
 
     }
-    DbSet<PlaneTicket> PlaneTickets { get; set; }
-    DbSet<Seat> Seats { get; set; }
-    DbSet<Variant> Variants { get; set; }
-    DbSet<Location> Locations { get; set; }
-    DbSet<BonusCard> BonusCards { get; set; }
-    DbSet<Country> Countries { get; set; }
-    DbSet<TrainTicket> TrainTickets { get; set; }
-
+    public DbSet<PlaneTicket> PlaneTickets { get; set; }
+    public DbSet<Seat> Seats { get; set; }
+    public DbSet<Variant> Variants { get; set; }
+    public DbSet<Location> Locations { get; set; }
+    public DbSet<BonusCard> BonusCards { get; set; }
+    public DbSet<Country> Countries { get; set; }
+    public DbSet<TrainTicket> TrainTickets { get; set; }
 }
