@@ -1,6 +1,6 @@
 ﻿namespace StoreApp.DAL.Infrastructure
 {
-    internal class IPlaneTicketRepository
+    public class IPlaneTicketRepository
     {
     }
 }

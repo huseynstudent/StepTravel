@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StoreApp.DAL.Infrastructure
+namespace StoreApp.Application.CQRS.BonusCards.Handler.CommandHandler
 {
-    public class SqlTrainTicketRepository
+    public class DeleteBonusCardCommandHandler
     {
     }
 }

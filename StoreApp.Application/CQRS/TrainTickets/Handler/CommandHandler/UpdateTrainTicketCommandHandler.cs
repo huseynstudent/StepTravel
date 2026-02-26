@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StoreApp.DAL.Infrastructure
+namespace StoreApp.Application.CQRS.TrainTickets.Handler.CommandHandler
 {
-    public class SqlTrainTicketRepository
+    public class UpdateTrainTicketCommandHandler
     {
     }
 }
