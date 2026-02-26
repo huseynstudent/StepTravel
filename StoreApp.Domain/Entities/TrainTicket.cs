@@ -8,5 +8,4 @@ public class TrainTicket: BaseTicket
     public string TrainNumber { get; set; }
     public int VagonNumber { get; set; }
 
-
 }

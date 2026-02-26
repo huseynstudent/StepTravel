@@ -8,12 +8,16 @@ public class BaseTicket
     //public User Customer { get; set; } //User ve Role yazanda elave edecem
 
     //public State State { get; set; } //State enum-"Canceled", "Delayed","Pending","Expired"
-    public Seat Seat { get; set; }
     public DateTime DueDate { get; set; }
     public DateTime BroughtDate { get; set; }
+    public Seat Seat { get; set; }
     public Location From { get; set; }
     public Location To { get; set; }
     public Variant Variant { get; set; }
+    public int SeatId { get; set; }
+    public int FromId { get; set; }
+    public int ToId { get; set; }
+    public int VariantId { get; set; }
     public bool HasPet { get; set; } = false;
     public bool HasChild { get; set; } = false;
     public int LuggageCount { get; set; } = 0;
