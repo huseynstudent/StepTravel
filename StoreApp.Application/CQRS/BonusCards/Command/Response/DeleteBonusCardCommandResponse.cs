@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StoreApp.Application.CQRS.BonusCards.Command.Response
+﻿namespace StoreApp.Application.CQRS.BonusCards.Command.Response
 {
     public class DeleteBonusCardCommandResponse
     {
+        public int Id { get; set; }
+        public string CardNumber { get; set; }
+        public double Points { get; set; } = 0;
     }
 }

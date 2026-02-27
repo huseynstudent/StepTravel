@@ -1,8 +1,10 @@
-﻿namespace StoreApp.Domain.Entities;
+﻿using StoreApp.Domain.BaseEntities;
 
-public class BonusCard
+namespace StoreApp.Domain.Entities;
+
+public class BonusCard : BaseEntity
 {
     public int Id { get; set; }
-    public int CardNumber { get; set; }
-    public double Points { get; set; } = 0;
+    public string CardNumber { get; set; }
+    public double Points { get; set; }
 }

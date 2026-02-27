@@ -1,6 +1,6 @@
 ﻿namespace StoreApp.Application.CQRS.BonusCards.Query.Response
 {
-    class GetAllBonusCardQueryResponse
+    class GetByIdBonusCardQueryResponse
     {
         public int Id { get; set; }
         public string CardNumber { get; set; }

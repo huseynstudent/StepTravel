@@ -1,8 +1,9 @@
-﻿namespace StoreApp.Application.CQRS.BonusCards.Command.Response;
-
-public class CeateBonusCardCommandResponse
+﻿namespace StoreApp.Application.CQRS.BonusCards.Command.Response
 {
-    public int Id { get; set; }
-    public int CardNumber { get; set; }
-     public double Points { get; set; } = 0;
+    public class CeateBonusCardCommandResponse
+    {
+        public int Id { get; set; }
+        public string CardNumber { get; set; }
+        public double Points { get; set; } = 0;
+    }
 }
