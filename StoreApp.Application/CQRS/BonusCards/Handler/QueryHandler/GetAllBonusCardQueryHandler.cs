@@ -8,7 +8,6 @@ namespace StoreApp.Application.CQRS.BonusCards.Handler.QueryHandler
     class GetAllBonusCardQueryHandler : IRequestHandler<GetAllBonusCardQueryRequest, Pagination<GetAllBonusCardQueryResponse>>
     {
         private readonly IUnitOfWork _unitOfWork;
-
         public GetAllBonusCardQueryHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

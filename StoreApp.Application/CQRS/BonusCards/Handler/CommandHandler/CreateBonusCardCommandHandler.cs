@@ -2,7 +2,6 @@
 using StoreApp.Application.CQRS.BonusCards.Command.Request;
 using StoreApp.Application.CQRS.BonusCards.Command.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
-using StoreApp.DAL.Context;
 using StoreApp.Domain.Entities;
 using StoreApp.Repository.Comman;
 namespace StoreApp.Application.CQRS.BonusCards.Handler.CommandHandler

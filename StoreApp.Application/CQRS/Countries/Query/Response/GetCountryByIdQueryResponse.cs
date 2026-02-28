@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StoreApp.Application.CQRS.Countries.Query.Response
+﻿namespace StoreApp.Application.CQRS.Countries.Query.Response
 {
-    public class GetCountryByIdQueryResponse
+    class GetCountryByIdQueryResponse
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }
