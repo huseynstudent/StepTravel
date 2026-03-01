@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
+using StoreApp.Application.CQRS.Seats.Command.Response;
+using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 
-namespace StoreApp.Application.CQRS.Seats.Command.Request
+namespace StoreApp.Application.CQRS.Seats.Command.Request;
+
+public class DeleteSeatCommandRequest: IRequest<ResponseModel<DeleteSeatCommandResponse>>
 {
-    public class DeleteSeatCommandRequest
-    {
-    }
+    public int Id { get; set; }
 }

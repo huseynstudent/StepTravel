@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace StoreApp.Application.CQRS.Seats.Command.Response;
 
-namespace StoreApp.Application.CQRS.Seats.Command.Response
+public class UpdateSeatCommandResponse
 {
-    public class UpdateSeatCommandResponse
-    {
-    }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public bool IsOccupied { get; set; }
+    public int VariantId { get; set; }
 }
