@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
+using StoreApp.Application.CQRS.Seats.Query.Response;
+using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 
 namespace StoreApp.Application.CQRS.Seats.Query.Request
 {
-    public class GetSeatByIdQueryRequest
+    public class GetSeatByIdQueryRequest : IRequest<ResponseModel<GetSeatByIdQueryResponse>>
     {
+        public int Id { get; set; }
     }
 }
