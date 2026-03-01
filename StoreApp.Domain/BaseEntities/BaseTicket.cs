@@ -2,9 +2,8 @@
 
 namespace StoreApp.Domain.BaseEntities;
 
-public class BaseTicket
+public class BaseTicket: BaseEntity
 {
-    public int Id { get; set; }
     //public User Customer { get; set; } //User ve Role yazanda elave edecem
 
     //public State State { get; set; } //State enum-"Canceled", "Delayed","Pending","Expired"

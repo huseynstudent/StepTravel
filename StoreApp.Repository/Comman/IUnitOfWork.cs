@@ -9,6 +9,7 @@ public interface IUnitOfWork
     ITrainTicketRepository TrainTicketRepository { get; }
     IPlaneTicketRepository PlaneTicketRepository { get; }
     IBonusCardRepository BonusCardRepository { get; }
+    ISeatRepository SeatRepository { get; }
     IVariantRepository VariantRepository { get; }
     Task SaveChangesAsync();
 }
