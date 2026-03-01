@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StoreApp.Application.CQRS.Locations.Query.Response
+﻿namespace StoreApp.Application.CQRS.Locations.Query.Response
 {
-    public class GetLocationByIdQueryResponse
+    class GetLocationByIdQueryResponse
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Country { get; set; }
+        public int CountryId { get; set; }
+        public int DistanceToken { get; set; }
     }
 }

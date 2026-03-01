@@ -1,12 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using MediatR;
+using StoreApp.Application.CQRS.Locations.Command.Request;
+using StoreApp.Application.CQRS.Locations.Command.Response;
+using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
+using StoreApp.Domain.Entities;
+using StoreApp.Repository.Comman;
 namespace StoreApp.Application.CQRS.Locations.Handler.CommandHandler
 {
-    public class CreateLocationCommandHandler
+    class CreateLocationCommandHandler : IRequestHandler<CreateLocationCommandRequest, ResponseModel<CreateLocationCommandResponse>>
     {
+        private readonly IUnitOfWork _unitOfWork;
+        public CreateLocationCommandHandler(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+        public async Task<ResponseModel<CreateLocationCommandResponse>> Handle(CreateLocationCommandRequest request,CancellationToken cancellationToken)
+        {
+            var newLocation = new Location
+            {
+                Name = request.Name,
+                Country = request.Country,
+                CountryId = request.CountryId,
+                DistanceToken = request.DistanceToken
+            };
+
+            await _unitOfWork.LocationRepository.AddAsync(newLocation);
+            await _unitOfWork.SaveChangesAsync();
+
+            var response = new CreateLocationCommandResponse
+            {
+                Id = newLocation.Id,
+                Name = newLocation.Name,
+                Country = newLocation.Country,
+                CountryId = newLocation.CountryId,
+                DistanceToken = newLocation.DistanceToken
+            };
+
+            return new ResponseModel<CreateLocationCommandResponse>(response);
+        }
     }
 }

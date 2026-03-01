@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using MediatR;
+using StoreApp.Application.CQRS.Locations.Command.Response;
+using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
+using StoreApp.Domain.Entities;
 namespace StoreApp.Application.CQRS.Locations.Command.Request
 {
-    public class UpdateLocationCommandRequest
+    public class UpdateLocationCommandRequest : IRequest<ResponseModel<UpdateLocationCommandResponse>>
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public Country Country { get; set; }
+        public int CountryId { get; set; }
+        public int DistanceToken { get; set; }
     }
 }
