@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StoreApp.Application.CQRS.TrainTickets.Command.Response
+﻿namespace StoreApp.Application.CQRS.TrainTickets.Command.Response
 {
     public class UpdateTrainTicketCommandResponse
     {
+        public int Id { get; set; }
+        public string TrainCompany { get; set; }
+        public string TrainNumber { get; set; }
+        public int VagonNumber { get; set; }
     }
 }

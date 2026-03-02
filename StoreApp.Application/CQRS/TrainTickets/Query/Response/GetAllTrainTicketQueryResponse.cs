@@ -1,6 +1,6 @@
 ﻿namespace StoreApp.Application.CQRS.TrainTickets.Query.Response
 {
-    class GetTrainTicketByIdQueryResponse
+    class GetAllTrainTicketQueryResponse
     {
         public int Id { get; set; }
         public string TrainCompany { get; set; }
