@@ -31,7 +31,7 @@ namespace StoreApp.Application.CQRS.Locations.Handler.CommandHandler
                 };
 
                 return new ResponseModel<DeleteLocationCommandResponse>(response);
-            })
+            }
             
             return new ResponseModel<DeleteLocationCommandResponse>(null);
         }

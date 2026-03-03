@@ -7,5 +7,4 @@ public interface IVariantRepository
     void DeleteAsync(int id);
     Task<Variant> GetByIdAsync(int id);
     IQueryable<Variant> GetAll();
-    void DeleteAync(Variant variant);
 }

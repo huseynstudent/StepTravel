@@ -26,7 +26,7 @@ namespace StoreApp.Application.CQRS.TrainTickets.Handler.QueryHandler
                 VagonNumber = trainTicket.VagonNumber
             }).ToList();
 
-            return new Pagination<GetAllTrainTicketQueryResponse>>(response, totalCount, request.Page, request.Limit);
+            return new Pagination<GetAllTrainTicketQueryResponse>(response, totalCount, request.Page, request.Limit);
         }
     }
 }
