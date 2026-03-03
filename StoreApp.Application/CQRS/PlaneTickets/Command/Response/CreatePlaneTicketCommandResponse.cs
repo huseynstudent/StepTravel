@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace StoreApp.Application.CQRS.PlaneTickets.Command.Response;
 
-namespace StoreApp.Application.CQRS.PlaneTickets.Command.Response
+public class CreatePlaneTicketCommandResponse
 {
-    public class CreatePlaneTicketCommandResponse
-    {
-    }
+    public int Id { get; set; }
+    public string Airline { get; set; }
+    public string Gate { get; set; }
+    public string Plane { get; set; }
+    public string Meal { get; set; }
+    public bool HasCheckedIn { get; set; } = false;
+    public double LuggageKg { get; set; }
 }
