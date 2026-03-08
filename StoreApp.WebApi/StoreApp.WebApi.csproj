@@ -19,4 +19,8 @@
     <ProjectReference Include="..\StoreApp.DAL\StoreApp.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infastructure\Security\" />
+  </ItemGroup>
+
 </Project>

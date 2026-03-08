@@ -16,4 +16,6 @@ public class StoreAppDbContext:DbContext
     public DbSet<BonusCard> BonusCards { get; set; }
     public DbSet<Country> Countries { get; set; }
     public DbSet<TrainTicket> TrainTickets { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<UserToken> UserTokens { get; set; }
 }
