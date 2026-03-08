@@ -9,9 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices();
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddSqlServer<StoreAppDbContext>(connectionString);
 builder.Services.AddScoped<IUnitOfWork, SqlUnitOfWork>((provider) =>
 {

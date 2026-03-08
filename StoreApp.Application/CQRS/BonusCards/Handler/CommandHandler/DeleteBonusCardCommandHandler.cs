@@ -5,14 +5,14 @@ using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.Repository.Comman;
 namespace StoreApp.Application.CQRS.BonusCards.Handler.CommandHandler
 {
-    class DeleteBonusCardCommandHandler : IRequestHandler<DeleteBonusCardRequest, ResponseModel<DeleteBonusCardCommandResponse>>
+    class DeleteBonusCardCommandHandler : IRequestHandler<DeleteBonusCardCommandRequest, ResponseModel<DeleteBonusCardCommandResponse>>
     {
         private readonly IUnitOfWork _unitOfWork;
         public DeleteBonusCardCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<ResponseModel<DeleteBonusCardCommandResponse>> Handle(DeleteBonusCardRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel<DeleteBonusCardCommandResponse>> Handle(DeleteBonusCardCommandRequest request, CancellationToken cancellationToken)
         {
             var bonusCard = await _unitOfWork.BonusCardRepository.GetByIdAsync(request.Id);
 
