@@ -6,7 +6,7 @@ using StoreApp.Repository.Comman;
 
 namespace StoreApp.Application.CQRS.Seats.Handler.CommandHandler;
 
-public class DeleteSeatCommandHandler: IRequestHandler<DeleteSeatCommandRequest, ResponseModel<DeleteSeatCommandResponse>>
+class DeleteSeatCommandHandler: IRequestHandler<DeleteSeatCommandRequest, ResponseModel<DeleteSeatCommandResponse>>
 {
     private readonly IUnitOfWork _unitOfWork;
     public DeleteSeatCommandHandler(IUnitOfWork unitOfWork)

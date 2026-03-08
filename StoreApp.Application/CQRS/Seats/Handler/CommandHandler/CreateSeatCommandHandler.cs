@@ -1,4 +1,5 @@
-﻿using StoreApp.Application.CQRS.Seats.Command.Request;
+﻿using MediatR;
+using StoreApp.Application.CQRS.Seats.Command.Request;
 using StoreApp.Application.CQRS.Seats.Command.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.Domain.Entities;
@@ -6,7 +7,7 @@ using StoreApp.Repository.Comman;
 
 namespace StoreApp.Application.CQRS.Seats.Handler.CommandHandler;
 
-public class CreateSeatCommandHandler
+class CreateSeatCommandHandler : IRequestHandler<CreateSeatCommandRequest, ResponseModel<CreateSeatCommandResponse>>
 {
     private readonly IUnitOfWork _unitOfWork;
     public CreateSeatCommandHandler(IUnitOfWork unitOfWork)

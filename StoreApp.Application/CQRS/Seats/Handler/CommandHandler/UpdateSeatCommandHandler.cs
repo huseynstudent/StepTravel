@@ -6,7 +6,7 @@ using StoreApp.Repository.Comman;
 
 namespace StoreApp.Application.CQRS.Seats.Handler.CommandHandler;
 
-public class UpdateSeatCommandHandler : IRequestHandler<UpdateSeatCommandRequest, ResponseModel<UpdateSeatCommandResponse>>
+class UpdateSeatCommandHandler : IRequestHandler<UpdateSeatCommandRequest, ResponseModel<UpdateSeatCommandResponse>>
 {
     private readonly IUnitOfWork _unitOfWork;
     public UpdateSeatCommandHandler(IUnitOfWork unitOfWork)
