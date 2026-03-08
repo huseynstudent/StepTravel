@@ -1,12 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
+using StoreApp.Application.CQRS.PlaneTickets.Command.Request;
+using StoreApp.Application.CQRS.PlaneTickets.Command.Response;
+using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
+using StoreApp.Repository.Comman;
 
-namespace StoreApp.Application.CQRS.PlaneTickets.Handler.CommandHandler
+namespace StoreApp.Application.CQRS.PlaneTickets.Handler.CommandHandler;
+
+public class UpdatePlaneTicketCommandHandler : IRequestHandler<UpdatePlaneTicketCommandRequest, ResponseModel<UpdatePlaneTicketCommandResponse>>
 {
-    public class UpdatePlaneTicketCommandHandler
+    private readonly IUnitOfWork _unitOfWork;
+    public UpdatePlaneTicketCommandHandler(IUnitOfWork unitOfWork)
     {
+        _unitOfWork = unitOfWork;
+    }
+    public async Task<ResponseModel<UpdatePlaneTicketCommandResponse>> Handle(UpdatePlaneTicketCommandRequest request, CancellationToken cancellationToken)
+    {
+        var planeTicket = await _unitOfWork.PlaneTicketRepository.GetByIdAsync(request.Id);
+        if(planeTicket != null)
+        {
+            planeTicket.Airline = request.Airline;
+            planeTicket.Gate = request.Gate;
+            planeTicket.Plane = request.Plane;
+            planeTicket.Meal = request.Meal;
+            planeTicket.HasCheckedIn = request.HasCheckedIn;
+            planeTicket.LuggageKg = request.LuggageKg;
+            _unitOfWork.PlaneTicketRepository.UpdateAsync(planeTicket);
+            await _unitOfWork.SaveChangesAsync();
+            var response = new UpdatePlaneTicketCommandResponse
+            {
+                Id = planeTicket.Id,
+                Airline = planeTicket.Airline,
+                Gate = planeTicket.Gate,
+                Plane = planeTicket.Plane,
+                Meal = planeTicket.Meal,
+                HasCheckedIn = planeTicket.HasCheckedIn,
+                LuggageKg = planeTicket.LuggageKg
+            };
+            return new ResponseModel<UpdatePlaneTicketCommandResponse>(response);
+        }
+        return new ResponseModel<UpdatePlaneTicketCommandResponse>(null);
     }
 }

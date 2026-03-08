@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
+using StoreApp.Application.CQRS.PlaneTickets.Query.Response;
 
-namespace StoreApp.Application.CQRS.PlaneTickets.Query.Request
+namespace StoreApp.Application.CQRS.PlaneTickets.Query.Request;
+
+public class GetPlaneTicketByIdQueryRequest:IRequest<GetPlaneTicketByIdQueryResponse>
 {
-    public class GetPlaneTicketByIdQueryRequest
-    {
-    }
+    public int Id { get; set; }
 }
