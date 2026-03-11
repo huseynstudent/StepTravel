@@ -18,4 +18,5 @@ public class StoreAppDbContext:DbContext
     public DbSet<TrainTicket> TrainTickets { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<UserToken> UserTokens { get; set; }
+    public DbSet<BonusProduct> BonusProducts { get; set; }
 }
