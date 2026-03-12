@@ -7,6 +7,9 @@ public class Location: BaseEntity
 {
     public string Name { get; set; }
     public Country Country { get; set; }
-    public int CountryId { get; set; } = 1;//default: Azerbaijan 
+    public int CountryId { get; set; }
     public int DistanceToken { get; set; }
 }
+
+
+
