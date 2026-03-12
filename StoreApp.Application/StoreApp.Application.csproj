@@ -25,5 +25,9 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.12" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Validations\CountriesValidations\" />
+	  <Folder Include="Validations\LocationsValidations\" />
+	</ItemGroup>
 
 </Project>
