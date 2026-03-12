@@ -31,7 +31,6 @@ public class SqlBonusCardRepository : BaseSqlRepository , IBonusCardRepository
 
         if (bonusCard != null)
         {
-            _context.BonusCards.Remove(bonusCard);
             bonusCard.IsDeleted = true;
             bonusCard.DeletedDate = DateTime.UtcNow;
         }

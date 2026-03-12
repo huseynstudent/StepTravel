@@ -34,7 +34,6 @@ public class SqlTrainTicketRepository:BaseSqlRepository, ITrainTicketRepository
         var trainticket = _context.TrainTickets.Find(id);
         if (trainticket != null)
         {
-            _context.TrainTickets.Remove(trainticket);
             trainticket.IsDeleted = true;
             trainticket.DeletedDate = DateTime.UtcNow;
         }

@@ -22,7 +22,7 @@ namespace StoreApp.DAL.Infrastructure
 
             if (country != null)
             {
-                _context.Countries.Remove(country);
+
                 country.IsDeleted = true;
                 country.DeletedDate = DateTime.UtcNow;
             }
