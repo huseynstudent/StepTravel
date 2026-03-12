@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StoreApp.Application.CQRS.Countries.Command.Request;
 using StoreApp.Application.CQRS.Countries.Query.Request;
 namespace StoreApp.WebApi.Controllers;
-
+[AllowAnonymous]
 public class CountryController : BaseController
 {
     [HttpPost]

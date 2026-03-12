@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.24" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.12">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,10 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\StoreApp.Application\StoreApp.Application.csproj" />
     <ProjectReference Include="..\StoreApp.DAL\StoreApp.DAL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Infastructure\Security\" />
   </ItemGroup>
 
 </Project>
