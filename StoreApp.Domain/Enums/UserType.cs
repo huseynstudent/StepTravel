@@ -1,9 +1,8 @@
-﻿namespace StoreApp.Domain.Enums
+﻿namespace StoreApp.Domain.Enums;
+
+public enum UserType
 {
-    public enum UserType
-    {
-        Admin = 1,
-        Cashier = 2,
-        Customer= 3,
-    }
+    Admin = 1,
+    Cashier = 2,
+    Customer= 3,
 }
