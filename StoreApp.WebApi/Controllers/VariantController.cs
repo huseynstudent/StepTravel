@@ -16,7 +16,7 @@ public class VariantController : BaseController
     {
         return Ok(await Sender.Send(request));
     }
-    [HttpDelete("{id}")]
+    [HttpDelete]
     public async Task<IActionResult> DeleteVariant(DeleteVariantCommandRequest request)
     {
         return Ok(await Sender.Send(request));

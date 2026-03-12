@@ -16,7 +16,7 @@ public class BonusCardController : BaseController
     {
         return Ok(await Sender.Send(request));
     }
-    [HttpDelete("{id}")]
+    [HttpDelete]
     public async Task<IActionResult> DeleteBonusCard(DeleteBonusCardCommandRequest request)
     {
         return Ok(await Sender.Send(request));

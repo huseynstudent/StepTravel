@@ -16,7 +16,7 @@ public class TrainTicketController : BaseController
     {
         return Ok(await Sender.Send(request));
     }
-    [HttpDelete("{id}")]
+    [HttpDelete]
     public async Task<IActionResult> DeleteTrainTicket(DeleteTrainTicketCommandRequest request)
     {
         return Ok(await Sender.Send(request));
