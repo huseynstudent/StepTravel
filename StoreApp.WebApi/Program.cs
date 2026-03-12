@@ -3,12 +3,10 @@ using StoreApp.Application;
 using StoreApp.DAL.Context;
 using StoreApp.DAL.UnitOfWork;
 using StoreApp.Repository.Comman;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+builder.Services.AddHttpContextAccessor();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices();
@@ -31,6 +29,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -71,4 +71,5 @@ public class StoreAppDbContext:DbContext
             .HasForeignKey(t => t.VariantId)
             .OnDelete(DeleteBehavior.NoAction);
     }
+    public DbSet<BonusProduct> BonusProducts { get; set; }
 }

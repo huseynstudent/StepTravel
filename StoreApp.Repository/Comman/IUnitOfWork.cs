@@ -11,5 +11,6 @@ public interface IUnitOfWork
     IBonusCardRepository BonusCardRepository { get; }
     ISeatRepository SeatRepository { get; }
     IVariantRepository VariantRepository { get; }
+    IBonusProductRepository BonusProductRepository { get; }
     Task SaveChangesAsync();
 }
