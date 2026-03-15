@@ -16,7 +16,7 @@ public class LocationController : BaseController
     {
         return Ok(await Sender.Send(request));
     }
-    [HttpDelete("{id}")]
+    [HttpDelete]
     public async Task<IActionResult> DeleteLocation(DeleteLocationCommandRequest request)
     {
         return Ok(await Sender.Send(request));

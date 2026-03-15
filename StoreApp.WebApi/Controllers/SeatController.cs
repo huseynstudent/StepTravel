@@ -16,7 +16,7 @@ public class SeatController : BaseController
     {
         return Ok(await Sender.Send(request));
     }
-    [HttpDelete("{id}")]
+    [HttpDelete]
     public async Task<IActionResult> DeleteSeat(DeleteSeatCommandRequest request)
     {
         return Ok(await Sender.Send(request));

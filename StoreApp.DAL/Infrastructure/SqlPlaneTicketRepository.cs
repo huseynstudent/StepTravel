@@ -37,7 +37,6 @@ public class SqlPlaneTicketRepository : BaseSqlRepository, IPlaneTicketRepositor
         var planeticket = _context.PlaneTickets.Find(id);
         if (planeticket != null)
         {
-            _context.PlaneTickets.Remove(planeticket);
             planeticket.IsDeleted = true;
             planeticket.DeletedDate = DateTime.UtcNow;
         }

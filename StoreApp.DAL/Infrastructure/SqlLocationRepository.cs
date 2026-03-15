@@ -20,7 +20,6 @@ public class SqlLocationRepository : BaseSqlRepository, ILocationRepository
 
         if (location != null)
         {
-            _context.Locations.Remove(location);
             location.IsDeleted = true;
             location.DeletedDate = DateTime.UtcNow;
         }

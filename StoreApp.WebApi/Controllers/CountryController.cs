@@ -16,7 +16,7 @@ public class CountryController : BaseController
     {
         return Ok(await Sender.Send(request));
     }
-    [HttpDelete("{id}")]
+    [HttpDelete]
     public async Task<IActionResult> DeleteCountry(DeleteCountryCommandRequest request)
     {
         return Ok(await Sender.Send(request));

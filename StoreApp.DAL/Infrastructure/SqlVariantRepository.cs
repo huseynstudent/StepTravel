@@ -20,7 +20,9 @@ public class SqlVariantRepository : BaseSqlRepository, IVariantRepository
 
         if (variant != null)
         {
-            _context.Variants.Remove(variant);
+            variant.IsDeleted = true;
+            variant.DeletedDate = DateTime.UtcNow;
+
         }
     }
     public void UpdateAsync(Variant entity)

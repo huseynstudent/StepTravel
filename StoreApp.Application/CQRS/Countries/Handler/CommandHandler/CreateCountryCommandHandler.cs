@@ -17,6 +17,7 @@ namespace StoreApp.Application.CQRS.Countries.Handler.CommandHandler
         {
             var country = new Country
             {
+
                 Name = request.Name
             };
 
@@ -25,6 +26,7 @@ namespace StoreApp.Application.CQRS.Countries.Handler.CommandHandler
 
             var response = new CreateCountryCommandResponse
             {
+                Id = country.Id,
                 Name = country.Name
             };
 

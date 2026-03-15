@@ -32,7 +32,6 @@ public class SqlSeatRepository: BaseSqlRepository, ISeatRepository
         var seat = _context.Seats.Find(id);
         if (seat != null)
         {
-            _context.Seats.Remove(seat);
             seat.IsDeleted = true;
             seat.DeletedDate = DateTime.UtcNow;
         }
