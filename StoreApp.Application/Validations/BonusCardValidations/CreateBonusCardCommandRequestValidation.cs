@@ -8,10 +8,10 @@ public class CreateBonusCardCommandRequestValidation:AbstractValidator<CreateBon
     public CreateBonusCardCommandRequestValidation()
     {
         RuleFor(x => x.CardNumber)
-            .NotEmpty().WithMessage("Bonus kart nömrəsi boş ola bilməz.")
-            .Length(16).WithMessage("Bonus kart nömrəsi 16 rəqəm olmalıdır.")
-            .Matches(@"^\d+$").WithMessage("Bonus kart nömrəsi yalnız rəqəmlər içermelidir.");
+            .NotEmpty().WithMessage("The bonus card number cannot be empty !")
+            .Length(16).WithMessage("The bonus card number must be 16 digits long !")
+            .Matches(@"^\d+$").WithMessage("The bonus card number must contain only digits !");
         RuleFor(x => x.Points)
-            .GreaterThanOrEqualTo(0).WithMessage("Bonus kart xallar sıfırdan az olamaz.");
+            .GreaterThanOrEqualTo(0).WithMessage("The bonus card points cannot be less than zero !");
     }
 }
