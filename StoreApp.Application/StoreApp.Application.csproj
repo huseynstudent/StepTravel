@@ -28,6 +28,9 @@
 	<ItemGroup>
 	  <Folder Include="Validations\CountriesValidations\" />
 	  <Folder Include="Validations\LocationsValidations\" />
+	  <Folder Include="Validations\VariantsValidations\" />
+	  <Folder Include="Validations\SeatsValidations\" />
+	  <Folder Include="Validations\PlaneTicketsValidations\" />
 	</ItemGroup>
 
 </Project>
