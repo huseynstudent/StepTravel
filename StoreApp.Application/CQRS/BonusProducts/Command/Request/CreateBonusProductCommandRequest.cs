@@ -4,8 +4,7 @@ using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using Microsoft.AspNetCore.Http;
 namespace StoreApp.Application.CQRS.BonusProducts.Command.Request
 {
-    public class CreateBonusProductCommandRequest
-        : IRequest<ResponseModel<CreateBonusProductCommandResponse>>
+    public class CreateBonusProductCommandRequest : IRequest<ResponseModel<CreateBonusProductCommandResponse>>
     {
         public string Name { get; set; }
         public int PricePoint { get; set; }
