@@ -60,7 +60,7 @@ namespace StoreApp.Application.Validations.PlaneTicketsValidations
 
             RuleFor(x => x.TotalLuggageKg)
                 .GreaterThanOrEqualTo(0).WithMessage("The total luggage weight must be greater than or equal to zero !")
-                .NotEmpty().WithMessage("The total luggage weight cannot be empty !")
+                .NotEmpty().WithMessage("The total luggage weight cannot be empty !");
         }
     }
 }

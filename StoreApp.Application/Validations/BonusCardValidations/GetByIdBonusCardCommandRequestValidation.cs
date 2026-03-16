@@ -2,7 +2,7 @@
 using StoreApp.Application.CQRS.BonusCards.Query.Request;
 namespace StoreApp.Application.Validations.BonusCardValidations
 {
-    public class GetByIdBonusCardCommandRequestValidation : AbstractValidator<GetBonusCardByIdQueryRequest>
+    public class GetByIdBonusCardCommandRequestValidation : AbstractValidator<GetBonusCardByIdQueryRequest> 
     {
         public GetByIdBonusCardCommandRequestValidation()
         {

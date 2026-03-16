@@ -30,6 +30,27 @@ namespace StoreApp.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BonusProducts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PricePoint = table.Column<int>(type: "int", nullable: false),
+                    InStock = table.Column<int>(type: "int", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageFileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BonusProducts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Countries",
                 columns: table => new
                 {
@@ -58,6 +79,7 @@ namespace StoreApp.DAL.Migrations
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Birthday = table.Column<DateOnly>(type: "date", nullable: false),
                     Fin = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -168,16 +190,17 @@ namespace StoreApp.DAL.Migrations
                     Meal = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HasCheckedIn = table.Column<bool>(type: "bit", nullable: false),
                     LuggageKg = table.Column<double>(type: "float", nullable: false),
-                    FromId = table.Column<int>(type: "int", nullable: false),
-                    ToId = table.Column<int>(type: "int", nullable: false),
-                    SeatId = table.Column<int>(type: "int", nullable: false),
-                    VariantId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    State = table.Column<int>(type: "int", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BroughtDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SeatId = table.Column<int>(type: "int", nullable: false),
+                    FromId = table.Column<int>(type: "int", nullable: false),
+                    ToId = table.Column<int>(type: "int", nullable: false),
+                    VariantId = table.Column<int>(type: "int", nullable: false),
                     HasPet = table.Column<bool>(type: "bit", nullable: false),
                     HasChild = table.Column<bool>(type: "bit", nullable: false),
                     LuggageCount = table.Column<int>(type: "int", nullable: false),
@@ -226,6 +249,7 @@ namespace StoreApp.DAL.Migrations
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    State = table.Column<int>(type: "int", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BroughtDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SeatId = table.Column<int>(type: "int", nullable: false),
@@ -323,6 +347,9 @@ namespace StoreApp.DAL.Migrations
         {
             migrationBuilder.DropTable(
                 name: "BonusCards");
+
+            migrationBuilder.DropTable(
+                name: "BonusProducts");
 
             migrationBuilder.DropTable(
                 name: "PlaneTickets");

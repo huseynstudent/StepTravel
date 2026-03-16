@@ -25,7 +25,7 @@ namespace StoreApp.Application.Validations.AuthValidations
 
             RuleFor(x => x.Password)
                 .NotEmpty().MinimumLength(6).WithMessage("Password must be at least 6 characters long.")
-                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$")
+                .Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$");
 
             RuleFor(x => x.Birthday)
                 .LessThan(DateOnly.FromDateTime(DateTime.Now)).WithMessage("Birthday must be in the past.")

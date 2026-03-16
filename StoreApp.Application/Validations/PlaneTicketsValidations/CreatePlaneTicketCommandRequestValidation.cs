@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using StoreApp.Application.CQRS.PlaneTickets.Command.Request;
-
 namespace StoreApp.Application.Validations.PlaneTicketsValidations
 {
     public class CreatePlaneTicketCommandRequestValidation : AbstractValidator<CreatePlaneTicketCommandRequest>
