@@ -39,7 +39,8 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
         {
             if (adminPassword == request.Password)
             {
-                var token = GenerateJwtToken(adminEmail, "Admin", null);
+                int id = 0;
+                var token = GenerateJwtToken(adminEmail, "Admin", id);
                 _logger.LogInformation("Admin login via configured credentials");
                 return new ResponseModel<AuthResponse>(new AuthResponse { Email = adminEmail, Role = "Admin", Token = token });
             }
