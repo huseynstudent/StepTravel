@@ -9,5 +9,4 @@ public class Variant : BaseEntity
     public double AllowedLuggageKg { get; set; } = 15;
     public int AllowedLuggageCount { get; set; } = 1;
     public bool IsPriority { get; set; } = false;
-
 }
