@@ -10,7 +10,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-
+using StoreApp.Application.Service;
 
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandRequest, ResponseModel<RegisterUserCommandResponse>>
 {
@@ -25,13 +25,62 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
         _logger = logger;
     }
 
+    public string RandomCode()
+    {
+        var Random = new Random();
+        return $"{Random.Next(100000, 1000000)}";
+    }
+
     public async Task<ResponseModel<RegisterUserCommandResponse>> Handle(RegisterUserCommandRequest request, CancellationToken cancellationToken)
     {
+        var exists_e = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email && !u.IsDeleted, cancellationToken);
+
+        if (exists_e != null)
+        {
+            _logger.LogInformation("Registration failed - email exists: {Email}", request.Email);
+            return new ResponseModel<RegisterUserCommandResponse>(null);
+        }
+
+        string code = RandomCode();
+
         var adminEmail = _configuration["Admin:Email"];
         if (!string.IsNullOrWhiteSpace(adminEmail) &&
             string.Equals(request.Email?.Trim(), adminEmail.Trim(), StringComparison.OrdinalIgnoreCase))
         {
             _logger.LogWarning("Attempt to register with reserved admin email: {Email}", request.Email);
+            return new ResponseModel<RegisterUserCommandResponse>(null);
+        }
+
+        try
+        {
+            // --- EMAIL DÜZƏLİŞİ BURADADIR ---
+            string senderEmail = "onurrmoskowaa2008@gmail.com";
+            string appPassword = "ktjt ikkz uncw nhic";
+
+            // Email servisini burada birbaşa yaradırıq
+            var emailService = new StoreApp.Application.Service.Email();
+
+            // Sənin Send metoduna 5 parametr göndəririk (sender, pass, receiver, subject, body)
+            bool sentEmail = emailService.Send(
+                senderEmail,
+                appPassword,
+                request.Email,
+                "Your Confirmation Code",
+                $"Your confirmation code is : {code}"
+            );
+
+            if (!sentEmail)
+            {
+                _logger.LogError("\n\t\t Email could not be sent !");
+                return new ResponseModel<RegisterUserCommandResponse>(null);
+            }
+
+            _logger.LogInformation("\n\t Confirmation code has been sent to your email !");
+            // ------------------------------
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("\n\t\t Email could not be sent ! Error: " + ex.Message);
             return new ResponseModel<RegisterUserCommandResponse>(null);
         }
 
