@@ -53,14 +53,11 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
 
         try
         {
-            // --- EMAIL DÜZƏLİŞİ BURADADIR ---
             string senderEmail = "onurrmoskowaa2008@gmail.com";
             string appPassword = "ktjt ikkz uncw nhic";
 
-            // Email servisini burada birbaşa yaradırıq
             var emailService = new StoreApp.Application.Service.Email();
 
-            // Sənin Send metoduna 5 parametr göndəririk (sender, pass, receiver, subject, body)
             bool sentEmail = emailService.Send(
                 senderEmail,
                 appPassword,
@@ -76,7 +73,6 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
             }
 
             _logger.LogInformation("\n\t Confirmation code has been sent to your email !");
-            // ------------------------------
         }
         catch (Exception ex)
         {

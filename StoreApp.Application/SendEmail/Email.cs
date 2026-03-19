@@ -12,14 +12,13 @@ namespace StoreApp.Application.Service
             try
             {
                 var Message = new MimeMessage();
-                Message.From.Add(new MailboxAddress("Step Travels", senderEmail)); // Hospital adını Step Travels etdik
+                Message.From.Add(new MailboxAddress("Step Travels", senderEmail));
                 Message.To.Add(new MailboxAddress("Receiver", receiverEmail));
                 Message.Subject = subject;
                 Message.Body = new TextPart("plain") { Text = body };
 
                 using (var Client = new SmtpClient())
                 {
-                    // Sertifikat yoxlanışını keçmək üçün (Console-dakı məntiqin)
                     Client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
                     try
@@ -31,7 +30,6 @@ namespace StoreApp.Application.Service
                     }
                     catch (Exception ex)
                     {
-                        // Web mühitində Console yerinə Log daha yaxşıdır, amma metodun bool qaytarır
                         return false;
                     }
                 }
