@@ -52,7 +52,6 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         var roundTripMultiplier = planeTicket.IsRoundTrip ? 2 : 1;
         planeTicket.Price = variantPrice * roundTripMultiplier * planeTicket.Discount;
 
-        _unitOfWork.PlaneTicketRepository.UpdateAsync(planeTicket);
         await _unitOfWork.SaveChangesAsync();
 
         var response = new FillPlaneTicketCommandResponse

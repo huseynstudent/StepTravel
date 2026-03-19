@@ -3,6 +3,8 @@ using StoreApp.Application;
 using StoreApp.DAL.Context;
 using StoreApp.DAL.UnitOfWork;
 using StoreApp.Repository.Comman;
+using StoreApp.WebApi.Infastructure.Middlewares;
+using StoreApp.WebApi.Infrastructure.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,7 @@ builder.Services.AddScoped<IUnitOfWork, SqlUnitOfWork>((provider) =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAuthenticationDependency(builder.Configuration);
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -54,6 +57,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

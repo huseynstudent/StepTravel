@@ -51,7 +51,6 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         var roundTripMultiplier = trainTicket.IsRoundTrip ? 2 : 1;
         trainTicket.Price = variantPrice * roundTripMultiplier * trainTicket.Discount;
 
-        _unitOfWork.TrainTicketRepository.UpdateAsync(trainTicket);
         await _unitOfWork.SaveChangesAsync();
 
         var response = new FillTrainTicketCommandResponse
