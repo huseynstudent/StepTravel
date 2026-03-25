@@ -16,9 +16,9 @@ namespace StoreApp.DAL.Infrastructure
         {
             _context.Countries.Add(entity);
         }
-        public void DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            var country = _context.Countries.Find(id);
+            var country = await _context.Countries.FindAsync(id);
 
             if (country != null)
             {
@@ -27,15 +27,10 @@ namespace StoreApp.DAL.Infrastructure
                 country.DeletedDate = DateTime.UtcNow;
             }
         }
-        public void UpdateAsync(Country entity)
+        public void Update(Country entity)
         {
-            var country = _context.Countries.Find(entity.Id);
-
-            if (country != null)
-            {
-                country.Name = entity.Name;
-                country.UpdatedDate = DateTime.UtcNow;
-            }
+            entity.UpdatedDate = DateTime.UtcNow;
+                _context.Countries.Update(entity);
         }
         public IQueryable<Country> GetAll()
         {

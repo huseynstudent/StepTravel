@@ -18,7 +18,7 @@ namespace StoreApp.Application.CQRS.Locations.Handler.CommandHandler
 
             if (location != null)
             {
-                _unitOfWork.LocationRepository.DeleteAsync(request.Id);
+                await _unitOfWork.LocationRepository.DeleteAsync(request.Id);
                 await _unitOfWork.SaveChangesAsync();
 
                 var response = new DeleteLocationCommandResponse

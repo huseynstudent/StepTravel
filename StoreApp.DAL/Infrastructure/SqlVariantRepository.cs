@@ -14,9 +14,9 @@ public class SqlVariantRepository : BaseSqlRepository, IVariantRepository
     {
         _context.Variants.Add(entity);
     }
-    public void DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        var variant = _context.Variants.Find(id);
+        var variant = await _context.Variants.FindAsync(id);
 
         if (variant != null)
         {
@@ -25,19 +25,10 @@ public class SqlVariantRepository : BaseSqlRepository, IVariantRepository
 
         }
     }
-    public void UpdateAsync(Variant entity)
+    public void Update(Variant entity)
     {
-        var variant = _context.Variants.Find(entity.Id);
-
-        if (variant != null)
-        {
-            variant.Name = entity.Name;
-            variant.Price = entity.Price;
-            variant.AllowedLuggageKg = entity.AllowedLuggageKg;
-            variant.AllowedLuggageCount = entity.AllowedLuggageCount;
-            variant.IsPriority = entity.IsPriority;
-            _context.Variants.Update(variant);
-        }
+        entity.UpdatedDate = DateTime.UtcNow;
+        _context.Variants.Update(entity);
     }
     public IQueryable<Variant> GetAll()
     {

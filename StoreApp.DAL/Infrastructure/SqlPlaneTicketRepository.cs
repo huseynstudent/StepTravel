@@ -17,24 +17,14 @@ public class SqlPlaneTicketRepository : BaseSqlRepository, IPlaneTicketRepositor
     {
         _context.PlaneTickets.Add(planeticket);
     }
-    public void UpdateAsync(PlaneTicket planeticket)
+    public void Update(PlaneTicket planeticket)
     {
-        var existingPlaneTicket = _context.PlaneTickets.Find(planeticket.Id);
-        if (existingPlaneTicket != null)
-        {
-            existingPlaneTicket.Airline = planeticket.Airline;
-            existingPlaneTicket.Gate = planeticket.Gate;
-            existingPlaneTicket.Plane = planeticket.Plane;
-            //existingPlaneTicket.Meal = planeticket.Meal;
-            existingPlaneTicket.HasCheckedIn = planeticket.HasCheckedIn;
-            existingPlaneTicket.LuggageKg = planeticket.LuggageKg;
-            existingPlaneTicket.VariantId = planeticket.VariantId;
-            existingPlaneTicket.UpdatedDate = DateTime.UtcNow;
-        }
+        planeticket.UpdatedDate = DateTime.UtcNow;
+            _context.PlaneTickets.Update(planeticket);
     }
-    public void DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        var planeticket = _context.PlaneTickets.Find(id);
+        var planeticket = await _context.PlaneTickets.FindAsync(id);
         if (planeticket != null)
         {
             planeticket.IsDeleted = true;

@@ -22,7 +22,7 @@ class UpdateTrainTicketCommandHandler : IRequestHandler<UpdateTrainTicketCommand
             trainTicket.TrainNumber = request.TrainNumber;
             trainTicket.VagonNumber = request.VagonNumber;
 
-            _unitOfWork.TrainTicketRepository.UpdateAsync(trainTicket);
+            _unitOfWork.TrainTicketRepository.Update(trainTicket);
             await _unitOfWork.SaveChangesAsync();
 
             var response = new UpdateTrainTicketCommandResponse

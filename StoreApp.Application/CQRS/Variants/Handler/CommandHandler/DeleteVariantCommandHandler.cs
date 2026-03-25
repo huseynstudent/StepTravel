@@ -18,7 +18,7 @@ namespace StoreApp.Application.CQRS.Variants.Handler.CommandHandler
 
             if (variant != null)
             {
-                _unitOfWork.VariantRepository.DeleteAsync(request.Id);
+                await _unitOfWork.VariantRepository.DeleteAsync(request.Id);
                 await _unitOfWork.SaveChangesAsync();
 
                 var response = new DeleteVariantCommandResponse

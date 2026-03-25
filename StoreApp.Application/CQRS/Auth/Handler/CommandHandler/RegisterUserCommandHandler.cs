@@ -51,8 +51,8 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
 
         try
         {
-            string senderEmail = "onurrmoskowaa2008@gmail.com";
-            string appPassword = "ktjt ikkz uncw nhic";
+            string senderEmail = _configuration["Email:SenderAddress"]!;
+            string appPassword = _configuration["Email:AppPassword"]!;
 
             var emailService = new StoreApp.Application.Service.Email();
 
@@ -78,12 +78,6 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
             return new ResponseModel<RegisterUserCommandResponse>(null);
         }
 
-        var exists = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email && !u.IsDeleted, cancellationToken);
-        if (exists != null)
-        {
-            _logger.LogInformation("Registration failed - email exists: {Email}", request.Email);
-            return new ResponseModel<RegisterUserCommandResponse>(null);
-        }
         var user = new User
         {
             Name = request.Name ?? string.Empty,

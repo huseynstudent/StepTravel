@@ -18,7 +18,7 @@ class DeleteSeatCommandHandler: IRequestHandler<DeleteSeatCommandRequest, Respon
         var seat = await _unitOfWork.SeatRepository.GetByIdAsync(request.Id);
         if (seat != null)
         {
-            _unitOfWork.SeatRepository.DeleteAsync(request.Id);
+            await _unitOfWork.SeatRepository.DeleteAsync(request.Id);
             await _unitOfWork.SaveChangesAsync();
             var response = new DeleteSeatCommandResponse
             {

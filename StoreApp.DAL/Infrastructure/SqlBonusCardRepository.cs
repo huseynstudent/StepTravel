@@ -14,20 +14,14 @@ public class SqlBonusCardRepository : BaseSqlRepository , IBonusCardRepository
     {
         _context.BonusCards.Add(bonusCard);
     }
-    public void UpdateAsync(BonusCard bonusCard)
+    public void Update(BonusCard bonusCard)
     {
-        var existingBonusCard = _context.BonusCards.Find(bonusCard.Id);
-
-        if (existingBonusCard != null)
-        {
-            existingBonusCard.CardNumber = bonusCard.CardNumber;
-            existingBonusCard.Points = bonusCard.Points;
-            existingBonusCard.UpdatedDate = DateTime.UtcNow;
-        }
+        bonusCard.UpdatedDate = DateTime.UtcNow;
+        _context.BonusCards.Update(bonusCard);
     }
-    public void DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        var bonusCard = _context.BonusCards.Find(id);
+        var bonusCard = await _context.BonusCards.FindAsync(id);
 
         if (bonusCard != null)
         {

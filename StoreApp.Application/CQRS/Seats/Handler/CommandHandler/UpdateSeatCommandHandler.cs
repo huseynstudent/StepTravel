@@ -21,7 +21,7 @@ class UpdateSeatCommandHandler : IRequestHandler<UpdateSeatCommandRequest, Respo
             seat.Name = request.Name;
             seat.IsOccupied = request.IsOccupied;
             seat.VariantId = request.VariantId;
-            _unitOfWork.SeatRepository.UpdateAsync(seat);
+            _unitOfWork.SeatRepository.Update(seat);
             await _unitOfWork.SaveChangesAsync();
             var response = new UpdateSeatCommandResponse
             {

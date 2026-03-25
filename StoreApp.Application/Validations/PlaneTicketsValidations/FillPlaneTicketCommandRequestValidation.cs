@@ -38,20 +38,10 @@ namespace StoreApp.Application.Validations.PlaneTicketsValidations
                 .IsInEnum().WithMessage("The state must be a valid enum value !")
                 .NotEmpty().WithMessage("The state cannot be empty !");
 
-            RuleFor(x => x.HasPet)
-                .IsInEnum().WithMessage("The payment method must be a valid enum value !")
-                .NotEmpty().WithMessage("The payment method cannot be empty !");
-
-            RuleFor(x => x.HasChild)
-                .IsInEnum().WithMessage("The payment method must be a valid enum value !")
-                .NotEmpty().WithMessage("The payment method cannot be empty !");
-
             RuleFor(x => x.IsRoundTrip)
-                .NotNull().WithMessage("The round trip status cannot be null !")
                 .Must(x => x == true || x == false).WithMessage("The round trip status must be either true or false !");
 
             RuleFor(x => x.IsCashPayment)
-                .NotNull().WithMessage("The cash payment status cannot be null !")
                 .Must(x => x == true || x == false).WithMessage("The cash payment status must be either true or false !");
 
             RuleFor(x => x.LuggageCount)

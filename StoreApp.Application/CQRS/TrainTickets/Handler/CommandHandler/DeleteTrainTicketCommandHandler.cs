@@ -18,7 +18,7 @@ class DeleteTrainTicketCommandHandler : IRequestHandler<DeleteTrainTicketCommand
 
         if (trainTicket != null)
         {
-            _unitOfWork.TrainTicketRepository.DeleteAsync(request.Id);
+            await _unitOfWork.TrainTicketRepository.DeleteAsync(request.Id);
             await _unitOfWork.SaveChangesAsync();
 
             var response = new DeleteTrainTicketCommandResponse

@@ -20,7 +20,7 @@ namespace StoreApp.Application.CQRS.Countries.Handler.CommandHandler
             {
                 country.Name = request.Name;
 
-                _unitOfWork.CountryRepository.UpdateAsync(country);
+                _unitOfWork.CountryRepository.Update(country);
                 await _unitOfWork.SaveChangesAsync();
 
                 var response = new UpdateCountryCommandResponse

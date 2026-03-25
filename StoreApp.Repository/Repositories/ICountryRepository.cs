@@ -3,8 +3,8 @@ namespace StoreApp.Repository.Repositories;
 public interface ICountryRepository
 {
     Task AddAsync(Country country);
-    void UpdateAsync(Country country);
-    void DeleteAsync(int id);
+    void Update(Country country);
+    Task DeleteAsync(int id);
     Task<Country> GetByIdAsync(int id);
     IQueryable<Country> GetAll();
 }

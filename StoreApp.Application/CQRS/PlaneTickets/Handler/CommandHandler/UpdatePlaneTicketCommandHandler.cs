@@ -24,7 +24,7 @@ public class UpdatePlaneTicketCommandHandler : IRequestHandler<UpdatePlaneTicket
             //planeTicket.Meal = request.Meal;
             planeTicket.HasCheckedIn = request.HasCheckedIn;
             planeTicket.LuggageKg = request.LuggageKg;
-            _unitOfWork.PlaneTicketRepository.UpdateAsync(planeTicket);
+            _unitOfWork.PlaneTicketRepository.Update(planeTicket);
             await _unitOfWork.SaveChangesAsync();
             var response = new UpdatePlaneTicketCommandResponse
             {

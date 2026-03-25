@@ -18,7 +18,7 @@ namespace StoreApp.Application.CQRS.Countries.Handler.CommandHandler
 
             if(country != null)
             {
-                _unitOfWork.CountryRepository.DeleteAsync(request.Id);
+                await _unitOfWork.CountryRepository.DeleteAsync(request.Id);
                 await _unitOfWork.SaveChangesAsync();
 
                 var response = new DeleteCountryCommandResponse

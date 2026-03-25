@@ -20,9 +20,9 @@ public class SqlBonusProductRepository : BaseSqlRepository, IBonusProductReposit
         await _context.BonusProducts.AddAsync(entity);
     }
 
-    public void DeleteAsync(int id)
+    public  async Task DeleteAsync(int id)
     {
-        var product = _context.BonusProducts.Find(id);
+        var product = await _context.BonusProducts.FindAsync(id);
         if (product != null)
         {
             product.IsDeleted = true;
@@ -30,23 +30,10 @@ public class SqlBonusProductRepository : BaseSqlRepository, IBonusProductReposit
         }
     }
 
-    public void UpdateAsync(BonusProduct entity)
+    public void Update(BonusProduct entity)
     {
-        var product = _context.BonusProducts.Find(entity.Id);
-        if (product != null)
-        {
-            product.Name = entity.Name;
-            product.PricePoint = entity.PricePoint;
-            product.InStock = entity.InStock;
-            product.UpdatedDate = DateTime.UtcNow;
-
-            // Only replace image if a new one was provided
-            if (!string.IsNullOrEmpty(entity.ImageUrl))
-            {
-                product.ImageUrl = entity.ImageUrl;
-                product.ImageFileName = entity.ImageFileName;
-            }
-        }
+        entity.UpdatedDate = DateTime.UtcNow;
+        _context.BonusProducts.Update(entity);
     }
 
     public IQueryable<BonusProduct> GetAll()

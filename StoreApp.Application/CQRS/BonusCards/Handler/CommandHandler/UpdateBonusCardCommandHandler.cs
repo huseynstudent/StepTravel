@@ -21,7 +21,7 @@ namespace StoreApp.Application.CQRS.BonusCards.Handler.CommandHandler
                 bonusCard.CardNumber = request.CardNumber;
                 bonusCard.Points = request.Points;
 
-                _unitOfWork.BonusCardRepository.UpdateAsync(bonusCard);
+                _unitOfWork.BonusCardRepository.Update(bonusCard);
                 await _unitOfWork.SaveChangesAsync();
 
                 var response = new UpdateBonusCardCommandResponse

@@ -18,7 +18,7 @@ namespace StoreApp.Application.CQRS.BonusCards.Handler.CommandHandler
 
             if (bonusCard != null)
             {
-                _unitOfWork.BonusCardRepository.DeleteAsync(request.Id);
+                await _unitOfWork.BonusCardRepository.DeleteAsync(request.Id);
                 await _unitOfWork.SaveChangesAsync();
 
                 var response = new DeleteBonusCardCommandResponse

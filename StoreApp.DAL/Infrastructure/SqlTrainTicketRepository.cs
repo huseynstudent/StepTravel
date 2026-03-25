@@ -17,21 +17,14 @@ public class SqlTrainTicketRepository:BaseSqlRepository, ITrainTicketRepository
     {
         _context.TrainTickets.Add(trainticket);
     }
-    public void UpdateAsync(TrainTicket trainticket)
+    public void Update(TrainTicket trainticket)
     {
-        var existingTrainTicket = _context.TrainTickets.Find(trainticket.Id);
-        if (existingTrainTicket != null)
-        {
-            existingTrainTicket.TrainCompany = trainticket.TrainCompany;
-            existingTrainTicket.TrainNumber = trainticket.TrainNumber;
-            existingTrainTicket.VagonNumber = trainticket.VagonNumber;
-            existingTrainTicket.VariantId = trainticket.VariantId;
-            existingTrainTicket.UpdatedDate = DateTime.UtcNow;
-        }
+        trainticket.UpdatedDate = DateTime.UtcNow;
+            _context.TrainTickets.Update(trainticket);
     }
-    public void DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        var trainticket = _context.TrainTickets.Find(id);
+        var trainticket = await _context.TrainTickets.FindAsync(id);
         if (trainticket != null)
         {
             trainticket.IsDeleted = true;

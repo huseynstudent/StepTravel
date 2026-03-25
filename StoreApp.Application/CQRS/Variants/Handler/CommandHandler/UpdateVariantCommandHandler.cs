@@ -24,7 +24,7 @@ namespace StoreApp.Application.CQRS.Variants.Handler.CommandHandler
                 variant.AllowedLuggageCount = request.AllowedLuggageCount;
                 variant.IsPriority = request.IsPriority;
 
-                _unitOfWork.VariantRepository.UpdateAsync(variant);
+                _unitOfWork.VariantRepository.Update(variant);
                 await _unitOfWork.SaveChangesAsync();
 
                 var response = new UpdateVariantCommandResponse

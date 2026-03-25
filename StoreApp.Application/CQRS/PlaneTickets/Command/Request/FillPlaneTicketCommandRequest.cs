@@ -9,6 +9,7 @@ namespace StoreApp.Application.CQRS.PlaneTickets.Command.Request;
 public class FillPlaneTicketCommandRequest: IRequest<ResponseModel<FillPlaneTicketCommandResponse>>
 {
     public int Id { get; set; }
+    public int UserId { get; set; }
     public State State { get; set; }
     public DateTime DueDate { get; set; }
     public int SeatId { get; set; }

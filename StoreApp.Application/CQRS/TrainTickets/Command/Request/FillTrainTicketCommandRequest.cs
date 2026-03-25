@@ -9,6 +9,7 @@ using MediatR;
 public class FillTrainTicketCommandRequest : IRequest<ResponseModel<FillTrainTicketCommandResponse>>
 {
     public int Id { get; set; }
+    public int UserId { get; set; }
     public State State { get; set; }
     public DateTime DueDate { get; set; }
     public int SeatId { get; set; }

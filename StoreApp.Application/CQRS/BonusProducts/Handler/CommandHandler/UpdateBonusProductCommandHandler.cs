@@ -50,7 +50,7 @@ namespace StoreApp.Application.CQRS.BonusProducts.Handler.CommandHandler
             existing.ImageUrl = imageUrl;
             existing.ImageFileName = imageFileName;
 
-            _unitOfWork.BonusProductRepository.UpdateAsync(existing);
+            _unitOfWork.BonusProductRepository.Update(existing);
             await _unitOfWork.SaveChangesAsync();
 
             var response = new UpdateBonusProductCommandResponse

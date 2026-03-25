@@ -18,7 +18,7 @@ public class DeletePlaneTicketCommandHandler : IRequestHandler<DeletePlaneTicket
         var planeTicket = await _unitOfWork.PlaneTicketRepository.GetByIdAsync(request.Id);
         if (planeTicket != null)
         {
-            _unitOfWork.PlaneTicketRepository.DeleteAsync(request.Id);
+            await _unitOfWork.PlaneTicketRepository.DeleteAsync(request.Id);
             await _unitOfWork.SaveChangesAsync();
             var response = new DeletePlaneTicketCommandResponse
             {

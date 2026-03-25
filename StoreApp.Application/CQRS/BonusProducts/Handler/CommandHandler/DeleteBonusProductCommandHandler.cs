@@ -19,7 +19,7 @@ namespace StoreApp.Application.CQRS.BonusProducts.Handler.CommandHandler
         public async Task<ResponseModel<DeleteBonusProductCommandResponse>> Handle(
             DeleteBonusProductCommandRequest request, CancellationToken cancellationToken)
         {
-            _unitOfWork.BonusProductRepository.DeleteAsync(request.Id);
+            await _unitOfWork.BonusProductRepository.DeleteAsync(request.Id);
             await _unitOfWork.SaveChangesAsync();
 
             var response = new DeleteBonusProductCommandResponse { IsDeleted = true };

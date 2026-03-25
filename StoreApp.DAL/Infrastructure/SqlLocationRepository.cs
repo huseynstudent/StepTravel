@@ -14,9 +14,9 @@ public class SqlLocationRepository : BaseSqlRepository, ILocationRepository
     {
         _context.Locations.Add(entity);
     }
-    public void DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        var location = _context.Locations.Find(id);
+        var location = await _context.Locations.FindAsync(id);
 
         if (location != null)
         {
@@ -24,16 +24,10 @@ public class SqlLocationRepository : BaseSqlRepository, ILocationRepository
             location.DeletedDate = DateTime.UtcNow;
         }
     }
-    public void UpdateAsync(Location entity)
+    public void Update(Location entity)
     {
-        var location = _context.Locations.Find(entity.Id);
-
-        if (location != null)
-        {
-            location.Name = entity.Name;
-            location.CountryId = entity.CountryId;
-            location.UpdatedDate = DateTime.UtcNow;
-        }
+        entity.UpdatedDate = DateTime.UtcNow;
+        _context.Locations.Update(entity);
     }
     public IQueryable<Location> GetAll()
     {

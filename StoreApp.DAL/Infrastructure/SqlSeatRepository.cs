@@ -16,20 +16,14 @@ public class SqlSeatRepository: BaseSqlRepository, ISeatRepository
     {
         _context.Seats.Add(seat);
     }
-    public void UpdateAsync(Seat seat)
+    public void Update(Seat seat)
     {
-        var existingSeat = _context.Seats.Find(seat.Id);
-        if (existingSeat != null)
-        {
-            existingSeat.Name = seat.Name;
-            existingSeat.IsOccupied = seat.IsOccupied;
-            existingSeat.VariantId = seat.VariantId;
-            existingSeat.UpdatedDate = DateTime.UtcNow;
-        }
+        seat.UpdatedDate = DateTime.UtcNow;
+        _context.Seats.Update(seat);
     }
-    public void DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        var seat = _context.Seats.Find(id);
+        var seat = await _context.Seats.FindAsync(id);
         if (seat != null)
         {
             seat.IsDeleted = true;

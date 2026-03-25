@@ -23,7 +23,7 @@ namespace StoreApp.Application.CQRS.Locations.Handler.CommandHandler
                 location.CountryId = request.CountryId;
                 location.DistanceToken = request.DistanceToken;
 
-                _unitOfWork.LocationRepository.UpdateAsync(location);
+                _unitOfWork.LocationRepository.Update(location);
                 await _unitOfWork.SaveChangesAsync();
 
                 var response = new UpdateLocationCommandResponse
