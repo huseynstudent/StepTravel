@@ -25,7 +25,7 @@ public class SqlPlaneTicketRepository : BaseSqlRepository, IPlaneTicketRepositor
             existingPlaneTicket.Airline = planeticket.Airline;
             existingPlaneTicket.Gate = planeticket.Gate;
             existingPlaneTicket.Plane = planeticket.Plane;
-            existingPlaneTicket.Meal = planeticket.Meal;
+            //existingPlaneTicket.Meal = planeticket.Meal;
             existingPlaneTicket.HasCheckedIn = planeticket.HasCheckedIn;
             existingPlaneTicket.LuggageKg = planeticket.LuggageKg;
             existingPlaneTicket.VariantId = planeticket.VariantId;

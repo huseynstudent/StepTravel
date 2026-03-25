@@ -8,7 +8,7 @@ public class PlaneTicket : BaseTicket
     public string Airline { get; set; }
     public string Gate { get; set; }
     public string Plane { get; set; }
-    public MealType Meal { get; set; }
+    //public MealType Meal { get; set; }
     public bool HasCheckedIn { get; set; } = false;
     public double LuggageKg { get; set; }
 

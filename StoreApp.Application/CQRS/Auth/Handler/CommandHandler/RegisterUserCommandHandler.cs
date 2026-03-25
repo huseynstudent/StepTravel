@@ -92,7 +92,9 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
             PasswordHash = PasswordHelper.Hash(request.Password ?? string.Empty),
             Birthday = request.Birthday,
             Fin = request.Fin ?? string.Empty,
-            Role = UserType.Customer
+            Role = UserType.Customer,
+            ConfirmCode = code,
+            IsConfirmed = false
         };
 
         _db.Users.Add(user);

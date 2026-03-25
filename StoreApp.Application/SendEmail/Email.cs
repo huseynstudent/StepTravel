@@ -1,11 +1,11 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
+using StoreApp.Application.Interfaces;
 using System;
-
 namespace StoreApp.Application.Service
 {
-    public class Email
+    public class Email : IEmailService
     {
         public bool Send(string senderEmail, string appPassword, string receiverEmail, string subject, string body)
         {
