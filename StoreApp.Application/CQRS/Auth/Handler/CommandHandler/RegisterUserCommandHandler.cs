@@ -10,8 +10,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using StoreApp.Application.Service;
-
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandRequest, ResponseModel<RegisterUserCommandResponse>>
 {
     private readonly StoreAppDbContext _db;
@@ -86,7 +84,6 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
             _logger.LogInformation("Registration failed - email exists: {Email}", request.Email);
             return new ResponseModel<RegisterUserCommandResponse>(null);
         }
-
         var user = new User
         {
             Name = request.Name ?? string.Empty,
