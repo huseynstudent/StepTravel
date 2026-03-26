@@ -2,7 +2,7 @@
 
 namespace StoreApp.WebApi.Controllers;
 
-using global::StoreApp.Application.CQRS.Auth.Command.Request;
+using StoreApp.Application.CQRS.Auth.Command.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 [AllowAnonymous]

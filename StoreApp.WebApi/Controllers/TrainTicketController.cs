@@ -31,4 +31,15 @@ public class TrainTicketController : BaseController
     {
         return Ok(await Sender.Send(new GetTrainTicketByIdQueryRequest { Id = id }));
     }
+    [HttpGet("by-name")]
+    public async Task<IActionResult> GetTrainTicketsByName([FromQuery] GetTrainTicketByNameQueryRequest request)
+    {
+        return Ok(await Sender.Send(request));
+    }
+
+    [HttpGet("by-date")]
+    public async Task<IActionResult> GetTrainTicketsByDate([FromQuery] GetTrainTicketByDateQueryRequest request)
+    {
+        return Ok(await Sender.Send(request));
+    }
 }

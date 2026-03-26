@@ -31,4 +31,15 @@ public class PlaneTicketController : BaseController
     {
         return Ok(await Sender.Send(new GetPlaneTicketByIdQueryRequest { Id = id }));
     }
+    [HttpGet("by-name")]
+    public async Task<IActionResult> GetTicketsByName([FromQuery] GetPlaneTicketByNameQueryRequest request)
+    {
+        return Ok(await Sender.Send(request));
+    }
+
+    [HttpGet("by-date")]
+    public async Task<IActionResult> GetTicketsByDate([FromQuery] GetPlaneTicketByDateQueryRequest request)
+    {
+        return Ok(await Sender.Send(request));
+    }
 }
