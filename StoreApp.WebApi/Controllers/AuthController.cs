@@ -2,9 +2,11 @@
 
 namespace StoreApp.WebApi.Controllers;
 
-using StoreApp.Application.CQRS.Auth.Command.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StoreApp.Application.CQRS.Auth.Command.Request;
+using StoreApp.Application.Email.Commands;
+
 [AllowAnonymous]
 public class AuthController : BaseController
 {
@@ -17,6 +19,12 @@ public class AuthController : BaseController
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginUserCommandRequest request)
+    {
+        var result = await Sender.Send(request);
+        return Ok(result);
+    }
+    [HttpPost("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand request)
     {
         var result = await Sender.Send(request);
         return Ok(result);

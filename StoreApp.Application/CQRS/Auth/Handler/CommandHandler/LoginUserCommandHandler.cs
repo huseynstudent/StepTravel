@@ -54,7 +54,11 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
             _logger.LogWarning("Login failed - user not found: {Email}", request.Email);
             return new ResponseModel<AuthResponse>(null);
         }
-
+        if (!user.IsConfirmed)
+        {
+            _logger.LogWarning("Login failed - email not confirmed: {Email}", request.Email);
+            return new ResponseModel<AuthResponse>(null);
+        }
         if (!PasswordHelper.Verify(request.Password ?? string.Empty, user.PasswordHash))
         {
             _logger.LogWarning("Login failed - invalid password for {Email}", request.Email);
