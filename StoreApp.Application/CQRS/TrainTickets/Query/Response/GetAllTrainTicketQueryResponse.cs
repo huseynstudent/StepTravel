@@ -1,10 +1,13 @@
-﻿namespace StoreApp.Application.CQRS.TrainTickets.Query.Response
+﻿namespace StoreApp.Application.CQRS.TrainTickets.Query.Response;
+
+public class GetAllTrainTicketQueryResponse
 {
-    class GetAllTrainTicketQueryResponse
-    {
-        public int Id { get; set; }
-        public string TrainCompany { get; set; }
-        public string TrainNumber { get; set; }
-        public int VagonNumber { get; set; }
-    }
+    public int Id { get; set; }
+    public string TrainCompany { get; set; }
+    public string TrainNumber { get; set; }
+    public int VagonNumber { get; set; }
+    public DateTime DueDate { get; set; }
+
+    public string From { get; set; }
+    public string To { get; set; }
 }

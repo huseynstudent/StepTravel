@@ -25,7 +25,7 @@ public class GetPlaneTicketByIdQueryHandler:IRequestHandler<GetPlaneTicketByIdQu
             Airline = planeTicket.Airline,
             Gate = planeTicket.Gate,
             Plane = planeTicket.Plane,
-            //Meal = planeTicket.Meal,
+            Meal = planeTicket.Meal,
             HasCheckedIn = planeTicket.HasCheckedIn,
             LuggageKg = planeTicket.LuggageKg
         };
