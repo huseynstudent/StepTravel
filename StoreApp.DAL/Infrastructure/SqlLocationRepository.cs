@@ -12,7 +12,7 @@ public class SqlLocationRepository : BaseSqlRepository, ILocationRepository
     }
     public async Task AddAsync(Location entity)
     {
-        _context.Locations.Add(entity);
+        await _context.Locations.AddAsync(entity);
     }
     public async Task DeleteAsync(int id)
     {

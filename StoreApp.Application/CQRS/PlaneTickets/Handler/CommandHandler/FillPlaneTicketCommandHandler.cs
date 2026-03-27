@@ -38,7 +38,12 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
         var from = request.FromId != 0 ? await _unitOfWork.LocationRepository.GetByIdAsync(request.FromId) : null;
+        if (from == null)
+            return new ResponseModel<FillPlaneTicketCommandResponse>(null);
+
         var to = request.ToId != 0 ? await _unitOfWork.LocationRepository.GetByIdAsync(request.ToId) : null;
+        if (to == null)
+            return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
         planeTicket.State = request.State;
         planeTicket.DueDate = request.DueDate;
@@ -61,17 +66,26 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
 
         seat.IsOccupied = true;
 
-        // price calculation
-        var basePrice = variant?.Price ?? 0.0;
+        // base price from distance token logic
+        var variantAddition = variant?.Price ?? 0.0;
+        double basePrice;
+
+        if (from.CountryId == to.CountryId)
+        {
+            basePrice = 150 + variantAddition;
+        }
+        else
+        {
+            var distance = Math.Abs(from.DistanceToken - to.DistanceToken);
+            basePrice = distance * 40 + variantAddition;
+        }
+
         var roundTripMultiplier = planeTicket.IsRoundTrip ? 2 : 1;
         var luggageFee = request.TotalLuggageKg > (variant?.AllowedLuggageKg ?? 0) ? 10.0 : 0.0;
-
         var today = DateTime.UtcNow;
         var isBirthday = user.Birthday.Month == today.Month && user.Birthday.Day == today.Day;
         var birthdayMultiplier = isBirthday ? 0.5 : 1.0;
-
         var manualDiscount = planeTicket.Discount is > 0 and <= 1 ? planeTicket.Discount : 1.0;
-
         planeTicket.Price = (basePrice * roundTripMultiplier + luggageFee) * birthdayMultiplier * manualDiscount;
 
         await _unitOfWork.SaveChangesAsync();
