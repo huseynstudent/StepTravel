@@ -92,7 +92,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
         };
 
         _db.Users.Add(user);
-        await _db.SaveChangesAsync(cancellationToken);
+        await _db.SaveChangesAsync(cancellationToken);//bunun yeri deyismelidi
 
         _logger.LogInformation("New user registered: {Email} (Id: {Id})", user.Email, user.Id);
 
