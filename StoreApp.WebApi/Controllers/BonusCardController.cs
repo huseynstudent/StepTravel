@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using StoreApp.Application.CQRS.BonusCards.Command.Request;
 using StoreApp.Application.CQRS.BonusCards.Query.Request;
+using StoreApp.Domain.Auth;
 namespace StoreApp.WebApi.Controllers;
-[AllowAnonymous]
+[Authorize(Roles =Roles.Admin)]
 public class BonusCardController : BaseController
 {
     [HttpPost]
@@ -27,6 +28,7 @@ public class BonusCardController : BaseController
         return Ok(await Sender.Send(request));
     }
     [HttpGet("{id}")]
+    [Authorize(Roles = "Customer, Admin")]
     public async Task<IActionResult> GetBonusCardById(int id)
     {
         return Ok(await Sender.Send(new GetBonusCardByIdQueryRequest { Id = id }));

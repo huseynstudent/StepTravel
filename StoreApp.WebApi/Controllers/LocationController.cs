@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StoreApp.Application.CQRS.Locations.Command.Request;
 using StoreApp.Application.CQRS.Locations.Query.Request;
 namespace StoreApp.WebApi.Controllers;
-[AllowAnonymous]
+[Authorize(Roles = "Admin,Company")]
 public class LocationController : BaseController
 {
     [HttpPost]
@@ -17,11 +17,13 @@ public class LocationController : BaseController
         return Ok(await Sender.Send(request));
     }
     [HttpDelete]
+    [Authorize(Roles = "Admin")] 
     public async Task<IActionResult> DeleteLocation(DeleteLocationCommandRequest request)
     {
         return Ok(await Sender.Send(request));
     }
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllLocations([FromQuery] GetAllLocationQueryRequest request)
     {
         return Ok(await Sender.Send(request));

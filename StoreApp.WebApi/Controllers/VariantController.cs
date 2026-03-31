@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StoreApp.Application.CQRS.Variants.Command.Request;
 using StoreApp.Application.CQRS.Variants.Query.Request;
 namespace StoreApp.WebApi.Controllers;
-[AllowAnonymous]
+[Authorize(Roles = "Admin")]
 public class VariantController : BaseController
 {
     [HttpPost]
@@ -22,6 +22,7 @@ public class VariantController : BaseController
         return Ok(await Sender.Send(request));
     }
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllVariants([FromQuery] GetAllVariantQueryRequest request)
     {
         return Ok(await Sender.Send(request));

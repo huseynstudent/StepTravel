@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using StoreApp.Domain.Auth;
 
 public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, ResponseModel<AuthResponse>>
 {
@@ -40,7 +41,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
             if (adminPassword == request.Password)
             {
                 int id = 0;
-                var token = GenerateJwtToken(adminEmail, "Admin", id);
+                var token = GenerateJwtToken(adminEmail,Roles.Admin,0);
                 _logger.LogInformation("Admin login via configured credentials");
                 return new ResponseModel<AuthResponse>(new AuthResponse { Email = adminEmail, Role = "Admin", Token = token });
             }

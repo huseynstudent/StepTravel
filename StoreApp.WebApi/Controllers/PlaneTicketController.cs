@@ -5,7 +5,7 @@ using StoreApp.Application.CQRS.PlaneTickets.Query.Request;
 
 namespace StoreApp.WebApi.Controllers;
 
-[AllowAnonymous]
+[Authorize(Roles = "Admin,Company")]
 public class PlaneTicketController : BaseController
 {
     [HttpPost]
