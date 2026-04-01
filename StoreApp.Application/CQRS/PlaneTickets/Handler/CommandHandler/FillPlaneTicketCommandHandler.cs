@@ -58,6 +58,7 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         planeTicket.Variant = variant;
         planeTicket.HasPet = request.HasPet;
         planeTicket.HasChild = request.HasChild;
+        planeTicket.HasCheckedIn= request.HasCheckedIn;
         planeTicket.LuggageCount = request.LuggageCount;
         planeTicket.TotalLuggageKg = request.TotalLuggageKg;
         planeTicket.IsRoundTrip = request.IsRoundTrip;
@@ -102,6 +103,7 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
             VariantId = planeTicket.VariantId,
             HasPet = planeTicket.HasPet,
             HasChild = planeTicket.HasChild,
+            HasCheckedIn = true,
             LuggageCount = planeTicket.LuggageCount,
             TotalLuggageKg = planeTicket.TotalLuggageKg,
             Discount = planeTicket.Discount,

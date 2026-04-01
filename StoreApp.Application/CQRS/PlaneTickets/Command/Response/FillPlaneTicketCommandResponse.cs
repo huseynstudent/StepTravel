@@ -6,7 +6,7 @@ namespace StoreApp.Application.CQRS.PlaneTickets.Command.Response;
 public class FillPlaneTicketCommandResponse
 {
     public int Id { get; set; }
-    //public User Customer { get; set; }
+    public User Customer { get; set; }
     public State State { get; set; } 
     public DateTime DueDate { get; set; }
     public DateTime BroughtDate { get; set; }
@@ -16,6 +16,7 @@ public class FillPlaneTicketCommandResponse
     public int VariantId { get; set; }
     public bool HasPet { get; set; } = false;
     public bool HasChild { get; set; } = false;
+    public bool HasCheckedIn { get; set; } = true;
     public int LuggageCount { get; set; } = 0;
     public double TotalLuggageKg { get; set; } = 0;
     public double Discount { get; set; } = 1;
