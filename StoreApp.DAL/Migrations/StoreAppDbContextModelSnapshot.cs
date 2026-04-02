@@ -408,6 +408,9 @@ namespace StoreApp.DAL.Migrations
                     b.Property<DateOnly>("Birthday")
                         .HasColumnType("date");
 
+                    b.Property<string>("ConfirmCode")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -421,6 +424,9 @@ namespace StoreApp.DAL.Migrations
                     b.Property<string>("Fin")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");

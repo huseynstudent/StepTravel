@@ -12,7 +12,7 @@ using StoreApp.DAL.Context;
 namespace StoreApp.DAL.Migrations
 {
     [DbContext(typeof(StoreAppDbContext))]
-    [Migration("20260316092447_mig1")]
+    [Migration("20260401045158_mig1")]
     partial class mig1
     {
         /// <inheritdoc />
@@ -411,6 +411,9 @@ namespace StoreApp.DAL.Migrations
                     b.Property<DateOnly>("Birthday")
                         .HasColumnType("date");
 
+                    b.Property<string>("ConfirmCode")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -424,6 +427,9 @@ namespace StoreApp.DAL.Migrations
                     b.Property<string>("Fin")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
