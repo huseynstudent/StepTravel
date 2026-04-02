@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using StoreApp.Application.CQRS.BonusProducts.Command.Request;
 using StoreApp.Application.CQRS.BonusProducts.Query.Request;
+using StoreApp.Domain.Auth;
 namespace StoreApp.WebApi.Controllers;
-[AllowAnonymous]
+[Authorize(Roles = "Admin,Company")]
 public class BonusProductController : BaseController
 {
     [HttpPost]
@@ -17,6 +18,7 @@ public class BonusProductController : BaseController
         return Ok(await Sender.Send(request));
     }
     [HttpDelete]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteBonusProduct(DeleteBonusProductCommandRequest request)
     {
         return Ok(await Sender.Send(request));

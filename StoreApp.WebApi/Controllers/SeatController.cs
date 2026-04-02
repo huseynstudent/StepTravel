@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StoreApp.Application.CQRS.Seats.Command.Request;
 using StoreApp.Application.CQRS.Seats.Query.Request;
 namespace StoreApp.WebApi.Controllers;
-[AllowAnonymous]
+[Authorize(Roles = "Admin")]
 public class SeatController : BaseController
 {
     [HttpPost]
@@ -12,6 +12,7 @@ public class SeatController : BaseController
         return Ok(await Sender.Send(request));
     }
     [HttpPut]
+    [Authorize(Roles = "Admin,Company,User")]
     public async Task<IActionResult> UpdateSeat(UpdateSeatCommandRequest request)
     {
         return Ok(await Sender.Send(request));
@@ -22,11 +23,13 @@ public class SeatController : BaseController
         return Ok(await Sender.Send(request));
     }
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllSeats([FromQuery] GetAllSeatQueryRequest request)
     {
         return Ok(await Sender.Send(request));
     }
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,Company")]
     public async Task<IActionResult> GetSeatById(int id)
     {
         return Ok(await Sender.Send(new GetSeatByIdQueryRequest { Id = id }));

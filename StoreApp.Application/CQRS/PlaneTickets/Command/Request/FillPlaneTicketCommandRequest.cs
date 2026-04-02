@@ -18,6 +18,7 @@ public class FillPlaneTicketCommandRequest: IRequest<ResponseModel<FillPlaneTick
     public int VariantId { get; set; }
     public bool HasPet { get; set; } = false;
     public bool HasChild { get; set; } = false;
+    public bool HasCheckedIn { get; set; } = false;
     public int LuggageCount { get; set; } = 0;
     public double TotalLuggageKg { get; set; } = 0;
     public bool IsRoundTrip { get; set; } = false;

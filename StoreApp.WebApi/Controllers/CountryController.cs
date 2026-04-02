@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StoreApp.Application.CQRS.Countries.Command.Request;
 using StoreApp.Application.CQRS.Countries.Query.Request;
 namespace StoreApp.WebApi.Controllers;
-[AllowAnonymous]
+[Authorize(Roles = "Admin,Company")]
 public class CountryController : BaseController
 {
     [HttpPost]
@@ -17,6 +17,7 @@ public class CountryController : BaseController
         return Ok(await Sender.Send(request));
     }
     [HttpDelete]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteCountry(DeleteCountryCommandRequest request)
     {
         return Ok(await Sender.Send(request));
