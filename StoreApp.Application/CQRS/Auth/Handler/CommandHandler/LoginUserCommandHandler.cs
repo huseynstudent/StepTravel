@@ -1,18 +1,22 @@
-﻿namespace StoreApp.Application.CQRS.Auth.Handler.CommandHandler;
-using StoreApp.Application.CQRS.Auth.Command.Request;
-using StoreApp.Application.CQRS.Auth.Command.Response;
-using StoreApp.Application.Helpers;
-using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
-using StoreApp.DAL.Context;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using StoreApp.Domain.Auth;
+using StoreApp.Application.CQRS.Auth.Command.Request;
+using StoreApp.Application.CQRS.Auth.Command.Response;
+using StoreApp.Application.Helpers;
+using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
+using StoreApp.DAL.Context;
+
+namespace StoreApp.Application.CQRS.Auth.Handler.CommandHandler;
 
 public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, ResponseModel<AuthResponse>>
 {
@@ -29,46 +33,51 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
 
     public async Task<ResponseModel<AuthResponse>> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
     {
+        // 1. Validasiya - Konstruktora mütləq null ötürürük
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             return new ResponseModel<AuthResponse>(null);
 
         var adminEmail = _configuration["Admin:Email"];
         var adminPassword = _configuration["Admin:Password"];
 
+        // 2. Admin girişi
         if (!string.IsNullOrWhiteSpace(adminEmail) &&
             string.Equals(request.Email.Trim(), adminEmail.Trim(), StringComparison.OrdinalIgnoreCase))
         {
             if (adminPassword == request.Password)
             {
-                int id = 0;
-                var token = GenerateJwtToken(adminEmail,Roles.Admin,0);
-                _logger.LogInformation("Admin login via configured credentials");
-                return new ResponseModel<AuthResponse>(new AuthResponse { Email = adminEmail, Role = "Admin", Token = token });
+                var token = GenerateJwtToken(adminEmail, "Admin", 0);
+                var adminAuth = new AuthResponse { Email = adminEmail, Role = "Admin", Token = token };
+
+                return new ResponseModel<AuthResponse>(adminAuth);
             }
-            _logger.LogWarning("Failed admin login attempt for configured admin email");
             return new ResponseModel<AuthResponse>(null);
         }
 
+        // 3. İstifadəçi axtarışı
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email && !u.IsDeleted, cancellationToken);
         if (user == null)
         {
             _logger.LogWarning("Login failed - user not found: {Email}", request.Email);
             return new ResponseModel<AuthResponse>(null);
         }
+
+        // 4. Email təsdiq yoxlanışı
         if (!user.IsConfirmed)
         {
             _logger.LogWarning("Login failed - email not confirmed: {Email}", request.Email);
             return new ResponseModel<AuthResponse>(null);
         }
+
+        // 5. Şifrə yoxlanışı
         if (!PasswordHelper.Verify(request.Password ?? string.Empty, user.PasswordHash))
         {
             _logger.LogWarning("Login failed - invalid password for {Email}", request.Email);
             return new ResponseModel<AuthResponse>(null);
         }
 
+        // 6. Uğurlu Giriş
         var jwt = GenerateJwtToken(user.Email, user.Role.ToString(), user.Id);
-
-        _logger.LogInformation("User logged in: {Email}", user.Email);
 
         var response = new AuthResponse
         {
@@ -78,6 +87,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
             Token = jwt
         };
 
+        // ƏSAS DÜZƏLİŞ: response obyektini konstruktora parametr kimi göndəririk
         return new ResponseModel<AuthResponse>(response);
     }
 
@@ -92,7 +102,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
 
         var claims = new List<Claim>
         {
-            new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub, email),
+            new Claim(JwtRegisteredClaimNames.Sub, email),
             new Claim(ClaimTypes.Role, role),
             new Claim("role", role)
         };

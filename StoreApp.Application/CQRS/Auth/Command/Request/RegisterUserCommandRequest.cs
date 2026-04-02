@@ -10,5 +10,4 @@ public class RegisterUserCommandRequest : IRequest<ResponseModel<RegisterUserCom
     public string Password { get; set; }
     public DateOnly Birthday { get; set; }
     public string Fin { get; set; }
-    public string Conifrm { get; set; }
 }
