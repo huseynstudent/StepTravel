@@ -33,14 +33,13 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
 
     public async Task<ResponseModel<AuthResponse>> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
     {
-        // 1. Validasiya - Konstruktora mütləq null ötürürük
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             return new ResponseModel<AuthResponse>(null);
 
         var adminEmail = _configuration["Admin:Email"];
         var adminPassword = _configuration["Admin:Password"];
 
-        // 2. Admin girişi
+        // Admin girişi
         if (!string.IsNullOrWhiteSpace(adminEmail) &&
             string.Equals(request.Email.Trim(), adminEmail.Trim(), StringComparison.OrdinalIgnoreCase))
         {
@@ -54,7 +53,6 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
             return new ResponseModel<AuthResponse>(null);
         }
 
-        // 3. İstifadəçi axtarışı
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email && !u.IsDeleted, cancellationToken);
         if (user == null)
         {
@@ -62,21 +60,18 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
             return new ResponseModel<AuthResponse>(null);
         }
 
-        // 4. Email təsdiq yoxlanışı
         if (!user.IsConfirmed)
         {
             _logger.LogWarning("Login failed - email not confirmed: {Email}", request.Email);
             return new ResponseModel<AuthResponse>(null);
         }
 
-        // 5. Şifrə yoxlanışı
         if (!PasswordHelper.Verify(request.Password ?? string.Empty, user.PasswordHash))
         {
             _logger.LogWarning("Login failed - invalid password for {Email}", request.Email);
             return new ResponseModel<AuthResponse>(null);
         }
 
-        // 6. Uğurlu Giriş
         var jwt = GenerateJwtToken(user.Email, user.Role.ToString(), user.Id);
 
         var response = new AuthResponse
@@ -87,7 +82,6 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
             Token = jwt
         };
 
-        // ƏSAS DÜZƏLİŞ: response obyektini konstruktora parametr kimi göndəririk
         return new ResponseModel<AuthResponse>(response);
     }
 
