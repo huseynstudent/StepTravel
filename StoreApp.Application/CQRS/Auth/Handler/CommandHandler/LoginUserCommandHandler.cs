@@ -38,7 +38,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
         if (!string.IsNullOrWhiteSpace(adminEmail) &&
             string.Equals(request.Email.Trim(), adminEmail.Trim(), StringComparison.OrdinalIgnoreCase))
         {
-            if (adminPassword == request.Password)
+            if (PasswordHelper.Verify(request.Password, PasswordHelper.Hash(adminPassword)))
             {
                 int id = 0;
                 var token = GenerateJwtToken(adminEmail,Roles.Admin,0);

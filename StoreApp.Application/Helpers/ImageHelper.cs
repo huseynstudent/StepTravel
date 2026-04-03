@@ -5,7 +5,6 @@ namespace StoreApp.Application.Helpers;
 
 public static class ImageHelper
 {
-    // Call this from your handler — pass in webRootPath and the IFormFile
     public static async Task<(string imageUrl, string imageFileName)> SaveImageAsync(
         string webRootPath, IFormFile image, string baseUrl)
     {
