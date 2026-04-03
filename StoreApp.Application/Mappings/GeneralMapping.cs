@@ -16,7 +16,6 @@ namespace StoreApp.Application.Mappings
                 .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.Birthday))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.Fin, opt => opt.MapFrom(src => src.Fin))
-                // Şifrəni birbaşa PasswordHash-ə atırıq (Handler-də hash-ləmək daha yaxşıdır, amma mapping üçün belədir)
                 .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
                 .ForMember(dest => dest.IsConfirmed, opt => opt.MapFrom(src => false))
                 .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));

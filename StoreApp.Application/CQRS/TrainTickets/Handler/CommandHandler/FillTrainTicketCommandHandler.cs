@@ -65,8 +65,6 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         trainTicket.Note = request.Note;
 
         seat.IsOccupied = true;
-
-        // base price from distance token logic
         var variantAddition = variant?.Price ?? 0.0;
         double basePrice;
 

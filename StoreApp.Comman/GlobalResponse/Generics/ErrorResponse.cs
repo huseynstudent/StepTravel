@@ -18,7 +18,7 @@ public class ErrorResponse
 
     }
 
-    public enum ErrorTypes//elave edile biler
+    public enum ErrorTypes
     {
         BadRequest = 1,
         NotFound = 2,

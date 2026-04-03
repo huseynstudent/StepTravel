@@ -10,12 +10,13 @@ public class SqlUnitOfWork : IUnitOfWork
 {
     private readonly string _connectionString;
     private readonly StoreAppDbContext _context;
-
     public SqlUnitOfWork(string connectionString, StoreAppDbContext context)
     {
         _connectionString = connectionString;
         _context = context;
     }
+    public SqlUserRepository _userRepository;
+    public IUserRepository UserRepository => _userRepository ??= new SqlUserRepository(_context, _connectionString);
     public SqlSeatRepository _seatRepository;
     public ISeatRepository SeatRepository => _seatRepository ??= new SqlSeatRepository(_context, _connectionString);
     
