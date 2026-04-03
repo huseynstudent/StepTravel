@@ -1,4 +1,7 @@
-﻿namespace StoreApp.Application.CQRS.Auth.Handler.CommandHandler;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using StoreApp.Application.CQRS.Auth.Command.Request;
 using StoreApp.Application.CQRS.Auth.Command.Response;
 using StoreApp.Application.Helpers;
@@ -6,10 +9,9 @@ using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.DAL.Context;
 using StoreApp.Domain.Entities;
 using StoreApp.Domain.Enums;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+
+namespace StoreApp.Application.CQRS.Auth.Handler.CommandHandler;
+
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandRequest, ResponseModel<RegisterUserCommandResponse>>
 {
     private readonly StoreAppDbContext _db;
@@ -23,60 +25,18 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
         _logger = logger;
     }
 
-    public string RandomCode()
-    {
-        var Random = new Random();
-        return $"{Random.Next(100000, 1000000)}";
-    }
+    private string GenerateRandomCode() => new Random().Next(100000, 1000000).ToString();
 
     public async Task<ResponseModel<RegisterUserCommandResponse>> Handle(RegisterUserCommandRequest request, CancellationToken cancellationToken)
     {
-        var exists_e = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email && !u.IsDeleted, cancellationToken);
-
-        if (exists_e != null)
+        var existingUser = await _db.Users.AnyAsync(u => u.Email == request.Email && !u.IsDeleted, cancellationToken);
+        if (existingUser)
         {
-            _logger.LogInformation("Registration failed - email exists: {Email}", request.Email);
+            _logger.LogWarning("Registration failed - Email already exists: {Email}", request.Email);
             return new ResponseModel<RegisterUserCommandResponse>(null);
         }
 
-        string code = RandomCode();
-
-        var adminEmail = _configuration["Admin:Email"];
-        if (!string.IsNullOrWhiteSpace(adminEmail) &&
-            string.Equals(request.Email?.Trim(), adminEmail.Trim(), StringComparison.OrdinalIgnoreCase))
-        {
-            _logger.LogWarning("Attempt to register with reserved admin email: {Email}", request.Email);
-            return new ResponseModel<RegisterUserCommandResponse>(null);
-        }
-
-        try
-        {
-            string senderEmail = _configuration["Email:SenderAddress"]!;
-            string appPassword = _configuration["Email:AppPassword"]!;
-
-            var emailService = new StoreApp.Application.Service.Email();
-
-            bool sentEmail = emailService.Send(
-                senderEmail,
-                appPassword,
-                request.Email,
-                "Your Confirmation Code",
-                $"Your confirmation code is : {code}"
-            );
-
-            if (!sentEmail)
-            {
-                _logger.LogError("\n\t\t Email could not be sent !");
-                return new ResponseModel<RegisterUserCommandResponse>(null);
-            }
-
-            _logger.LogInformation("\n\t Confirmation code has been sent to your email !");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("\n\t\t Email could not be sent ! Error: " + ex.Message);
-            return new ResponseModel<RegisterUserCommandResponse>(null);
-        }
+        string code = GenerateRandomCode();
 
         var user = new User
         {
@@ -88,21 +48,50 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
             Fin = request.Fin ?? string.Empty,
             Role = UserType.Customer,
             ConfirmCode = code,
-            IsConfirmed = false
+            IsConfirmed = false,
         };
 
-        _db.Users.Add(user);
-        await _db.SaveChangesAsync(cancellationToken);//bunun yeri deyismelidi
+        try
+        {
+            await _db.Users.AddAsync(user, cancellationToken);
+            await _db.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("User successfully saved to database: {Email}", user.Email);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Database save failed for: {Email}", request.Email);
+            return new ResponseModel<RegisterUserCommandResponse>(null);
+        }
 
-        _logger.LogInformation("New user registered: {Email} (Id: {Id})", user.Email, user.Id);
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                string sender = _configuration["EmailSettings:SenderEmail"];
+                string password = _configuration["EmailSettings:AppPassword"];
 
-        var response = new RegisterUserCommandResponse
+                var emailService = new StoreApp.Application.Service.Email();
+                emailService.Send(
+                    sender,
+                    password,
+                    request.Email,
+                    "Verification Code",
+                    $"Your verification code is: <b>{code}</b>"
+                );
+                _logger.LogInformation("Email sent successfully to: {Email}", request.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Critical Email Error: {Message}", ex.Message);
+            }
+        });
+        var responseData = new RegisterUserCommandResponse
         {
             Id = user.Id,
             Email = user.Email,
             Role = user.Role.ToString()
         };
 
-        return new ResponseModel<RegisterUserCommandResponse>(response);
+        return new ResponseModel<RegisterUserCommandResponse>(responseData);
     }
 }
