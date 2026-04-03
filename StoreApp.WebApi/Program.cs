@@ -8,7 +8,6 @@ using StoreApp.WebApi.Infrastructure.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. CORS Siyasəti - React-dan gələn sorğulara icazə vermək üçün
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
@@ -36,7 +35,6 @@ builder.Services.AddScoped<IUnitOfWork, SqlUnitOfWork>((provider) =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthenticationDependency(builder.Configuration);
 
-// Swagger Konfiqurasiyası
 builder.Services.AddSwaggerGen(c => {
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
@@ -64,7 +62,6 @@ builder.Services.AddSwaggerGen(c => {
 
 var app = builder.Build();
 
-// Pipeline-ın qurulması
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -72,11 +69,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
-
-// 2. CORS-u işə sal (Mütləq Auth-dan əvvəl gəlməlidir)
 app.UseCors("AllowReactApp");
-
-// Middleware-lər
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseAuthentication();

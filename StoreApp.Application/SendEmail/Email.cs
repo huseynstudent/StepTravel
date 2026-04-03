@@ -10,7 +10,6 @@ namespace StoreApp.Application.Service
     {
         public bool Send(string senderEmail, string appPassword, string receiverEmail, string subject, string body)
         {
-            // Konfiqurasiya yoxlanışı (boş gələrsə dərhal dayansın)
             if (string.IsNullOrEmpty(senderEmail) || string.IsNullOrEmpty(appPassword))
             {
                 Console.WriteLine("Email Error: Sender email or App Password is missing in appsettings.json");
@@ -42,12 +41,8 @@ namespace StoreApp.Application.Service
 
                 using (var client = new SmtpClient())
                 {
-                    // SSL/TLS sertifikat yoxlanışını bypass edirik (HP maşınlarda mütləqdir)
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-
-                    // Google üçün standart port 587 və StartTls-dir
                     client.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-
                     client.Authenticate(senderEmail, appPassword);
                     client.Send(message);
                     client.Disconnect(true);
@@ -56,7 +51,6 @@ namespace StoreApp.Application.Service
             }
             catch (Exception ex)
             {
-                // Xətanı daha detallı görmək üçün
                 Console.WriteLine($"Critical Email Error: {ex.Message}");
                 if (ex.InnerException != null)
                     Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");

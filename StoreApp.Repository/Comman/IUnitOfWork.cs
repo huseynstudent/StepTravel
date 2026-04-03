@@ -4,6 +4,7 @@ namespace StoreApp.Repository.Comman;
 
 public interface IUnitOfWork
 {
+    IUserRepository UserRepository { get; }
     ICountryRepository CountryRepository { get; }
     ILocationRepository LocationRepository { get; }
     ITrainTicketRepository TrainTicketRepository { get; }

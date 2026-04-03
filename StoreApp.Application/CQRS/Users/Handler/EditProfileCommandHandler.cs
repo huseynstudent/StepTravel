@@ -5,11 +5,13 @@ using StoreApp.DAL.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using StoreApp.Repository.Comman;
 namespace StoreApp.Application.CQRS.Users.Handler;
 public class EditProfileCommandHandler
     : IRequestHandler<EditProfileCommandRequest, ResponseModel<EditProfileCommandResponse>>
 {
     private readonly StoreAppDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<EditProfileCommandHandler> _logger;
 
     public EditProfileCommandHandler(StoreAppDbContext db, ILogger<EditProfileCommandHandler> logger)
@@ -47,7 +49,7 @@ public class EditProfileCommandHandler
         user.Birthday = request.Birthday;
         user.Fin = request.Fin;
 
-        // await _unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
+        _unitOfWork.UserRepository.Update(user);
         await _db.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("EditProfile: user {UserId} updated.", user.Id);

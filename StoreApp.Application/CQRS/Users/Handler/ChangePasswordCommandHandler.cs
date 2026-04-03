@@ -8,10 +8,13 @@ using StoreApp.DAL.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using StoreApp.Repository.Comman;
+
 public class ChangePasswordCommandHandler
     : IRequestHandler<ChangePasswordCommandRequest, ResponseModel<ChangePasswordCommandResponse>>
 {
     private readonly StoreAppDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ChangePasswordCommandHandler> _logger;
 
     public ChangePasswordCommandHandler(StoreAppDbContext db, ILogger<ChangePasswordCommandHandler> logger)
@@ -40,7 +43,7 @@ public class ChangePasswordCommandHandler
 
         user.PasswordHash = PasswordHelper.Hash(request.NewPassword);
 
-        // TODO: call your repository update method here when it's ready
+        _unitOfWork.UserRepository.Update(user);
         await _db.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("ChangePassword: user {UserId} password updated.", user.Id);
