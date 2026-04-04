@@ -1,12 +1,13 @@
 ﻿using StoreApp.Domain.Entities;
 using StoreApp.Domain.Enums;
 
+
 namespace StoreApp.Application.CQRS.PlaneTickets.Command.Response;
 
 public class FillPlaneTicketCommandResponse
 {
     public int Id { get; set; }
-    public User Customer { get; set; }
+    public StoreApp.Domain.Entities.User Customer { get; set; }
     public State State { get; set; } 
     public DateTime DueDate { get; set; }
     public DateTime BroughtDate { get; set; }

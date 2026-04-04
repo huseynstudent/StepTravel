@@ -5,7 +5,7 @@ namespace StoreApp.Application.CQRS.TrainTickets.Command.Response;
 public class FillTrainTicketCommandResponse
 {
     public int Id { get; set; }
-    public User Customer { get; set; }
+    public Domain.Entities.User Customer { get; set; }
     public State State { get; set; }
     public DateTime DueDate { get; set; }
     public DateTime BroughtDate { get; set; }

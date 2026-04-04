@@ -46,6 +46,7 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
 
         trainTicket.State = request.State;
+        trainTicket.Customer = user;
         trainTicket.DueDate = request.DueDate;
         trainTicket.BroughtDate = DateTime.UtcNow;
         trainTicket.SeatId = request.SeatId;
@@ -91,6 +92,7 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         var response = new FillTrainTicketCommandResponse
         {
             Id = trainTicket.Id,
+            Customer = trainTicket.Customer,
             State = trainTicket.State,
             DueDate = trainTicket.DueDate,
             BroughtDate = trainTicket.BroughtDate,

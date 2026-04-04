@@ -64,6 +64,7 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         planeTicket.IsRoundTrip = request.IsRoundTrip;
         planeTicket.IsCashPayment = request.IsCashPayment;
         planeTicket.Note = request.Note;
+        planeTicket.Customer = user;
 
         seat.IsOccupied = true;
         var variantAddition = variant?.Price ?? 0.0;
@@ -92,6 +93,7 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         var response = new FillPlaneTicketCommandResponse
         {
             Id = planeTicket.Id,
+            Customer = planeTicket.Customer,
             State = planeTicket.State,
             DueDate = planeTicket.DueDate,
             BroughtDate = planeTicket.BroughtDate,
