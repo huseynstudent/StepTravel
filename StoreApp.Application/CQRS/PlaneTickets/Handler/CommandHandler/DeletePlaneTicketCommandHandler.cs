@@ -16,21 +16,28 @@ public class DeletePlaneTicketCommandHandler : IRequestHandler<DeletePlaneTicket
     public async Task<ResponseModel<DeletePlaneTicketCommandResponse>> Handle(DeletePlaneTicketCommandRequest request, CancellationToken cancellationToken)
     {
         var planeTicket = await _unitOfWork.PlaneTicketRepository.GetByIdAsync(request.Id);
-        if (planeTicket != null)
+        if (planeTicket == null)
+            return new ResponseModel<DeletePlaneTicketCommandResponse>(null);
+
+        var seats = _unitOfWork.SeatRepository.GetAll()
+            .Where(s => s.PlaneTicketId == request.Id)
+            .ToList();
+        foreach (var seat in seats)
+            await _unitOfWork.SeatRepository.DeleteAsync(seat.Id);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        await _unitOfWork.PlaneTicketRepository.DeleteAsync(request.Id);
+        await _unitOfWork.SaveChangesAsync();
+
+        return new ResponseModel<DeletePlaneTicketCommandResponse>(new DeletePlaneTicketCommandResponse
         {
-            await _unitOfWork.PlaneTicketRepository.DeleteAsync(request.Id);
-            await _unitOfWork.SaveChangesAsync();
-            var response = new DeletePlaneTicketCommandResponse
-            {
-                Id = planeTicket.Id,
-                Airline = planeTicket.Airline,
-                Gate = planeTicket.Gate,
-                Plane = planeTicket.Plane,
-                Meal = planeTicket.Meal,
-                LuggageKg = planeTicket.LuggageKg
-            };
-            return new ResponseModel<DeletePlaneTicketCommandResponse>(response);
-        }
-        return new ResponseModel<DeletePlaneTicketCommandResponse>(null);
+            Id = planeTicket.Id,
+            Airline = planeTicket.Airline,
+            Gate = planeTicket.Gate,
+            Plane = planeTicket.Plane,
+            Meal = planeTicket.Meal,
+            LuggageKg = planeTicket.LuggageKg
+        });
     }
 }

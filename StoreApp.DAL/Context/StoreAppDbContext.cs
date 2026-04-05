@@ -79,12 +79,12 @@ public class StoreAppDbContext:DbContext
             .HasOne<PlaneTicket>()
             .WithMany()
             .HasForeignKey(s => s.PlaneTicketId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction );
 
         modelBuilder.Entity<Seat>()
             .HasOne<TrainTicket>()
             .WithMany()
             .HasForeignKey(s => s.TrainTicketId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

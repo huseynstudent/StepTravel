@@ -15,23 +15,26 @@ class DeleteTrainTicketCommandHandler : IRequestHandler<DeleteTrainTicketCommand
     public async Task<ResponseModel<DeleteTrainTicketCommandResponse>> Handle(DeleteTrainTicketCommandRequest request, CancellationToken cancellationToken)
     {
         var trainTicket = await _unitOfWork.TrainTicketRepository.GetByIdAsync(request.Id);
+        if (trainTicket == null)
+            return new ResponseModel<DeleteTrainTicketCommandResponse>(null);
 
-        if (trainTicket != null)
+        var seats = _unitOfWork.SeatRepository.GetAll()
+            .Where(s => s.PlaneTicketId == request.Id)
+            .ToList();
+
+        foreach (var seat in seats)
+            await _unitOfWork.SeatRepository.DeleteAsync(seat.Id);
+
+        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.TrainTicketRepository.DeleteAsync(request.Id);
+        await _unitOfWork.SaveChangesAsync();
+
+        return new ResponseModel<DeleteTrainTicketCommandResponse>(new DeleteTrainTicketCommandResponse
         {
-            await _unitOfWork.TrainTicketRepository.DeleteAsync(request.Id);
-            await _unitOfWork.SaveChangesAsync();
-
-            var response = new DeleteTrainTicketCommandResponse
-            {
-                Id = trainTicket.Id,
-                TrainCompany = trainTicket.TrainCompany,
-                TrainNumber = trainTicket.TrainNumber,
-                VagonNumber = trainTicket.VagonNumber
-            };
-
-            return new ResponseModel<DeleteTrainTicketCommandResponse>(response);
-        }
-
-        return new ResponseModel<DeleteTrainTicketCommandResponse>(null);
+            Id = trainTicket.Id,
+            TrainCompany = trainTicket.TrainCompany,
+            TrainNumber = trainTicket.TrainNumber,
+            VagonNumber = trainTicket.VagonNumber
+        });
     }
 }
