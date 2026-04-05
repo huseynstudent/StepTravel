@@ -27,8 +27,5 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.12" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="CQRS\Auth\Query\" />
-	</ItemGroup>
 
 </Project>

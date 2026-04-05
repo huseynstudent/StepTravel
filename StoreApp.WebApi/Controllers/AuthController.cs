@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StoreApp.Application.CQRS.Auth.Command.Request;
+using StoreApp.Application.CQRS.Auth.Query.Request;
 using StoreApp.Application.CQRS.User.Command.Request;
 using StoreApp.Application.CQRS.Users.Command.Request;
 using StoreApp.Application.Email.Commands;
@@ -13,6 +14,13 @@ namespace StoreApp.WebApi.Controllers;
 [ApiController]
 public class AuthController : BaseController
 {
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMe()
+    {
+        var userId = int.Parse(User.FindFirst("uid")!.Value);
+        return Ok(await Sender.Send(new GetMeQueryRequest { UserId = userId }));
+    }
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterUserCommandRequest request)
     {
