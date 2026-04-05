@@ -13,7 +13,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5176") // React-ın standart portu
+            policy.WithOrigins("http://localhost:5173") // React-ın standart portu
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });

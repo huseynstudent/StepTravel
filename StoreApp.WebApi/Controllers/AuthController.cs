@@ -18,19 +18,31 @@ public class AuthController : BaseController
     [HttpGet("me")]
     public async Task<IActionResult> GetMe()
     {
-        var userId = int.Parse(User.FindFirst("uid")!.Value);
-        return Ok(await Sender.Send(new GetMeQueryRequest { UserId = userId }));
+        var uidClaim = User.FindFirst("uid")?.Value;
+
+        if (string.IsNullOrEmpty(uidClaim) || !int.TryParse(uidClaim, out int userId))
+        {
+            return Unauthorized(new { message = "User identity not found or token is invalid." });
+        }
+
+        var result = await Sender.Send(new GetMeQueryRequest { UserId = userId });
+
+        if (result == null)
+        {
+            return NotFound(new { message = "User profile not found." });
+        }
+
+        return Ok(result);
     }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterUserCommandRequest request)
     {
         var result = await Sender.Send(request);
-
         if (result.Data == null)
         {
             return BadRequest(new { message = "Registration failed. Email might already exist." });
         }
-
         return Ok(result);
     }
 
@@ -45,14 +57,9 @@ public class AuthController : BaseController
     public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailCommand request)
     {
         var result = await Sender.Send(request);
-
-        if (result)
-        {
-            return Ok(true);
-        }
-
-        return BadRequest(false);
+        return result ? Ok(true) : BadRequest(false);
     }
+
     [Authorize]
     [HttpPut("edit-profile")]
     public async Task<IActionResult> EditProfile([FromBody] EditProfileCommandRequest request)
@@ -62,8 +69,8 @@ public class AuthController : BaseController
             return Unauthorized();
 
         request.UserId = userId;
-
         var result = await Sender.Send(request);
+
         if (result.Data is null)
             return BadRequest(new { message = "Profile update failed. Email may already be in use." });
 
@@ -79,13 +86,14 @@ public class AuthController : BaseController
             return Unauthorized();
 
         request.UserId = userId;
-
         var result = await Sender.Send(request);
+
         if (result.Data?.IsSuccess == false)
             return BadRequest(new { message = result.Data.Message });
 
         return Ok(result);
     }
+
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommandRequest request)
     {
@@ -102,5 +110,4 @@ public class AuthController : BaseController
 
         return Ok(result);
     }
-
 }
