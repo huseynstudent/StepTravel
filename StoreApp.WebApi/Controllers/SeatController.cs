@@ -6,13 +6,17 @@ namespace StoreApp.WebApi.Controllers;
 [Authorize(Roles = "Admin")]
 public class SeatController : BaseController
 {
+    [HttpGet("by-ticket")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetSeatsByTicket([FromQuery] GetSeatsByTicketQueryRequest request)
+    => Ok(await Sender.Send(request));
     [HttpPost]
     public async Task<IActionResult> CreateSeat (CreateSeatCommandRequest request)
     {
         return Ok(await Sender.Send(request));
     }
     [HttpPut]
-    [Authorize(Roles = "Admin,Company,User")]
+    [Authorize]
     public async Task<IActionResult> UpdateSeat(UpdateSeatCommandRequest request)
     {
         return Ok(await Sender.Send(request));
