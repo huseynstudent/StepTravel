@@ -1,5 +1,4 @@
 ﻿namespace StoreApp.Application.CQRS.PlaneTickets.Command.Response;
-
 public class UpdatePlaneTicketCommandResponse
 {
     public int Id { get; set; }
