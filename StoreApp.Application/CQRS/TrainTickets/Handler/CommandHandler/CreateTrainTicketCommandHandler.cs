@@ -8,6 +8,7 @@ namespace StoreApp.Application.CQRS.TrainTickets.Handler.CommandHandler;
 
 class CreateTrainTicketCommandHandler : IRequestHandler<CreateTrainTicketCommandRequest, ResponseModel<CreateTrainTicketCommandResponse>>
 {
+
     private readonly IUnitOfWork _unitOfWork;
     public CreateTrainTicketCommandHandler(IUnitOfWork unitOfWork)
     {
