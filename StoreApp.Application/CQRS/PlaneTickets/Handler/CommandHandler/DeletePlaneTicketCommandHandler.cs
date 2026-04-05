@@ -27,7 +27,6 @@ public class DeletePlaneTicketCommandHandler : IRequestHandler<DeletePlaneTicket
                 Gate = planeTicket.Gate,
                 Plane = planeTicket.Plane,
                 Meal = planeTicket.Meal,
-                HasCheckedIn = planeTicket.HasCheckedIn,
                 LuggageKg = planeTicket.LuggageKg
             };
             return new ResponseModel<DeletePlaneTicketCommandResponse>(response);

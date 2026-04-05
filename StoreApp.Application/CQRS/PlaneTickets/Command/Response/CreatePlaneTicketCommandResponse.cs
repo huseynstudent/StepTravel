@@ -7,6 +7,8 @@ public class CreatePlaneTicketCommandResponse
     public string Gate { get; set; }
     public string Plane { get; set; }
     public string Meal { get; set; }
-    public bool HasCheckedIn { get; set; } = false;
     public double LuggageKg { get; set; }
+    public DateTime DueDate { get; set; }
+    public int FromId { get; set; }
+    public int ToId { get; set; }
 }

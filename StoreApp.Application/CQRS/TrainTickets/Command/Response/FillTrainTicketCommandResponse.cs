@@ -7,11 +7,8 @@ public class FillTrainTicketCommandResponse
     public int Id { get; set; }
     public Domain.Entities.User Customer { get; set; }
     public State State { get; set; }
-    public DateTime DueDate { get; set; }
     public DateTime BroughtDate { get; set; }
-    public int SeatId { get; set; }
-    public int FromId { get; set; }
-    public int ToId { get; set; }
+    public int ChosenSeatId { get; set; }
     public int VariantId { get; set; }
     public bool HasPet { get; set; } = false;
     public bool HasChild { get; set; } = false;

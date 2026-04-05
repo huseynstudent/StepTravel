@@ -10,25 +10,9 @@ namespace StoreApp.Application.Validations.TrainTicketValidations
                 .GreaterThan(0).WithMessage("The Id must be greater than zero !")
                 .NotEmpty().WithMessage("The Id cannot be empty !");
 
-            RuleFor(x => x.DueDate)
-                .GreaterThan(DateTime.Now).WithMessage("The due date must be in the future !")
-                .NotEmpty().WithMessage("The due date cannot be empty !");
-
-            RuleFor(x => x.SeatId)
+            RuleFor(x => x.ChosenSeatId)
                 .GreaterThan(0).WithMessage("The seat ID must be greater than zero !")
                 .NotEmpty().WithMessage("The seat ID cannot be empty !");
-
-            RuleFor(x => x.FromId)
-                .GreaterThan(0).WithMessage("The from location ID must be greater than zero !")
-                .NotEmpty().WithMessage("The from location ID cannot be empty !");
-
-            RuleFor(x => x.ToId)
-                .GreaterThan(0).WithMessage("The to location ID must be greater than zero !")
-                .NotEmpty().WithMessage("The to location ID cannot be empty !");
-
-            RuleFor(x => x.VariantId)
-                .GreaterThan(0).WithMessage("The variant ID must be greater than zero !")
-                .NotEmpty().WithMessage("The variant ID cannot be empty !");
 
             RuleFor(x => x.Note)
                 .MaximumLength(500).WithMessage("The note must not exceed 500 characters !")

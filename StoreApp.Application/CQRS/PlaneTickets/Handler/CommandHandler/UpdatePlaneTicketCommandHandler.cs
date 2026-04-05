@@ -22,7 +22,6 @@ public class UpdatePlaneTicketCommandHandler : IRequestHandler<UpdatePlaneTicket
             planeTicket.Gate = request.Gate;
             planeTicket.Plane = request.Plane;
             planeTicket.Meal = request.Meal;
-            planeTicket.HasCheckedIn = request.HasCheckedIn;
             planeTicket.LuggageKg = request.LuggageKg;
             _unitOfWork.PlaneTicketRepository.Update(planeTicket);
             await _unitOfWork.SaveChangesAsync();
@@ -33,7 +32,6 @@ public class UpdatePlaneTicketCommandHandler : IRequestHandler<UpdatePlaneTicket
                 Gate = planeTicket.Gate,
                 Plane = planeTicket.Plane,
                 Meal = planeTicket.Meal,
-                HasCheckedIn = planeTicket.HasCheckedIn,
                 LuggageKg = planeTicket.LuggageKg
             };
             return new ResponseModel<UpdatePlaneTicketCommandResponse>(response);

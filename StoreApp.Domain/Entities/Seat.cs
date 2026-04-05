@@ -9,4 +9,6 @@ public class Seat : BaseEntity
     public User OccupiedBy { get; set; }
     public Variant Variant { get; set; }
     public int VariantId { get; set; }
+    public int? PlaneTicketId { get; set; }
+    public int? TrainTicketId { get; set; }
 }

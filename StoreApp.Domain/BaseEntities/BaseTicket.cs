@@ -9,11 +9,10 @@ public class BaseTicket: BaseEntity
     public State State { get; set; } //State enum-"Canceled", "Delayed","Pending","Expired"
     public DateTime DueDate { get; set; }
     public DateTime BroughtDate { get; set; }
-    public Seat Seat { get; set; }
     public Location From { get; set; }
     public Location To { get; set; }
     public Variant Variant { get; set; }
-    public int SeatId { get; set; }
+    public int ChosenSeatId { get; set; }
     public int FromId { get; set; }
     public int ToId { get; set; }
     public int VariantId { get; set; }

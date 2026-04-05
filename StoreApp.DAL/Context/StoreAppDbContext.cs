@@ -13,6 +13,7 @@ public class StoreAppDbContext:DbContext
     public DbSet<Seat> Seats { get; set; }
     public DbSet<Variant> Variants { get; set; }
     public DbSet<Location> Locations { get; set; }
+    public DbSet<BonusProduct> BonusProducts { get; set; }
     public DbSet<BonusCard> BonusCards { get; set; }
     public DbSet<Country> Countries { get; set; }
     public DbSet<TrainTicket> TrainTickets { get; set; }
@@ -21,6 +22,7 @@ public class StoreAppDbContext:DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // PLANE TICKET
         modelBuilder.Entity<PlaneTicket>()
             .HasOne(p => p.From)
             .WithMany()
@@ -34,17 +36,17 @@ public class StoreAppDbContext:DbContext
             .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<PlaneTicket>()
-            .HasOne(p => p.Seat)
-            .WithMany()
-            .HasForeignKey(p => p.SeatId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<PlaneTicket>()
             .HasOne(p => p.Variant)
             .WithMany()
             .HasForeignKey(p => p.VariantId)
             .OnDelete(DeleteBehavior.NoAction);
 
+        // PlaneTicket → chosen seat (user's purchase decision)
+        modelBuilder.Entity<PlaneTicket>()
+            .HasOne<Seat>()
+            .WithMany()
+            .HasForeignKey(p => p.ChosenSeatId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         // TRAIN TICKET
         modelBuilder.Entity<TrainTicket>()
@@ -60,16 +62,29 @@ public class StoreAppDbContext:DbContext
             .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<TrainTicket>()
-            .HasOne(t => t.Seat)
-            .WithMany()
-            .HasForeignKey(t => t.SeatId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<TrainTicket>()
             .HasOne(t => t.Variant)
             .WithMany()
             .HasForeignKey(t => t.VariantId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        // TrainTicket → chosen seat (user's purchase decision)
+        modelBuilder.Entity<TrainTicket>()
+            .HasOne<Seat>()
+            .WithMany()
+            .HasForeignKey(t => t.ChosenSeatId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // SEAT → ticket pool ownership (seat belongs to a flight/train)
+        modelBuilder.Entity<Seat>()
+            .HasOne<PlaneTicket>()
+            .WithMany()
+            .HasForeignKey(s => s.PlaneTicketId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Seat>()
+            .HasOne<TrainTicket>()
+            .WithMany()
+            .HasForeignKey(s => s.TrainTicketId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
-    public DbSet<BonusProduct> BonusProducts { get; set; }
 }

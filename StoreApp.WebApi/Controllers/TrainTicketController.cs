@@ -5,18 +5,21 @@ using StoreApp.Application.CQRS.TrainTickets.Query.Request;
 
 namespace StoreApp.WebApi.Controllers;
 
-[AllowAnonymous]
+[Authorize]
 public class TrainTicketController : BaseController
 {
     [HttpPost]
+    [Authorize(Roles = "Company")]
     public async Task<IActionResult> CreateTicket(CreateTrainTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 
     [HttpPut]
+    [Authorize(Roles = "Admin,Company")]
     public async Task<IActionResult> UpdateTicket(UpdateTrainTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 
     [HttpDelete]
+    [Authorize(Roles = "Admin,Company")]
     public async Task<IActionResult> DeleteTicket(DeleteTrainTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 

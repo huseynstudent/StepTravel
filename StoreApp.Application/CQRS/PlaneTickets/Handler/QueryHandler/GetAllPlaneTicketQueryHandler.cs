@@ -47,7 +47,6 @@ public class GetAllPlaneTicketQueryHandler : IRequestHandler<GetAllPlaneTicketQu
                 Gate = pt.Gate,
                 Plane = pt.Plane,
                 Meal = pt.Meal,
-                HasCheckedIn = pt.HasCheckedIn,
                 LuggageKg = pt.LuggageKg,
                 DueDate = pt.DueDate,
                 From = pt.From != null ? $"{pt.From.Name}, {pt.From.Country.Name}" : null,
