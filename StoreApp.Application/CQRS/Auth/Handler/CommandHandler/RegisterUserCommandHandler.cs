@@ -38,7 +38,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommandReq
 
         string code = GenerateRandomCode();
 
-        var user = new User
+        var user = new Domain.Entities.User
         {
             Name = request.Name ?? string.Empty,
             Surname = request.Surname ?? string.Empty,

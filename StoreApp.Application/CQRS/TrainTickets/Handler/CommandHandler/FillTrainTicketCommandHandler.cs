@@ -29,32 +29,23 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         if (user == null)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
 
-
         var seat = request.ChosenSeatId != 0 ? await _unitOfWork.SeatRepository.GetByIdAsync(request.ChosenSeatId) : null;
         if (seat == null)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
         if (seat.IsOccupied)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
-        var variant = seat.VariantId != 0 ? await _unitOfWork.VariantRepository.GetByIdAsync(seat.VariantId) : null;
+        var variant = await _unitOfWork.VariantRepository.GetByIdAsync(seat.VariantId);
 
-        var from = request.FromId != 0 ? await _unitOfWork.LocationRepository.GetByIdAsync(request.FromId) : null;
-        if (from == null)
+        var from = await _unitOfWork.LocationRepository.GetByIdAsync(trainTicket.FromId);
+        var to = await _unitOfWork.LocationRepository.GetByIdAsync(trainTicket.ToId);
+        if (from == null || to == null)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
 
-        var to = request.ToId != 0 ? await _unitOfWork.LocationRepository.GetByIdAsync(request.ToId) : null;
-        if (to == null)
-            return new ResponseModel<FillTrainTicketCommandResponse>(null);
-
-        trainTicket.State = request.State;
         trainTicket.Customer = user;
-        trainTicket.DueDate = request.DueDate;
+        trainTicket.State = request.State;
         trainTicket.BroughtDate = DateTime.UtcNow;
-        trainTicket.ChosenSeatId = request.ChosenSeatId;
-        trainTicket.FromId = request.FromId;
-        trainTicket.ToId = request.ToId;
-        trainTicket.VariantId = request.VariantId;
-        trainTicket.From = from;
-        trainTicket.To = to;
+        trainTicket.ChosenSeatId = seat.Id;
+        trainTicket.VariantId = seat.VariantId;
         trainTicket.Variant = variant;
         trainTicket.HasPet = request.HasPet;
         trainTicket.HasChild = request.HasChild;
@@ -65,12 +56,13 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         trainTicket.Note = request.Note;
 
         seat.IsOccupied = true;
+
         var variantAddition = variant?.Price ?? 0.0;
         double basePrice;
 
         if (from.CountryId == to.CountryId)
         {
-            basePrice = 150 + variantAddition;
+            basePrice = 70 + variantAddition;
         }
         else
         {
@@ -88,16 +80,12 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
 
         await _unitOfWork.SaveChangesAsync();
 
-        var response = new FillTrainTicketCommandResponse
+        return new ResponseModel<FillTrainTicketCommandResponse>(new FillTrainTicketCommandResponse
         {
             Id = trainTicket.Id,
-            Customer = trainTicket.Customer,
             State = trainTicket.State,
-            DueDate = trainTicket.DueDate,
             BroughtDate = trainTicket.BroughtDate,
             ChosenSeatId = trainTicket.ChosenSeatId,
-            FromId = trainTicket.FromId,
-            ToId = trainTicket.ToId,
             VariantId = trainTicket.VariantId,
             HasPet = trainTicket.HasPet,
             HasChild = trainTicket.HasChild,
@@ -108,8 +96,6 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
             IsCashPayment = trainTicket.IsCashPayment,
             Price = trainTicket.Price,
             Note = trainTicket.Note
-        };
-
-        return new ResponseModel<FillTrainTicketCommandResponse>(response);
+        });
     }
 }

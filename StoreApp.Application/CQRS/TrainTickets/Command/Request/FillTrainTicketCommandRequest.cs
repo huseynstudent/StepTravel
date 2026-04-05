@@ -11,10 +11,7 @@ public class FillTrainTicketCommandRequest : IRequest<ResponseModel<FillTrainTic
     public int Id { get; set; }
     public int UserId { get; set; }
     public State State { get; set; }
-    public DateTime DueDate { get; set; }
     public int ChosenSeatId { get; set; }
-    public int FromId { get; set; }
-    public int ToId { get; set; }
     public bool HasPet { get; set; } = false;
     public bool HasChild { get; set; } = false;
     public int LuggageCount { get; set; } = 0;

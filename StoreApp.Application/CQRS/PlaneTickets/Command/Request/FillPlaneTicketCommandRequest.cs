@@ -15,7 +15,6 @@ public class FillPlaneTicketCommandRequest: IRequest<ResponseModel<FillPlaneTick
     public int ChosenSeatId { get; set; }
     public int FromId { get; set; }
     public int ToId { get; set; }
-    public int VariantId { get; set; }
     public bool HasPet { get; set; } = false;
     public bool HasChild { get; set; } = false;
     public int LuggageCount { get; set; } = 0;

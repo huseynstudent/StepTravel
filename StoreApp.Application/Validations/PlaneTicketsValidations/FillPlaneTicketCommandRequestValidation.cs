@@ -25,9 +25,6 @@ namespace StoreApp.Application.Validations.PlaneTicketsValidations
             RuleFor(x => x.ToId)
                 .GreaterThan(0).WithMessage("The to location ID must be greater than zero !")
                 .NotEmpty().WithMessage("The to location ID cannot be empty !");
-            RuleFor(x => x.VariantId)
-                .GreaterThan(0).WithMessage("The variant ID must be greater than zero !")
-                .NotEmpty().WithMessage("The variant ID cannot be empty !");
 
             RuleFor(x => x.Note)
                 .MaximumLength(500).WithMessage("The note must not exceed 500 characters !")

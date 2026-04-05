@@ -29,31 +29,24 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         if (user == null)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
-        var variant = request.VariantId != 0 ? await _unitOfWork.VariantRepository.GetByIdAsync(request.VariantId) : null;
-
         var seat = request.ChosenSeatId != 0 ? await _unitOfWork.SeatRepository.GetByIdAsync(request.ChosenSeatId) : null;
         if (seat == null)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
         if (seat.IsOccupied)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
-        var from = request.FromId != 0 ? await _unitOfWork.LocationRepository.GetByIdAsync(request.FromId) : null;
-        if (from == null)
+        var variant = await _unitOfWork.VariantRepository.GetByIdAsync(seat.VariantId);
+
+        var from = await _unitOfWork.LocationRepository.GetByIdAsync(planeTicket.FromId);
+        var to = await _unitOfWork.LocationRepository.GetByIdAsync(planeTicket.ToId);
+        if (from == null || to == null)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
-        var to = request.ToId != 0 ? await _unitOfWork.LocationRepository.GetByIdAsync(request.ToId) : null;
-        if (to == null)
-            return new ResponseModel<FillPlaneTicketCommandResponse>(null);
-
+        planeTicket.Customer = user;
         planeTicket.State = request.State;
-        planeTicket.DueDate = request.DueDate;
         planeTicket.BroughtDate = DateTime.UtcNow;
-        planeTicket.ChosenSeatId = request.ChosenSeatId;
-        planeTicket.FromId = request.FromId;
-        planeTicket.ToId = request.ToId;
-        planeTicket.VariantId = request.VariantId;
-        planeTicket.From = from;
-        planeTicket.To = to;
+        planeTicket.ChosenSeatId = seat.Id;
+        planeTicket.VariantId = seat.VariantId;
         planeTicket.Variant = variant;
         planeTicket.HasPet = request.HasPet;
         planeTicket.HasChild = request.HasChild;
@@ -62,15 +55,16 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         planeTicket.IsRoundTrip = request.IsRoundTrip;
         planeTicket.IsCashPayment = request.IsCashPayment;
         planeTicket.Note = request.Note;
-        planeTicket.Customer = user;
 
         seat.IsOccupied = true;
+
+        // Pricing
         var variantAddition = variant?.Price ?? 0.0;
         double basePrice;
 
         if (from.CountryId == to.CountryId)
         {
-            basePrice = 150 + variantAddition;
+            basePrice = 100 + variantAddition;
         }
         else
         {
@@ -88,16 +82,13 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
 
         await _unitOfWork.SaveChangesAsync();
 
-        var response = new FillPlaneTicketCommandResponse
+        return new ResponseModel<FillPlaneTicketCommandResponse>(new FillPlaneTicketCommandResponse
         {
             Id = planeTicket.Id,
             Customer = planeTicket.Customer,
             State = planeTicket.State,
-            DueDate = planeTicket.DueDate,
             BroughtDate = planeTicket.BroughtDate,
             ChosenSeatId = planeTicket.ChosenSeatId,
-            FromId = planeTicket.FromId,
-            ToId = planeTicket.ToId,
             VariantId = planeTicket.VariantId,
             HasPet = planeTicket.HasPet,
             HasChild = planeTicket.HasChild,
@@ -108,8 +99,6 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
             IsCashPayment = planeTicket.IsCashPayment,
             Price = planeTicket.Price,
             Note = planeTicket.Note
-        };
-
-        return new ResponseModel<FillPlaneTicketCommandResponse>(response);
+        });
     }
-}//
+}

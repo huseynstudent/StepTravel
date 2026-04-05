@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -15,6 +8,9 @@ using StoreApp.Application.CQRS.Auth.Command.Response;
 using StoreApp.Application.Helpers;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.DAL.Context;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace StoreApp.Application.CQRS.Auth.Handler.CommandHandler;
 
