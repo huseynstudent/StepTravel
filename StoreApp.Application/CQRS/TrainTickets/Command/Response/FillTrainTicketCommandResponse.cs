@@ -9,7 +9,7 @@ public class FillTrainTicketCommandResponse
     public State State { get; set; }
     public DateTime DueDate { get; set; }
     public DateTime BroughtDate { get; set; }
-    public int SeatId { get; set; }
+    public int ChosenSeatId { get; set; }
     public int FromId { get; set; }
     public int ToId { get; set; }
     public int VariantId { get; set; }

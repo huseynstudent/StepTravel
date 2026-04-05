@@ -5,18 +5,21 @@ using StoreApp.Application.CQRS.PlaneTickets.Query.Request;
 
 namespace StoreApp.WebApi.Controllers;
 
-[Authorize(Roles = "Admin,Company")]
+[Authorize]
 public class PlaneTicketController : BaseController
 {
     [HttpPost]
+    [Authorize(Roles = "Company")]
     public async Task<IActionResult> CreateTicket(CreatePlaneTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 
     [HttpPut]
+    [Authorize(Roles = "Admin,Company")]
     public async Task<IActionResult> UpdateTicket(UpdatePlaneTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 
     [HttpDelete]
+    [Authorize(Roles = "Admin,Company")]
     public async Task<IActionResult> DeleteTicket(DeletePlaneTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 

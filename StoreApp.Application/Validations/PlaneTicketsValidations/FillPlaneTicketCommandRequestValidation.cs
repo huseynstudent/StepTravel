@@ -14,7 +14,7 @@ namespace StoreApp.Application.Validations.PlaneTicketsValidations
                 .GreaterThan(DateTime.Now).WithMessage("The due date must be in the future !")
                 .NotEmpty().WithMessage("The due date cannot be empty !");
 
-            RuleFor(x => x.SeatId)
+            RuleFor(x => x.ChosenSeatId)
                 .GreaterThan(0).WithMessage("The seat ID must be greater than zero !")
                 .NotEmpty().WithMessage("The seat ID cannot be empty !");
 

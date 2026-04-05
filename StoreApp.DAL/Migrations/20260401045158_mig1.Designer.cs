@@ -200,9 +200,6 @@ namespace StoreApp.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("HasCheckedIn")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("HasChild")
                         .HasColumnType("bit");
 
@@ -239,7 +236,7 @@ namespace StoreApp.DAL.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
-                    b.Property<int>("SeatId")
+                    b.Property<int>("ChosenSeatId")
                         .HasColumnType("int");
 
                     b.Property<int>("State")
@@ -261,7 +258,7 @@ namespace StoreApp.DAL.Migrations
 
                     b.HasIndex("FromId");
 
-                    b.HasIndex("SeatId");
+                    b.HasIndex("ChosenSeatId");
 
                     b.HasIndex("ToId");
 
@@ -358,7 +355,7 @@ namespace StoreApp.DAL.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
-                    b.Property<int>("SeatId")
+                    b.Property<int>("ChosenSeatId")
                         .HasColumnType("int");
 
                     b.Property<int>("State")
@@ -391,8 +388,8 @@ namespace StoreApp.DAL.Migrations
 
                     b.HasIndex("FromId");
 
-                    b.HasIndex("SeatId");
-
+                    b.HasIndex("ChosenSeatId");
+                        
                     b.HasIndex("ToId");
 
                     b.HasIndex("VariantId");
@@ -549,7 +546,7 @@ namespace StoreApp.DAL.Migrations
 
                     b.HasOne("StoreApp.Domain.Entities.Seat", "Seat")
                         .WithMany()
-                        .HasForeignKey("SeatId")
+                        .HasForeignKey("ChosenSeatId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -595,7 +592,7 @@ namespace StoreApp.DAL.Migrations
 
                     b.HasOne("StoreApp.Domain.Entities.Seat", "Seat")
                         .WithMany()
-                        .HasForeignKey("SeatId")
+                        .HasForeignKey("ChosenSeatId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

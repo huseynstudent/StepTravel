@@ -190,7 +190,6 @@ namespace StoreApp.DAL.Migrations
                     Gate = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Plane = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Meal = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HasCheckedIn = table.Column<bool>(type: "bit", nullable: false),
                     LuggageKg = table.Column<double>(type: "float", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -199,7 +198,7 @@ namespace StoreApp.DAL.Migrations
                     State = table.Column<int>(type: "int", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BroughtDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SeatId = table.Column<int>(type: "int", nullable: false),
+                    ChosenSeatId = table.Column<int>(type: "int", nullable: false),
                     FromId = table.Column<int>(type: "int", nullable: false),
                     ToId = table.Column<int>(type: "int", nullable: false),
                     VariantId = table.Column<int>(type: "int", nullable: false),
@@ -227,8 +226,8 @@ namespace StoreApp.DAL.Migrations
                         principalTable: "Locations",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_PlaneTickets_Seats_SeatId",
-                        column: x => x.SeatId,
+                        name: "FK_PlaneTickets_Seats_ChosenSeatId",
+                        column: x => x.ChosenSeatId,
                         principalTable: "Seats",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -254,7 +253,7 @@ namespace StoreApp.DAL.Migrations
                     State = table.Column<int>(type: "int", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BroughtDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SeatId = table.Column<int>(type: "int", nullable: false),
+                    ChosenSeatId = table.Column<int>(type: "int", nullable: false),
                     FromId = table.Column<int>(type: "int", nullable: false),
                     ToId = table.Column<int>(type: "int", nullable: false),
                     VariantId = table.Column<int>(type: "int", nullable: false),
@@ -282,8 +281,8 @@ namespace StoreApp.DAL.Migrations
                         principalTable: "Locations",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_TrainTickets_Seats_SeatId",
-                        column: x => x.SeatId,
+                        name: "FK_TrainTickets_Seats_ChosenSeatId",
+                        column: x => x.ChosenSeatId,
                         principalTable: "Seats",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -304,9 +303,9 @@ namespace StoreApp.DAL.Migrations
                 column: "FromId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlaneTickets_SeatId",
+                name: "IX_PlaneTickets_ChosenSeatId",
                 table: "PlaneTickets",
-                column: "SeatId");
+                column: "ChosenSeatId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlaneTickets_ToId",
@@ -329,9 +328,9 @@ namespace StoreApp.DAL.Migrations
                 column: "FromId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TrainTickets_SeatId",
+                name: "IX_TrainTickets_ChosenSeatId",
                 table: "TrainTickets",
-                column: "SeatId");
+                column: "ChosenSeatId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrainTickets_ToId",

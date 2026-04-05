@@ -31,7 +31,7 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
 
         var variant = request.VariantId != 0 ? await _unitOfWork.VariantRepository.GetByIdAsync(request.VariantId) : null;
 
-        var seat = request.SeatId != 0 ? await _unitOfWork.SeatRepository.GetByIdAsync(request.SeatId) : null;
+        var seat = request.ChosenSeatId != 0 ? await _unitOfWork.SeatRepository.GetByIdAsync(request.ChosenSeatId) : null;
         if (seat == null)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
         if (seat.IsOccupied)
@@ -48,17 +48,15 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         planeTicket.State = request.State;
         planeTicket.DueDate = request.DueDate;
         planeTicket.BroughtDate = DateTime.UtcNow;
-        planeTicket.SeatId = request.SeatId;
+        planeTicket.ChosenSeatId = request.ChosenSeatId;
         planeTicket.FromId = request.FromId;
         planeTicket.ToId = request.ToId;
         planeTicket.VariantId = request.VariantId;
-        planeTicket.Seat = seat;
         planeTicket.From = from;
         planeTicket.To = to;
         planeTicket.Variant = variant;
         planeTicket.HasPet = request.HasPet;
         planeTicket.HasChild = request.HasChild;
-        planeTicket.HasCheckedIn= request.HasCheckedIn;
         planeTicket.LuggageCount = request.LuggageCount;
         planeTicket.TotalLuggageKg = request.TotalLuggageKg;
         planeTicket.IsRoundTrip = request.IsRoundTrip;
@@ -97,13 +95,12 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
             State = planeTicket.State,
             DueDate = planeTicket.DueDate,
             BroughtDate = planeTicket.BroughtDate,
-            SeatId = planeTicket.SeatId,
+            ChosenSeatId = planeTicket.ChosenSeatId,
             FromId = planeTicket.FromId,
             ToId = planeTicket.ToId,
             VariantId = planeTicket.VariantId,
             HasPet = planeTicket.HasPet,
             HasChild = planeTicket.HasChild,
-            HasCheckedIn = true,
             LuggageCount = planeTicket.LuggageCount,
             TotalLuggageKg = planeTicket.TotalLuggageKg,
             Discount = planeTicket.Discount,

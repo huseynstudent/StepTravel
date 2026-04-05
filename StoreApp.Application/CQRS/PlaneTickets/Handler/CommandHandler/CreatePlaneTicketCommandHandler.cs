@@ -22,7 +22,6 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
             Gate = request.Gate,
             Plane = request.Plane,
             Meal = request.Meal,
-            HasCheckedIn = request.HasCheckedIn,
             LuggageKg = request.LuggageKg
 
         };
@@ -35,7 +34,6 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
             Gate = planeTicket.Gate,
             Plane = planeTicket.Plane,
             Meal = planeTicket.Meal,
-            HasCheckedIn = planeTicket.HasCheckedIn,
             LuggageKg = planeTicket.LuggageKg
         };
         return new ResponseModel<CreatePlaneTicketCommandResponse>(response);

@@ -29,13 +29,13 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         if (user == null)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
 
-        var variant = request.VariantId != 0 ? await _unitOfWork.VariantRepository.GetByIdAsync(request.VariantId) : null;
 
-        var seat = request.SeatId != 0 ? await _unitOfWork.SeatRepository.GetByIdAsync(request.SeatId) : null;
+        var seat = request.ChosenSeatId != 0 ? await _unitOfWork.SeatRepository.GetByIdAsync(request.ChosenSeatId) : null;
         if (seat == null)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
         if (seat.IsOccupied)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
+        var variant = seat.VariantId != 0 ? await _unitOfWork.VariantRepository.GetByIdAsync(seat.VariantId) : null;
 
         var from = request.FromId != 0 ? await _unitOfWork.LocationRepository.GetByIdAsync(request.FromId) : null;
         if (from == null)
@@ -49,11 +49,10 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         trainTicket.Customer = user;
         trainTicket.DueDate = request.DueDate;
         trainTicket.BroughtDate = DateTime.UtcNow;
-        trainTicket.SeatId = request.SeatId;
+        trainTicket.ChosenSeatId = request.ChosenSeatId;
         trainTicket.FromId = request.FromId;
         trainTicket.ToId = request.ToId;
         trainTicket.VariantId = request.VariantId;
-        trainTicket.Seat = seat;
         trainTicket.From = from;
         trainTicket.To = to;
         trainTicket.Variant = variant;
@@ -96,7 +95,7 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
             State = trainTicket.State,
             DueDate = trainTicket.DueDate,
             BroughtDate = trainTicket.BroughtDate,
-            SeatId = trainTicket.SeatId,
+            ChosenSeatId = trainTicket.ChosenSeatId,
             FromId = trainTicket.FromId,
             ToId = trainTicket.ToId,
             VariantId = trainTicket.VariantId,

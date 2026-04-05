@@ -7,7 +7,6 @@ public class GetAllPlaneTicketQueryResponse
     public string Gate { get; set; }
     public string Plane { get; set; }
     public string Meal { get; set; }
-    public bool HasCheckedIn { get; set; }
     public double LuggageKg { get; set; }
     public DateTime DueDate { get; set; }
     public string From { get; set; }
