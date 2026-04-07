@@ -21,6 +21,17 @@ public class AuthController : BaseController
         var userId = int.Parse(User.FindFirst("uid")!.Value);
         return Ok(await Sender.Send(new GetMeQueryRequest { UserId = userId }));
     }
+    [Authorize(Roles = "Admin")]
+    [HttpPost("create-executive")]
+    public async Task<IActionResult> CreateExecutive([FromBody] CreateExecutiveCommandRequest request)
+    {
+        var result = await Sender.Send(request);
+
+        if (result.Data == null)
+            return BadRequest(new { message = "Executive creation failed. Email may already be in use." });
+
+        return Ok(result);
+    }
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterUserCommandRequest request)
     {
