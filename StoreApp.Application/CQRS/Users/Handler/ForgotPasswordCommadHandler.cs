@@ -26,7 +26,10 @@ public class ForgotPasswordCommandHandler
         _logger = logger;
     }
 
-    private static string GenerateRandomCode() => new Random().Next(100000, 1000000).ToString();
+    private static string GenerateRandomCode()
+    {
+        return Random.Shared.Next(100000, 1000000).ToString();
+    }
 
     public async Task<ResponseModel<ForgotPasswordCommandResponse>> Handle(
         ForgotPasswordCommandRequest request, CancellationToken cancellationToken)
@@ -48,31 +51,30 @@ public class ForgotPasswordCommandHandler
 
         string code = GenerateRandomCode();
         user.ConfirmCode = code;
+
         await _db.SaveChangesAsync(cancellationToken);
 
-        _ = Task.Run(() =>
+        try
         {
-            try
-            {
-                string sender = _configuration["EmailSettings:SenderEmail"];
-                string password = _configuration["EmailSettings:AppPassword"];
+            string sender = _configuration["EmailSettings:SenderEmail"];
+            string password = _configuration["EmailSettings:AppPassword"];
 
-                var emailService = new StoreApp.Application.Service.Email();
-                emailService.Send(
-                    sender,
-                    password,
-                    request.Email,
-                    "Password Reset Code",
-                    $"Your password reset code is: <b>{code}</b><br/>It will be used to set a new password."
-                );
+            var emailService = new StoreApp.Application.Service.Email();
 
-                _logger.LogInformation("ForgotPassword: reset code emailed to {Email}.", request.Email);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("ForgotPassword email error: {Message}", ex.Message);
-            }
-        });
+            emailService.Send(
+                sender,
+                password,
+                request.Email,
+                "Password Reset Code",
+                $"Your password reset code is: <b>{code}</b><br/>It will be used to set a new password."
+            );
+
+            _logger.LogInformation("ForgotPassword: reset code emailed to {Email}.", request.Email);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("ForgotPassword email error: {Message}", ex.Message);
+        }
 
         return Ok();
     }

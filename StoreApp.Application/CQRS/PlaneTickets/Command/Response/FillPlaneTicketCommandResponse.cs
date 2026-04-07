@@ -1,8 +1,6 @@
-﻿using StoreApp.Domain.Enums;
-
-
+﻿using StoreApp.Domain.Entities;
+using StoreApp.Domain.Enums;
 namespace StoreApp.Application.CQRS.PlaneTickets.Command.Response;
-
 public class FillPlaneTicketCommandResponse
 {
     public int Id { get; set; }
