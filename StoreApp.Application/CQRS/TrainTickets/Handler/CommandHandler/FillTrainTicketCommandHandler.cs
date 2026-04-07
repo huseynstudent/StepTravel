@@ -25,22 +25,29 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         if (trainTicket == null)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
 
+        // Already claimed by another user
+        if (trainTicket.CustomerId != null)
+            return new ResponseModel<FillTrainTicketCommandResponse>(null);
+
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId && !u.IsDeleted, cancellationToken);
         if (user == null)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
 
-        var seat = request.ChosenSeatId != 0 ? await _unitOfWork.SeatRepository.GetByIdAsync(request.ChosenSeatId) : null;
-        if (seat == null)
+        var seat = await _unitOfWork.SeatRepository.GetByIdAsync(request.ChosenSeatId);
+        if (seat == null || seat.IsOccupied)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
-        if (seat.IsOccupied)
-            return new ResponseModel<FillTrainTicketCommandResponse>(null);
-        var variant = await _unitOfWork.VariantRepository.GetByIdAsync(seat.VariantId);
 
+        // Seat must belong to this ticket's pool
+        if (seat.TrainTicketId != trainTicket.Id)
+            return new ResponseModel<FillTrainTicketCommandResponse>(null);
+
+        var variant = await _unitOfWork.VariantRepository.GetByIdAsync(seat.VariantId);
         var from = await _unitOfWork.LocationRepository.GetByIdAsync(trainTicket.FromId);
         var to = await _unitOfWork.LocationRepository.GetByIdAsync(trainTicket.ToId);
         if (from == null || to == null)
             return new ResponseModel<FillTrainTicketCommandResponse>(null);
 
+        trainTicket.CustomerId = user.Id;
         trainTicket.Customer = user;
         trainTicket.State = request.State;
         trainTicket.BroughtDate = DateTime.UtcNow;
@@ -52,31 +59,19 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         trainTicket.LuggageCount = request.LuggageCount;
         trainTicket.TotalLuggageKg = request.TotalLuggageKg;
         trainTicket.IsRoundTrip = request.IsRoundTrip;
-        trainTicket.IsCashPayment = request.IsCashPayment;
         trainTicket.Note = request.Note;
 
         seat.IsOccupied = true;
 
         var variantAddition = variant?.Price ?? 0.0;
-        double basePrice;
+        double basePrice = from.CountryId == to.CountryId
+            ? 70 + variantAddition
+            : Math.Abs(from.DistanceToken - to.DistanceToken) * 40 + variantAddition;
 
-        if (from.CountryId == to.CountryId)
-        {
-            basePrice = 70 + variantAddition;
-        }
-        else
-        {
-            var distance = Math.Abs(from.DistanceToken - to.DistanceToken);
-            basePrice = distance * 40 + variantAddition;
-        }
-
-        var roundTripMultiplier = trainTicket.IsRoundTrip ? 2 : 1;
         var luggageFee = request.TotalLuggageKg > (variant?.AllowedLuggageKg ?? 0) ? 10.0 : 0.0;
-        var today = DateTime.UtcNow;
-        var isBirthday = user.Birthday.Month == today.Month && user.Birthday.Day == today.Day;
-        var birthdayMultiplier = isBirthday ? 0.5 : 1.0;
+        var isBirthday = user.Birthday.Month == DateTime.UtcNow.Month && user.Birthday.Day == DateTime.UtcNow.Day;
         var manualDiscount = trainTicket.Discount is > 0 and <= 1 ? trainTicket.Discount : 1.0;
-        trainTicket.Price = (basePrice * roundTripMultiplier + luggageFee) * birthdayMultiplier * manualDiscount;
+        trainTicket.Price = (basePrice * (trainTicket.IsRoundTrip ? 2 : 1) + luggageFee) * (isBirthday ? 0.5 : 1.0) * manualDiscount;
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -84,16 +79,15 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         {
             Id = trainTicket.Id,
             State = trainTicket.State,
-            BroughtDate = trainTicket.BroughtDate,
-            ChosenSeatId = trainTicket.ChosenSeatId,
-            VariantId = trainTicket.VariantId,
+            BroughtDate = (DateTime)trainTicket.BroughtDate,
+            ChosenSeatId = (int)trainTicket.ChosenSeatId,
+            VariantId = (int)trainTicket.VariantId,
             HasPet = trainTicket.HasPet,
             HasChild = trainTicket.HasChild,
             LuggageCount = trainTicket.LuggageCount,
             TotalLuggageKg = trainTicket.TotalLuggageKg,
             Discount = trainTicket.Discount,
             IsRoundTrip = trainTicket.IsRoundTrip,
-            IsCashPayment = trainTicket.IsCashPayment,
             Price = trainTicket.Price,
             Note = trainTicket.Note
         });

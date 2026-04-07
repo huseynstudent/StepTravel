@@ -3,6 +3,7 @@ using StoreApp.Application.CQRS.PlaneTickets.Command.Request;
 using StoreApp.Application.CQRS.PlaneTickets.Command.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.Domain.Entities;
+using StoreApp.Domain.Enums;
 using StoreApp.Repository.Comman;
 
 namespace StoreApp.Application.CQRS.PlaneTickets.Handler.CommandHandler;
@@ -16,7 +17,8 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<ResponseModel<CreatePlaneTicketCommandResponse>> Handle(CreatePlaneTicketCommandRequest request, CancellationToken cancellationToken)
+    public async Task<ResponseModel<CreatePlaneTicketCommandResponse>> Handle(
+        CreatePlaneTicketCommandRequest request, CancellationToken cancellationToken)
     {
         var from = await _unitOfWork.LocationRepository.GetByIdAsync(request.FromId);
         if (from == null)
@@ -26,37 +28,57 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
         if (to == null)
             return new ResponseModel<CreatePlaneTicketCommandResponse>(null);
 
-        var planeTicket = new PlaneTicket
-        {
-            Airline = request.Airline,
-            Gate = request.Gate,
-            Plane = request.Plane,
-            Meal = request.Meal,
-            LuggageKg = request.LuggageKg,
-            DueDate = request.DueDate,
-            FromId = request.FromId,
-            ToId = request.ToId,
-            From = from,
-            To = to
-        };
+        var columns = "ABCDEFGHIJK";
+        var createdTickets = new List<PlaneTicket>();
 
-        await _unitOfWork.PlaneTicketRepository.AddAsync(planeTicket);
-        await _unitOfWork.SaveChangesAsync();
-
-        int seatIndex = 1;
+        // One PlaneTicket per seat derived from SeatGroups
         foreach (var group in request.SeatGroups)
         {
-            var columns = "ABCDEFGHIJK";
             for (int row = 1; row <= group.RowCount; row++)
             {
                 for (int col = 0; col < group.SeatsPerRow; col++)
                 {
+                    var seatName = $"{row}{columns[col]}"; // e.g. "1A", "2B"
+
+                    var ticket = new PlaneTicket
+                    {
+                        Airline = request.Airline,
+                        Gate = request.Gate,
+                        Plane = request.Plane,
+                        Meal = request.Meal,
+                        LuggageKg = request.LuggageKg,
+                        DueDate = request.DueDate,
+                        FromId = request.FromId,
+                        ToId = request.ToId,
+                        From = from,
+                        To = to,
+                        State = State.Pending
+                    };
+
+                    await _unitOfWork.PlaneTicketRepository.AddAsync(ticket);
+                    createdTickets.Add(ticket);
+                }
+            }
+        }
+        await _unitOfWork.SaveChangesAsync();
+
+        //create one Seat per ticket, linked by PlaneTicketId
+        int ticketIndex = 0;
+        foreach (var group in request.SeatGroups)
+        {
+            for (int row = 1; row <= group.RowCount; row++)
+            {
+                for (int col = 0; col < group.SeatsPerRow; col++)
+                {
+                    var seatName = $"{row}{columns[col]}";
+                    var linkedTicket = createdTickets[ticketIndex++];
+
                     await _unitOfWork.SeatRepository.AddAsync(new Seat
                     {
-                        Name = $"{row}{columns[col]}",  // e.g. "1A", "1B", "3C"
+                        Name = seatName,
                         IsOccupied = false,
                         VariantId = group.VariantId,
-                        PlaneTicketId = planeTicket.Id
+                        PlaneTicketId = linkedTicket.Id
                     });
                 }
             }
@@ -64,17 +86,22 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
 
         await _unitOfWork.SaveChangesAsync();
 
-        return new ResponseModel<CreatePlaneTicketCommandResponse>(new CreatePlaneTicketCommandResponse
-        {
-            Id = planeTicket.Id,
-            Airline = planeTicket.Airline,
-            Gate = planeTicket.Gate,
-            Plane = planeTicket.Plane,
-            Meal = planeTicket.Meal,
-            LuggageKg = planeTicket.LuggageKg,
-            DueDate = planeTicket.DueDate,
-            FromId = planeTicket.FromId,
-            ToId = planeTicket.ToId
-        });
+        // Return summary using the first ticket as representative
+        var first = createdTickets.First();
+        return new ResponseModel<CreatePlaneTicketCommandResponse>(
+            new CreatePlaneTicketCommandResponse
+            {
+                Id = first.Id,
+                Airline = first.Airline,
+                Gate = first.Gate,
+                Plane = first.Plane,
+                Meal = first.Meal,
+                LuggageKg = first.LuggageKg,
+                DueDate = first.DueDate,
+                FromId = first.FromId,
+                ToId = first.ToId,
+                //total count
+                TotalTicketsCreated = createdTickets.Count
+            });
     }
 }

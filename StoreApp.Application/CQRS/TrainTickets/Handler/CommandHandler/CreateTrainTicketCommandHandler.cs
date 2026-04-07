@@ -3,11 +3,12 @@ using StoreApp.Application.CQRS.TrainTickets.Command.Request;
 using StoreApp.Application.CQRS.TrainTickets.Command.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.Domain.Entities;
+using StoreApp.Domain.Enums;
 using StoreApp.Repository.Comman;
 
 namespace StoreApp.Application.CQRS.TrainTickets.Handler.CommandHandler;
 
-class CreateTrainTicketCommandHandler : IRequestHandler<CreateTrainTicketCommandRequest, ResponseModel<CreateTrainTicketCommandResponse>>
+public class CreateTrainTicketCommandHandler : IRequestHandler<CreateTrainTicketCommandRequest, ResponseModel<CreateTrainTicketCommandResponse>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -16,7 +17,8 @@ class CreateTrainTicketCommandHandler : IRequestHandler<CreateTrainTicketCommand
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<ResponseModel<CreateTrainTicketCommandResponse>> Handle(CreateTrainTicketCommandRequest request, CancellationToken cancellationToken)
+    public async Task<ResponseModel<CreateTrainTicketCommandResponse>> Handle(
+        CreateTrainTicketCommandRequest request, CancellationToken cancellationToken)
     {
         var from = await _unitOfWork.LocationRepository.GetByIdAsync(request.FromId);
         if (from == null)
@@ -26,34 +28,52 @@ class CreateTrainTicketCommandHandler : IRequestHandler<CreateTrainTicketCommand
         if (to == null)
             return new ResponseModel<CreateTrainTicketCommandResponse>(null);
 
-        var trainTicket = new TrainTicket
-        {
-            TrainCompany = request.TrainCompany,
-            TrainNumber = request.TrainNumber,
-            VagonNumber = request.VagonNumber,
-            DueDate = request.DueDate,
-            FromId = request.FromId,
-            ToId = request.ToId,
-            From = from,
-            To = to
-        };
-
-        await _unitOfWork.TrainTicketRepository.AddAsync(trainTicket);
-        await _unitOfWork.SaveChangesAsync();
+        var columns = "ABCDEFGHIJK";
+        var createdTickets = new List<TrainTicket>();
 
         foreach (var group in request.SeatGroups)
         {
-            var columns = "ABCDEFGHIJK";
             for (int row = 1; row <= group.RowCount; row++)
             {
                 for (int col = 0; col < group.SeatsPerRow; col++)
                 {
+                    var ticket = new TrainTicket
+                    {
+                        TrainCompany = request.TrainCompany,
+                        TrainNumber = request.TrainNumber,
+                        VagonNumber = request.VagonNumber,
+                        DueDate = request.DueDate,
+                        FromId = request.FromId,
+                        ToId = request.ToId,
+                        From = from,
+                        To = to,
+                        State = State.Pending
+                    };
+
+                    await _unitOfWork.TrainTicketRepository.AddAsync(ticket);
+                    createdTickets.Add(ticket);
+                }
+            }
+        }
+        await _unitOfWork.SaveChangesAsync();
+
+        // Create one Seat per ticket, linked by TrainTicketId
+        int ticketIndex = 0;
+        foreach (var group in request.SeatGroups)
+        {
+            for (int row = 1; row <= group.RowCount; row++)
+            {
+                for (int col = 0; col < group.SeatsPerRow; col++)
+                {
+                    var seatName = $"{row}{columns[col]}";
+                    var linkedTicket = createdTickets[ticketIndex++];
+
                     await _unitOfWork.SeatRepository.AddAsync(new Seat
                     {
-                        Name = $"{row}{columns[col]}",  // e.g. "1A", "1B", "3C"
+                        Name = seatName,
                         IsOccupied = false,
                         VariantId = group.VariantId,
-                        TrainTicketId = trainTicket.Id
+                        TrainTicketId = linkedTicket.Id
                     });
                 }
             }
@@ -61,15 +81,18 @@ class CreateTrainTicketCommandHandler : IRequestHandler<CreateTrainTicketCommand
 
         await _unitOfWork.SaveChangesAsync();
 
-        return new ResponseModel<CreateTrainTicketCommandResponse>(new CreateTrainTicketCommandResponse
-        {
-            Id = trainTicket.Id,
-            TrainCompany = trainTicket.TrainCompany,
-            TrainNumber = trainTicket.TrainNumber,
-            VagonNumber = trainTicket.VagonNumber,
-            DueDate = trainTicket.DueDate,
-            FromId = trainTicket.FromId,
-            ToId = trainTicket.ToId
-        });
+        var first = createdTickets.First();
+        return new ResponseModel<CreateTrainTicketCommandResponse>(
+            new CreateTrainTicketCommandResponse
+            {
+                Id = first.Id,
+                TrainCompany = first.TrainCompany,
+                TrainNumber = first.TrainNumber,
+                VagonNumber = first.VagonNumber,
+                DueDate = first.DueDate,
+                FromId = first.FromId,
+                ToId = first.ToId,
+                TotalTicketsCreated = createdTickets.Count
+            });
     }
 }

@@ -11,5 +11,6 @@ namespace StoreApp.Application.CQRS.TrainTickets.Command.Response
         public DateTime DueDate { get; set; }
         public int FromId { get; set; }
         public int ToId { get; set; }
+        public int TotalTicketsCreated { get; set; }
     }
 }

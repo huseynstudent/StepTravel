@@ -25,23 +25,29 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         if (planeTicket == null)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
+        // Already claimed by another user
+        if (planeTicket.CustomerId != null)
+            return new ResponseModel<FillPlaneTicketCommandResponse>(null);
+
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId && !u.IsDeleted, cancellationToken);
         if (user == null)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
-        var seat = request.ChosenSeatId != 0 ? await _unitOfWork.SeatRepository.GetByIdAsync(request.ChosenSeatId) : null;
-        if (seat == null)
+        var seat = await _unitOfWork.SeatRepository.GetByIdAsync(request.ChosenSeatId);
+        if (seat == null || seat.IsOccupied)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
-        if (seat.IsOccupied)
+
+        // Seat must belong to this ticket's pool
+        if (seat.PlaneTicketId != planeTicket.Id)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
         var variant = await _unitOfWork.VariantRepository.GetByIdAsync(seat.VariantId);
-
         var from = await _unitOfWork.LocationRepository.GetByIdAsync(planeTicket.FromId);
         var to = await _unitOfWork.LocationRepository.GetByIdAsync(planeTicket.ToId);
         if (from == null || to == null)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
+        planeTicket.CustomerId = user.Id;
         planeTicket.Customer = user;
         planeTicket.State = request.State;
         planeTicket.BroughtDate = DateTime.UtcNow;
@@ -53,32 +59,19 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         planeTicket.LuggageCount = request.LuggageCount;
         planeTicket.TotalLuggageKg = request.TotalLuggageKg;
         planeTicket.IsRoundTrip = request.IsRoundTrip;
-        planeTicket.IsCashPayment = request.IsCashPayment;
         planeTicket.Note = request.Note;
 
         seat.IsOccupied = true;
 
-        // Pricing
         var variantAddition = variant?.Price ?? 0.0;
-        double basePrice;
+        double basePrice = from.CountryId == to.CountryId
+            ? 100 + variantAddition
+            : Math.Abs(from.DistanceToken - to.DistanceToken) * 40 + variantAddition;
 
-        if (from.CountryId == to.CountryId)
-        {
-            basePrice = 100 + variantAddition;
-        }
-        else
-        {
-            var distance = Math.Abs(from.DistanceToken - to.DistanceToken);
-            basePrice = distance * 40 + variantAddition;
-        }
-
-        var roundTripMultiplier = planeTicket.IsRoundTrip ? 2 : 1;
         var luggageFee = request.TotalLuggageKg > (variant?.AllowedLuggageKg ?? 0) ? 10.0 : 0.0;
-        var today = DateTime.UtcNow;
-        var isBirthday = user.Birthday.Month == today.Month && user.Birthday.Day == today.Day;
-        var birthdayMultiplier = isBirthday ? 0.5 : 1.0;
+        var isBirthday = user.Birthday.Month == DateTime.UtcNow.Month && user.Birthday.Day == DateTime.UtcNow.Day;
         var manualDiscount = planeTicket.Discount is > 0 and <= 1 ? planeTicket.Discount : 1.0;
-        planeTicket.Price = (basePrice * roundTripMultiplier + luggageFee) * birthdayMultiplier * manualDiscount;
+        planeTicket.Price = (basePrice * (planeTicket.IsRoundTrip ? 2 : 1) + luggageFee) * (isBirthday ? 0.5 : 1.0) * manualDiscount;
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -87,16 +80,15 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
             Id = planeTicket.Id,
             Customer = planeTicket.Customer,
             State = planeTicket.State,
-            BroughtDate = planeTicket.BroughtDate,
-            ChosenSeatId = planeTicket.ChosenSeatId,
-            VariantId = planeTicket.VariantId,
+            BroughtDate = (DateTime)planeTicket.BroughtDate,
+            ChosenSeatId = (int)planeTicket.ChosenSeatId,
+            VariantId = (int)planeTicket.VariantId,
             HasPet = planeTicket.HasPet,
             HasChild = planeTicket.HasChild,
             LuggageCount = planeTicket.LuggageCount,
             TotalLuggageKg = planeTicket.TotalLuggageKg,
             Discount = planeTicket.Discount,
             IsRoundTrip = planeTicket.IsRoundTrip,
-            IsCashPayment = planeTicket.IsCashPayment,
             Price = planeTicket.Price,
             Note = planeTicket.Note
         });

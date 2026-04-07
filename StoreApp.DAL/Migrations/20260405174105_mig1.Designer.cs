@@ -212,9 +212,6 @@ namespace StoreApp.DAL.Migrations
                     b.Property<bool>("HasPet")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsCashPayment")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -232,7 +229,6 @@ namespace StoreApp.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Note")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Plane")
@@ -357,9 +353,6 @@ namespace StoreApp.DAL.Migrations
                     b.Property<bool>("HasPet")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsCashPayment")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -370,7 +363,6 @@ namespace StoreApp.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Price")

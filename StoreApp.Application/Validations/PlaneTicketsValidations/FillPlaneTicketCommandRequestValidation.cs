@@ -18,18 +18,8 @@ namespace StoreApp.Application.Validations.PlaneTicketsValidations
                 .GreaterThan(0).WithMessage("The seat ID must be greater than zero !")
                 .NotEmpty().WithMessage("The seat ID cannot be empty !");
 
-            RuleFor(x => x.FromId)
-                .GreaterThan(0).WithMessage("The from location ID must be greater than zero !")
-                .NotEmpty().WithMessage("The from location ID cannot be empty !");
-
-            RuleFor(x => x.ToId)
-                .GreaterThan(0).WithMessage("The to location ID must be greater than zero !")
-                .NotEmpty().WithMessage("The to location ID cannot be empty !");
-
             RuleFor(x => x.Note)
-                .MaximumLength(500).WithMessage("The note must not exceed 500 characters !")
-                .MinimumLength(0).WithMessage("The note must be at least 0 characters long !")
-                .NotNull().WithMessage("The note cannot be null !");
+                .MaximumLength(500).WithMessage("The note must not exceed 500 characters !");
 
             RuleFor(x => x.State)
                 .IsInEnum().WithMessage("The state must be a valid enum value !")
@@ -37,10 +27,6 @@ namespace StoreApp.Application.Validations.PlaneTicketsValidations
 
             RuleFor(x => x.IsRoundTrip)
                 .Must(x => x == true || x == false).WithMessage("The round trip status must be either true or false !");
-
-            RuleFor(x => x.IsCashPayment)
-                .Must(x => x == true || x == false).WithMessage("The cash payment status must be either true or false !");
-
             RuleFor(x => x.LuggageCount)
                 .GreaterThanOrEqualTo(0).WithMessage("The luggage count must be greater than or equal to zero !")
                 .NotEmpty().WithMessage("The luggage count cannot be empty !");

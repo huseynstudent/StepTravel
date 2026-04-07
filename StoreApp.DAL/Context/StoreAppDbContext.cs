@@ -3,12 +3,10 @@ using StoreApp.Domain.Entities;
 
 namespace StoreApp.DAL.Context;
 
-public class StoreAppDbContext:DbContext
+public class StoreAppDbContext : DbContext
 {
-    public StoreAppDbContext(DbContextOptions<StoreAppDbContext> options) : base(options)
-    {
+    public StoreAppDbContext(DbContextOptions<StoreAppDbContext> options) : base(options) { }
 
-    }
     public DbSet<PlaneTicket> PlaneTickets { get; set; }
     public DbSet<Seat> Seats { get; set; }
     public DbSet<Variant> Variants { get; set; }
@@ -23,6 +21,13 @@ public class StoreAppDbContext:DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // PLANE TICKET
+        modelBuilder.Entity<PlaneTicket>()
+            .HasOne(p => p.Customer)
+            .WithMany()
+            .HasForeignKey(p => p.CustomerId)
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired(false);
+
         modelBuilder.Entity<PlaneTicket>()
             .HasOne(p => p.From)
             .WithMany()
@@ -39,16 +44,24 @@ public class StoreAppDbContext:DbContext
             .HasOne(p => p.Variant)
             .WithMany()
             .HasForeignKey(p => p.VariantId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired(false);
 
-        // PlaneTicket → chosen seat (user's purchase decision)
         modelBuilder.Entity<PlaneTicket>()
             .HasOne<Seat>()
             .WithMany()
             .HasForeignKey(p => p.ChosenSeatId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired(false);
 
         // TRAIN TICKET
+        modelBuilder.Entity<TrainTicket>()
+            .HasOne(t => t.Customer)
+            .WithMany()
+            .HasForeignKey(t => t.CustomerId)
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired(false);
+
         modelBuilder.Entity<TrainTicket>()
             .HasOne(t => t.From)
             .WithMany()
@@ -65,26 +78,27 @@ public class StoreAppDbContext:DbContext
             .HasOne(t => t.Variant)
             .WithMany()
             .HasForeignKey(t => t.VariantId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired(false);
 
-        // TrainTicket → chosen seat (user's purchase decision)
         modelBuilder.Entity<TrainTicket>()
             .HasOne<Seat>()
             .WithMany()
             .HasForeignKey(t => t.ChosenSeatId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired(false);
 
-        // SEAT → ticket pool ownership (seat belongs to a flight/train)
+        // SEAT → pool ownership
         modelBuilder.Entity<Seat>()
             .HasOne<PlaneTicket>()
             .WithMany()
             .HasForeignKey(s => s.PlaneTicketId)
-            .OnDelete(DeleteBehavior.NoAction );
+            .OnDelete(DeleteBehavior.NoAction).IsRequired(false);
 
         modelBuilder.Entity<Seat>()
             .HasOne<TrainTicket>()
             .WithMany()
             .HasForeignKey(s => s.TrainTicketId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.NoAction).IsRequired(false);
     }
 }

@@ -16,7 +16,6 @@ public class FillTrainTicketCommandResponse
     public double TotalLuggageKg { get; set; } = 0;
     public double Discount { get; set; } = 1;
     public bool IsRoundTrip { get; set; } = false;
-    public bool IsCashPayment { get; set; } = true;
     public double Price { get; set; }
-    public string Note { get; set; }
+    public string? Note { get; set; }
 }
