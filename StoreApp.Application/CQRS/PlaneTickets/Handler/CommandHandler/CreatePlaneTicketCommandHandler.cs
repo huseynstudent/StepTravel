@@ -52,7 +52,7 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
                         ToId = request.ToId,
                         From = from,
                         To = to,
-                        State = State.Pending
+                        State = State.Available
                     };
 
                     await _unitOfWork.PlaneTicketRepository.AddAsync(ticket);
@@ -100,6 +100,7 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
                 DueDate = first.DueDate,
                 FromId = first.FromId,
                 ToId = first.ToId,
+                State = first.State,
                 //total count
                 TotalTicketsCreated = createdTickets.Count
             });

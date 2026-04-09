@@ -1,4 +1,6 @@
-﻿namespace StoreApp.Application.CQRS.PlaneTickets.Command.Response;
+﻿using StoreApp.Domain.Enums;
+
+namespace StoreApp.Application.CQRS.PlaneTickets.Command.Response;
 public class UpdatePlaneTicketCommandResponse
 {
     public int Id { get; set; }
@@ -7,4 +9,5 @@ public class UpdatePlaneTicketCommandResponse
     public string Plane { get; set; }
     public string Meal { get; set; }
     public double LuggageKg { get; set; }
+    public State State { get; set; }
 }

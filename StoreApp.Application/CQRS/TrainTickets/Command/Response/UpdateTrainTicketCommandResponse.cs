@@ -1,4 +1,6 @@
-﻿namespace StoreApp.Application.CQRS.TrainTickets.Command.Response
+﻿using StoreApp.Domain.Enums;
+
+namespace StoreApp.Application.CQRS.TrainTickets.Command.Response
 {
     public class UpdateTrainTicketCommandResponse
     {
@@ -6,5 +8,6 @@
         public string TrainCompany { get; set; }
         public string TrainNumber { get; set; }
         public int VagonNumber { get; set; }
+        public State State { get; set; }
     }
 }
