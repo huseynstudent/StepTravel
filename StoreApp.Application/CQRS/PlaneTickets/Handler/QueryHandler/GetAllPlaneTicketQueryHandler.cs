@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using StoreApp.Application.CQRS.PlaneTickets.Query.Request;
 using StoreApp.Application.CQRS.PlaneTickets.Query.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
+using StoreApp.Domain.Enums;
 using StoreApp.Repository.Comman;
 
 namespace StoreApp.Application.CQRS.PlaneTickets.Handler.QueryHandler;
@@ -21,6 +22,7 @@ public class GetAllPlaneTicketQueryHandler : IRequestHandler<GetAllPlaneTicketQu
         var query = _unitOfWork.PlaneTicketRepository.GetAll()
             .Include(pt => pt.From).ThenInclude(l => l.Country)
             .Include(pt => pt.To).ThenInclude(l => l.Country)
+            .Where(pt => pt.CustomerId == null && pt.State == State.Available)
             .AsQueryable();
 
         if (request.Date.HasValue)
@@ -35,23 +37,26 @@ public class GetAllPlaneTicketQueryHandler : IRequestHandler<GetAllPlaneTicketQu
         if (request.ToLocationId.HasValue)
             query = query.Where(pt => pt.ToId == request.ToLocationId.Value);
 
-        var totalCount = await query.CountAsync(cancellationToken);
+        var groupedQuery = query
+            .GroupBy(pt => new { pt.Airline, pt.Plane, pt.Gate, pt.DueDate, pt.FromId, pt.ToId })
+            .Select(g => new GetAllPlaneTicketQueryResponse
+            {
+                Id = g.First().Id, 
+                Airline = g.Key.Airline,
+                Gate = g.Key.Gate,
+                Plane = g.Key.Plane,
+                DueDate = g.Key.DueDate,
+                From = g.First().From != null ? $"{g.First().From.Name}, {g.First().From.Country.Name}" : null,
+                To = g.First().To != null ? $"{g.First().To.Name}, {g.First().To.Country.Name}" : null,
+                Price = g.Min(pt => pt.Price),
+                AvailableSeats = g.Count()
+            });
 
-        var paged = await query
+        var totalCount = await groupedQuery.CountAsync(cancellationToken);
+
+        var paged = await groupedQuery
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(pt => new GetAllPlaneTicketQueryResponse
-            {
-                Id = pt.Id,
-                Airline = pt.Airline,
-                Gate = pt.Gate,
-                Plane = pt.Plane,
-                Meal = pt.Meal,
-                LuggageKg = pt.LuggageKg,
-                DueDate = pt.DueDate,
-                From = pt.From != null ? $"{pt.From.Name}, {pt.From.Country.Name}" : null,
-                To = pt.To != null ? $"{pt.To.Name}, {pt.To.Country.Name}" : null
-            })
             .ToListAsync(cancellationToken);
 
         return new Pagination<GetAllPlaneTicketQueryResponse>(paged, totalCount, request.PageNumber, request.PageSize);
