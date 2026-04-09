@@ -18,21 +18,21 @@ namespace StoreApp.Application.CQRS.Locations.Handler.CommandHandler
             var newLocation = new Location
             {
                 Name = request.Name,
-                Country = request.Country,
                 CountryId = request.CountryId,
                 DistanceToken = request.DistanceToken
             };
 
             await _unitOfWork.LocationRepository.AddAsync(newLocation);
             await _unitOfWork.SaveChangesAsync();
+            var saved = await _unitOfWork.LocationRepository.GetByIdAsync(newLocation.Id);
 
             var response = new CreateLocationCommandResponse
             {
-                Id = newLocation.Id,
-                Name = newLocation.Name,
-                Country = newLocation.Country,
-                CountryId = newLocation.CountryId,
-                DistanceToken = newLocation.DistanceToken
+                Id = saved.Id,
+                Name = saved.Name,
+                DisplayName = $"{saved.Name},{saved.Country.Name}",
+                CountryId = saved.CountryId,
+                DistanceToken = saved.DistanceToken
             };
 
             return new ResponseModel<CreateLocationCommandResponse>(response);
