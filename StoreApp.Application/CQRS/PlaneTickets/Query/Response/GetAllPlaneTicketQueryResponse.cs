@@ -2,14 +2,19 @@
 
 public class GetAllPlaneTicketQueryResponse
 {
-    public int Id { get; set; } // ID of the first available seat in the group
+    public int Id { get; set; }
     public string Airline { get; set; }
     public string Gate { get; set; }
     public string Plane { get; set; }
+    public string Meal { get; set; }
+    public double LuggageKg { get; set; }
     public DateTime DueDate { get; set; }
     public string From { get; set; }
     public string To { get; set; }
-    public double Price { get; set; }
+
+    // Xətanı yaradan əsas hissə budur, bunu əlavə et:
+    public decimal Price { get; set; }
+
     public int AvailableSeats { get; set; }
     public string State { get; set; }
 }

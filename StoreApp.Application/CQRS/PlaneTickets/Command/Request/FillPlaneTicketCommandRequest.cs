@@ -18,4 +18,5 @@ public class FillPlaneTicketCommandRequest: IRequest<ResponseModel<FillPlaneTick
     public double TotalLuggageKg { get; set; } = 0;
     public bool IsRoundTrip { get; set; } = false;
     public string? Note { get; set; }
+    public State State { get; set; } // Bu sətiri əlavə et
 }

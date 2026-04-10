@@ -50,7 +50,7 @@ public class GetAllPlaneTicketQueryHandler : IRequestHandler<GetAllPlaneTicketQu
                 DueDate = g.Key.DueDate,
                 From = g.First().From != null ? g.First().From.Name + ", " + g.First().From.Country.Name : null,
                 To = g.First().To != null ? g.First().To.Name + ", " + g.First().To.Country.Name : null,
-                Price = g.Min(pt => pt.Price),
+                Price = g.Any() ? (decimal)g.Min(pt => pt.Price) : 0m,
                 AvailableSeats = g.Count(),
                 State = g.First().State.ToString()
             });
