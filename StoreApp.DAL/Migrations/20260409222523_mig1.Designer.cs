@@ -215,9 +215,6 @@ namespace StoreApp.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsRoundTrip")
-                        .HasColumnType("bit");
-
                     b.Property<int>("LuggageCount")
                         .HasColumnType("int");
 
@@ -354,9 +351,6 @@ namespace StoreApp.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRoundTrip")
                         .HasColumnType("bit");
 
                     b.Property<int>("LuggageCount")

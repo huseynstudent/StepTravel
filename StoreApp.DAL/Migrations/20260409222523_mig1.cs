@@ -183,7 +183,6 @@ namespace StoreApp.DAL.Migrations
                     LuggageCount = table.Column<int>(type: "int", nullable: false),
                     TotalLuggageKg = table.Column<double>(type: "float", nullable: false),
                     Discount = table.Column<double>(type: "float", nullable: false),
-                    IsRoundTrip = table.Column<bool>(type: "bit", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -270,7 +269,6 @@ namespace StoreApp.DAL.Migrations
                     LuggageCount = table.Column<int>(type: "int", nullable: false),
                     TotalLuggageKg = table.Column<double>(type: "float", nullable: false),
                     Discount = table.Column<double>(type: "float", nullable: false),
-                    IsRoundTrip = table.Column<bool>(type: "bit", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },

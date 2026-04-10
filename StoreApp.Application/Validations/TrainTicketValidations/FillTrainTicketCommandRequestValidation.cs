@@ -28,11 +28,6 @@ namespace StoreApp.Application.Validations.TrainTicketValidations
             RuleFor(x => x.HasChild)
                 .IsInEnum().WithMessage("The payment method must be a valid enum value !")
                 .NotEmpty().WithMessage("The payment method cannot be empty !");
-
-            RuleFor(x => x.IsRoundTrip)
-                .NotNull().WithMessage("The round trip status cannot be null !")
-                .Must(x => x == true || x == false).WithMessage("The round trip status must be either true or false !");
-
             RuleFor(x => x.LuggageCount)
                 .GreaterThanOrEqualTo(0).WithMessage("The luggage count must be greater than or equal to zero !")
                 .NotEmpty().WithMessage("The luggage count cannot be empty !");

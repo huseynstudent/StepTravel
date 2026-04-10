@@ -59,7 +59,6 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         trainTicket.HasChild = request.HasChild;
         trainTicket.LuggageCount = request.LuggageCount;
         trainTicket.TotalLuggageKg = request.TotalLuggageKg;
-        trainTicket.IsRoundTrip = request.IsRoundTrip;
         trainTicket.Note = request.Note;
 
         seat.IsOccupied = true;
@@ -72,7 +71,7 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
         var luggageFee = request.TotalLuggageKg > (variant?.AllowedLuggageKg ?? 0) ? 10.0 : 0.0;
         var isBirthday = user.Birthday.Month == DateTime.UtcNow.Month && user.Birthday.Day == DateTime.UtcNow.Day;
         var manualDiscount = trainTicket.Discount is > 0 and <= 1 ? trainTicket.Discount : 1.0;
-        trainTicket.Price = (basePrice * (trainTicket.IsRoundTrip ? 2 : 1) + luggageFee) * (isBirthday ? 0.5 : 1.0) * manualDiscount;
+        trainTicket.Price = (basePrice + luggageFee) * (isBirthday ? 0.5 : 1.0) * manualDiscount;
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -88,7 +87,6 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
             LuggageCount = trainTicket.LuggageCount,
             TotalLuggageKg = trainTicket.TotalLuggageKg,
             Discount = trainTicket.Discount,
-            IsRoundTrip = trainTicket.IsRoundTrip,
             Price = trainTicket.Price,
             Note = trainTicket.Note
         });
