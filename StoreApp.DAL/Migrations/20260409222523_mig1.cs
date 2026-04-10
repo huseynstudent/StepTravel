@@ -170,14 +170,14 @@ namespace StoreApp.DAL.Migrations
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: true),
                     State = table.Column<int>(type: "int", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BroughtDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ChosenSeatId = table.Column<int>(type: "int", nullable: false),
+                    BroughtDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ChosenSeatId = table.Column<int>(type: "int", nullable: true),
                     FromId = table.Column<int>(type: "int", nullable: false),
                     ToId = table.Column<int>(type: "int", nullable: false),
-                    VariantId = table.Column<int>(type: "int", nullable: false),
+                    VariantId = table.Column<int>(type: "int", nullable: true),
                     HasPet = table.Column<bool>(type: "bit", nullable: false),
                     HasChild = table.Column<bool>(type: "bit", nullable: false),
                     LuggageCount = table.Column<int>(type: "int", nullable: false),
@@ -185,7 +185,7 @@ namespace StoreApp.DAL.Migrations
                     Discount = table.Column<double>(type: "float", nullable: false),
                     IsRoundTrip = table.Column<bool>(type: "bit", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -204,8 +204,7 @@ namespace StoreApp.DAL.Migrations
                         name: "FK_PlaneTickets_Users_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PlaneTickets_Variants_VariantId",
                         column: x => x.VariantId,
@@ -258,14 +257,14 @@ namespace StoreApp.DAL.Migrations
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: true),
                     State = table.Column<int>(type: "int", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BroughtDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ChosenSeatId = table.Column<int>(type: "int", nullable: false),
+                    BroughtDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ChosenSeatId = table.Column<int>(type: "int", nullable: true),
                     FromId = table.Column<int>(type: "int", nullable: false),
                     ToId = table.Column<int>(type: "int", nullable: false),
-                    VariantId = table.Column<int>(type: "int", nullable: false),
+                    VariantId = table.Column<int>(type: "int", nullable: true),
                     HasPet = table.Column<bool>(type: "bit", nullable: false),
                     HasChild = table.Column<bool>(type: "bit", nullable: false),
                     LuggageCount = table.Column<int>(type: "int", nullable: false),
@@ -273,7 +272,7 @@ namespace StoreApp.DAL.Migrations
                     Discount = table.Column<double>(type: "float", nullable: false),
                     IsRoundTrip = table.Column<bool>(type: "bit", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -297,8 +296,7 @@ namespace StoreApp.DAL.Migrations
                         name: "FK_TrainTickets_Users_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_TrainTickets_Variants_VariantId",
                         column: x => x.VariantId,

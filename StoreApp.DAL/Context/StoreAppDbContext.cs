@@ -100,5 +100,6 @@ public class StoreAppDbContext : DbContext
             .WithMany()
             .HasForeignKey(s => s.TrainTicketId)
             .OnDelete(DeleteBehavior.NoAction).IsRequired(false);
+
     }
 }

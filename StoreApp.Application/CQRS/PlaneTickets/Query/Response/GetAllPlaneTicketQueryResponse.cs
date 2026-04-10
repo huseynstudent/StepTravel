@@ -11,4 +11,7 @@ public class GetAllPlaneTicketQueryResponse
     public DateTime DueDate { get; set; }
     public string From { get; set; }
     public string To { get; set; }
+    public double Price { get; set; }
+    public int AvailableSeats { get; set; }
+    public string State { get; set; }
 }

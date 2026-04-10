@@ -12,8 +12,8 @@ using StoreApp.DAL.Context;
 namespace StoreApp.DAL.Migrations
 {
     [DbContext(typeof(StoreAppDbContext))]
-    [Migration("20260407173420_mig2")]
-    partial class mig2
+    [Migration("20260409222523_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
