@@ -10,7 +10,6 @@ public class FillPlaneTicketCommandRequest: IRequest<ResponseModel<FillPlaneTick
 {
     public int Id { get; set; }
     public int UserId { get; set; }
-    public State State { get; set; }
     public DateTime DueDate { get; set; }
     public int ChosenSeatId { get; set; }
     public bool HasPet { get; set; } = false;

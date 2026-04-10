@@ -4,6 +4,7 @@ using StoreApp.Application.CQRS.TrainTickets.Command.Request;
 using StoreApp.Application.CQRS.TrainTickets.Command.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.DAL.Context;
+using StoreApp.Domain.Enums;
 using StoreApp.Repository.Comman;
 
 namespace StoreApp.Application.CQRS.TrainTickets.Handler.CommandHandler;
@@ -49,7 +50,7 @@ public class FillTrainTicketCommandHandler : IRequestHandler<FillTrainTicketComm
 
         trainTicket.CustomerId = user.Id;
         trainTicket.Customer = user;
-        trainTicket.State = request.State;
+        trainTicket.State = State.Booked;
         trainTicket.BroughtDate = DateTime.UtcNow;
         trainTicket.ChosenSeatId = seat.Id;
         trainTicket.VariantId = seat.VariantId;

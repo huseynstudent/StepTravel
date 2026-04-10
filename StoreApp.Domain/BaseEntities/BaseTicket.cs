@@ -7,7 +7,7 @@ public class BaseTicket: BaseEntity
 {
     public User? Customer { get; set; }
     public int? CustomerId { get; set; }
-    public State State { get; set; } //State enum-"Canceled", "Delayed","Pending","Expired"
+    public State State { get; set; } //State enum-"Canceled", "Delayed","Available","Expired"
     public DateTime DueDate { get; set; }
     public DateTime? BroughtDate { get; set; }
     public Location From { get; set; }

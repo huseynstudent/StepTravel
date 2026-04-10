@@ -2,12 +2,13 @@
 
 public class GetAllTrainTicketQueryResponse
 {
-    public int Id { get; set; }
+    public int Id { get; set; } // Representative ID for booking
     public string TrainCompany { get; set; }
     public string TrainNumber { get; set; }
     public int VagonNumber { get; set; }
     public DateTime DueDate { get; set; }
-
     public string From { get; set; }
     public string To { get; set; }
+    public double Price { get; set; }
+    public int AvailableSeats { get; set; }
 }

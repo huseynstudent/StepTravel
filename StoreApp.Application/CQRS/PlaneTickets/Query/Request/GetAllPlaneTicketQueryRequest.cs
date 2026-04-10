@@ -8,7 +8,6 @@ public class GetAllPlaneTicketQueryRequest : IRequest<Pagination<GetAllPlaneTick
 {
     public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 10;
-
     public DateTime? Date { get; set; }
     public string? Airline { get; set; }
     public int? FromLocationId { get; set; }

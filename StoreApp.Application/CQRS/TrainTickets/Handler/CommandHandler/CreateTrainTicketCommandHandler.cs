@@ -48,7 +48,7 @@ public class CreateTrainTicketCommandHandler : IRequestHandler<CreateTrainTicket
                         ToId = request.ToId,
                         From = from,
                         To = to,
-                        State = State.Pending
+                        State = State.Available
                     };
 
                     await _unitOfWork.TrainTicketRepository.AddAsync(ticket);

@@ -10,7 +10,6 @@ public class FillTrainTicketCommandRequest : IRequest<ResponseModel<FillTrainTic
 {
     public int Id { get; set; }
     public int UserId { get; set; }
-    public State State { get; set; }
     public int ChosenSeatId { get; set; }
     public bool HasPet { get; set; } = false;
     public bool HasChild { get; set; } = false;

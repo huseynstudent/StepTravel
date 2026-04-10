@@ -4,6 +4,7 @@ using StoreApp.Application.CQRS.PlaneTickets.Command.Request;
 using StoreApp.Application.CQRS.PlaneTickets.Command.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.DAL.Context;
+using StoreApp.Domain.Enums;
 using StoreApp.Repository.Comman;
 
 namespace StoreApp.Application.CQRS.PlaneTickets.Handler.CommandHandler;
@@ -49,7 +50,7 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
 
         planeTicket.CustomerId = user.Id;
         planeTicket.Customer = user;
-        planeTicket.State = request.State;
+        planeTicket.State = State.Booked;
         planeTicket.BroughtDate = DateTime.UtcNow;
         planeTicket.ChosenSeatId = seat.Id;
         planeTicket.VariantId = seat.VariantId;
