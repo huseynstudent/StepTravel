@@ -1,8 +1,10 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using StoreApp.Application.CQRS.Locations.Query.Request;
 using StoreApp.Application.CQRS.Locations.Query.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.Repository.Comman;
+
 namespace StoreApp.Application.CQRS.Locations.Handler.QueryHandler
 {
     class GetAllLocationQueryHandler : IRequestHandler<GetAllLocationQueryRequest, Pagination<GetAllLocationQueryResponse>>
@@ -14,7 +16,9 @@ namespace StoreApp.Application.CQRS.Locations.Handler.QueryHandler
         }
         public async Task<Pagination<GetAllLocationQueryResponse>> Handle(GetAllLocationQueryRequest request, CancellationToken cancellationToken)
         {
-            var locations = _unitOfWork.LocationRepository.GetAll();
+            var locations = _unitOfWork.LocationRepository.GetAll()
+                .Include(l => l.Country);
+
             var totalDataCount = locations.Count();
             var paginatedLocations = locations.Skip((request.Page - 1) * request.Limit).Take(request.Limit).ToList();
 
