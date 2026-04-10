@@ -24,10 +24,12 @@ public class TrainTicketController : BaseController
         => Ok(await Sender.Send(request));
 
     [HttpGet]
+    [AllowAnonymous]  // ← bilet siyahısı hər kəsə açıqdır
     public async Task<IActionResult> GetAllTickets([FromQuery] GetAllTrainTicketQueryRequest request)
         => Ok(await Sender.Send(request));
 
     [HttpGet("{id}")]
+    [AllowAnonymous]  // ← tək bilet də açıqdır
     public async Task<IActionResult> GetTicketById(int id)
         => Ok(await Sender.Send(new GetTrainTicketByIdQueryRequest { Id = id }));
 }

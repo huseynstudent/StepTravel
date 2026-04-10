@@ -18,6 +18,15 @@ public class PlaneTicketController : BaseController
     public async Task<IActionResult> UpdateTicket(UpdatePlaneTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 
+    [HttpPut("fill")]
+    public async Task<IActionResult> FillTicket(FillPlaneTicketCommandRequest request)
+    {
+        var result = await Sender.Send(request);
+        if (result.Data == null)
+            return BadRequest(new { message = "Bilet artıq alınıb və ya oturacaq doludur." });
+        return Ok(result);
+    }
+
     [HttpDelete]
     [Authorize(Roles = "Admin,Company")]
     public async Task<IActionResult> DeleteTicket(DeletePlaneTicketCommandRequest request)

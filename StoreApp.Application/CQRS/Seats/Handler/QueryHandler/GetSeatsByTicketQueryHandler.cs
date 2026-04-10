@@ -49,7 +49,8 @@ public class GetSeatsByTicketQueryHandler : IRequestHandler<GetSeatsByTicketQuer
                     IsOccupied = s.IsOccupied,
                     VariantId = s.VariantId,
                     VariantName = s.Variant.Name,
-                    VariantPrice = s.Variant.Price
+                    VariantPrice = s.Variant.Price,
+                    PlaneTicketId = s.PlaneTicketId
                 })
                 .OrderBy(s => s.Name)
                 .ToListAsync(cancellationToken);

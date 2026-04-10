@@ -8,4 +8,5 @@ public class GetSeatsByTicketQueryResponse
     public int VariantId { get; set; }
     public string VariantName { get; set; }
     public double VariantPrice { get; set; }
+    public int? PlaneTicketId { get; set; }  // ✅ Hansı biletə aid olduğunu göstərir
 }
