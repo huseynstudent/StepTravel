@@ -30,15 +30,15 @@ public class PlaneTicketController : BaseController
     }
 
     [HttpDelete]
-    [Authorize(Roles = "Admin,Company")]
+    [Authorize(Roles = "Admin")]   // ← yalnız Admin
     public async Task<IActionResult> DeleteTicket(DeletePlaneTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllTickets([FromQuery] GetAllPlaneTicketQueryRequest request)
         => Ok(await Sender.Send(request));
 
-    // ✅ my-tickets {id}-dən ƏVVƏL gəlməlidir — əks halda "my-tickets" stringi int kimi parse edilir
     [HttpGet("my-tickets")]
     public async Task<IActionResult> GetMyTickets([FromServices] StoreAppDbContext db)
     {

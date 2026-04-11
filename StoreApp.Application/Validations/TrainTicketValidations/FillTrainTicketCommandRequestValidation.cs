@@ -22,19 +22,17 @@ namespace StoreApp.Application.Validations.TrainTicketValidations
                 .NotEmpty().WithMessage("The state cannot be empty !");
 
             RuleFor(x => x.HasPet)
-                .IsInEnum().WithMessage("The payment method must be a valid enum value !")
-                .NotEmpty().WithMessage("The payment method cannot be empty !");
+                .Must(v => v == true || v == false).WithMessage("HasPet must be true or false !");
 
             RuleFor(x => x.HasChild)
-                .IsInEnum().WithMessage("The payment method must be a valid enum value !")
-                .NotEmpty().WithMessage("The payment method cannot be empty !");
+                .Must(v => v == true || v == false).WithMessage("HasChild must be true or false !");
             RuleFor(x => x.LuggageCount)
                 .GreaterThanOrEqualTo(0).WithMessage("The luggage count must be greater than or equal to zero !")
                 .NotEmpty().WithMessage("The luggage count cannot be empty !");
 
-             RuleFor(x => x.TotalLuggageKg)
-                .GreaterThanOrEqualTo(0).WithMessage("The total luggage kg must be greater than or equal to zero !")
-                .NotEmpty().WithMessage("The total luggage kg cannot be empty !");
+            RuleFor(x => x.TotalLuggageKg)
+               .GreaterThanOrEqualTo(0).WithMessage("The total luggage kg must be greater than or equal to zero !")
+               .NotEmpty().WithMessage("The total luggage kg cannot be empty !");
 
             RuleFor(x => x.TotalLuggageKg)
                 .GreaterThanOrEqualTo(0).WithMessage("The total luggage kg must be greater than or equal to zero !")
