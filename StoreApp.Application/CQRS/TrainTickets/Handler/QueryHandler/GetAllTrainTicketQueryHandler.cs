@@ -24,6 +24,7 @@ public class GetAllTrainTicketQueryHandler : IRequestHandler<GetAllTrainTicketQu
             .Include(tt => tt.To).ThenInclude(l => l.Country)
             .Where(tt => tt.CustomerId == null && tt.State == State.Available)
             .AsQueryable();
+
         if (request.Date.HasValue)
             query = query.Where(tt => tt.DueDate.Date == request.Date.Value.Date);
 
@@ -38,7 +39,7 @@ public class GetAllTrainTicketQueryHandler : IRequestHandler<GetAllTrainTicketQu
 
         var groupedQuery = query
             .GroupBy(tt => new { tt.TrainCompany, tt.TrainNumber, tt.VagonNumber, tt.DueDate, tt.FromId, tt.ToId })
-            .Select(g => new GetAllTrainTicketQueryResponse
+            .Select(g => new
             {
                 Id = g.First().Id,
                 TrainCompany = g.Key.TrainCompany,
@@ -47,7 +48,6 @@ public class GetAllTrainTicketQueryHandler : IRequestHandler<GetAllTrainTicketQu
                 DueDate = g.Key.DueDate,
                 From = g.First().From != null ? $"{g.First().From.Name}, {g.First().From.Country.Name}" : null,
                 To = g.First().To != null ? $"{g.First().To.Name}, {g.First().To.Country.Name}" : null,
-                Price = g.Min(tt => tt.Price),
                 AvailableSeats = g.Count()
             });
 
@@ -58,6 +58,32 @@ public class GetAllTrainTicketQueryHandler : IRequestHandler<GetAllTrainTicketQu
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return new Pagination<GetAllTrainTicketQueryResponse>(paged, totalCount, request.PageNumber, request.PageSize);
+        // Seat variantlarından min qiyməti ayrıca çək
+        var firstIds = paged.Select(p => p.Id).ToList();
+
+        var prices = await _unitOfWork.SeatRepository.GetAll()
+            .Include(s => s.Variant)
+            .Where(s => s.TrainTicketId != null
+                     && !s.IsOccupied
+                     && s.Variant != null
+                     && firstIds.Contains(s.TrainTicketId.Value))
+            .GroupBy(s => s.TrainTicketId)
+            .Select(g => new { TicketId = g.Key, MinPrice = g.Min(s => s.Variant.Price) })
+            .ToListAsync(cancellationToken);
+
+        var result = paged.Select(p => new GetAllTrainTicketQueryResponse
+        {
+            Id = p.Id,
+            TrainCompany = p.TrainCompany,
+            TrainNumber = p.TrainNumber,
+            VagonNumber = p.VagonNumber,
+            DueDate = p.DueDate,
+            From = p.From,
+            To = p.To,
+            AvailableSeats = p.AvailableSeats,
+            Price = prices.FirstOrDefault(x => x.TicketId == p.Id)?.MinPrice ?? 0
+        }).ToList();
+
+        return new Pagination<GetAllTrainTicketQueryResponse>(result, totalCount, request.PageNumber, request.PageSize);
     }
 }

@@ -17,7 +17,7 @@ public class PlaneTicketController : BaseController
 
     [HttpPut]
     [Authorize(Roles = "Admin,Company")]
-    public async Task<IActionResult> UpdateTicket(UpdatePlaneTicketCommandRequest request)
+    public async Task<IActionResult> UpdateTicket([FromBody] UpdatePlaneTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 
     [HttpPut("fill")]
@@ -30,8 +30,8 @@ public class PlaneTicketController : BaseController
     }
 
     [HttpDelete]
-    [Authorize(Roles = "Admin")] 
-    public async Task<IActionResult> DeleteTicket(DeletePlaneTicketCommandRequest request)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteTicket([FromBody] DeletePlaneTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 
     [HttpGet]
