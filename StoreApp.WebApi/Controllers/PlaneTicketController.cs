@@ -30,7 +30,7 @@ public class PlaneTicketController : BaseController
     }
 
     [HttpDelete]
-    [Authorize(Roles = "Admin")]   // ← yalnız Admin
+    [Authorize(Roles = "Admin")] 
     public async Task<IActionResult> DeleteTicket(DeletePlaneTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 

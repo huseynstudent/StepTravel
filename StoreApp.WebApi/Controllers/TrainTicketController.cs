@@ -39,7 +39,6 @@ public class TrainTicketController : BaseController
     public async Task<IActionResult> GetAllTickets([FromQuery] GetAllTrainTicketQueryRequest request)
         => Ok(await Sender.Send(request));
 
-    // ✅ my-tickets {id}-dən ƏVVƏL gəlməlidir — əks halda "my-tickets" stringi int kimi parse edilir
     [HttpGet("my-tickets")]
     public async Task<IActionResult> GetMyTickets([FromServices] StoreAppDbContext db)
     {
@@ -63,7 +62,11 @@ public class TrainTicketController : BaseController
                 t.LuggageCount,
                 t.TotalLuggageKg,
                 t.Note,
-                t.Price,
+                Price = t.Price != 0
+                    ? t.Price
+                    : db.Seats
+                        .Where(s => s.TrainTicketId == t.Id && s.Variant != null)
+                        .Min(s => (double?)s.Variant.Price) ?? 0,
                 t.Discount,
                 t.DueDate,
                 t.BroughtDate,
