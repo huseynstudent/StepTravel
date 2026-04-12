@@ -22,10 +22,13 @@ public class DeletePlaneTicketCommandHandler : IRequestHandler<DeletePlaneTicket
         var seats = _unitOfWork.SeatRepository.GetAll()
             .Where(s => s.PlaneTicketId == request.Id)
             .ToList();
-        foreach (var seat in seats)
-            await _unitOfWork.SeatRepository.DeleteAsync(seat.Id);
 
-        await _unitOfWork.SaveChangesAsync();
+        var now = DateTime.UtcNow;
+        foreach (var seat in seats)
+        {
+            seat.IsDeleted = true;
+            seat.DeletedDate = now;
+        }
 
         await _unitOfWork.PlaneTicketRepository.DeleteAsync(request.Id);
         await _unitOfWork.SaveChangesAsync();
