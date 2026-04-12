@@ -72,6 +72,7 @@ public class CreateExecutiveCommandHandler : IRequestHandler<CreateExecutiveComm
                     "Your StepTravel Executive Account",
                     $@"
                         <p>Welcome to <strong>StepTravel</strong>.</p>
+                        <p> {request.Name} {request.Surname},</p>
                         <p>An executive (Company) account has been created for you by an administrator.</p>
                         <br/>
                         <table style='border-collapse:collapse;'>
