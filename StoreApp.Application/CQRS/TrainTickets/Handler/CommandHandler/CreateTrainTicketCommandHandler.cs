@@ -30,6 +30,7 @@ public class CreateTrainTicketCommandHandler : IRequestHandler<CreateTrainTicket
 
         var columns = "ABCDEFGHIJK";
         var createdTickets = new List<TrainTicket>();
+        int rowOffset = 0;
 
         foreach (var group in request.SeatGroups)
         {
@@ -54,18 +55,20 @@ public class CreateTrainTicketCommandHandler : IRequestHandler<CreateTrainTicket
                     createdTickets.Add(ticket);
                 }
             }
+            rowOffset += group.RowCount;
         }
         await _unitOfWork.SaveChangesAsync();
 
         // Create one Seat per ticket, linked by TrainTicketId
         int ticketIndex = 0;
+        rowOffset = 0;
         foreach (var group in request.SeatGroups)
         {
             for (int row = 1; row <= group.RowCount; row++)
             {
                 for (int col = 0; col < group.SeatsPerRow; col++)
                 {
-                    var seatName = $"{row}{columns[col]}";
+                    var seatName = $"{row + rowOffset}{columns[col]}";
                     var linkedTicket = createdTickets[ticketIndex++];
 
                     await _unitOfWork.SeatRepository.AddAsync(new Seat
@@ -77,6 +80,7 @@ public class CreateTrainTicketCommandHandler : IRequestHandler<CreateTrainTicket
                     });
                 }
             }
+            rowOffset += group.RowCount;
         }
 
         await _unitOfWork.SaveChangesAsync();

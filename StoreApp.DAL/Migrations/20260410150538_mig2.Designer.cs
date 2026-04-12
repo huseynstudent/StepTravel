@@ -12,7 +12,7 @@ using StoreApp.DAL.Context;
 namespace StoreApp.DAL.Migrations
 {
     [DbContext(typeof(StoreAppDbContext))]
-    [Migration("20260407173420_mig2")]
+    [Migration("20260410150538_mig2")]
     partial class mig2
     {
         /// <inheritdoc />
@@ -215,9 +215,6 @@ namespace StoreApp.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsRoundTrip")
-                        .HasColumnType("bit");
-
                     b.Property<int>("LuggageCount")
                         .HasColumnType("int");
 
@@ -354,9 +351,6 @@ namespace StoreApp.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRoundTrip")
                         .HasColumnType("bit");
 
                     b.Property<int>("LuggageCount")

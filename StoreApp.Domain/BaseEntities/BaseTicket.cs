@@ -22,7 +22,6 @@ public class BaseTicket: BaseEntity
     public int LuggageCount { get; set; } = 0;
     public double TotalLuggageKg { get; set; } = 0;
     public double Discount { get; set; } = 1;
-    public bool IsRoundTrip { get; set; } = false;
     public double Price { get; set; }
     public string? Note { get; set; }
 }

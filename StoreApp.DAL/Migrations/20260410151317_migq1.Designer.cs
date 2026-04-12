@@ -12,8 +12,8 @@ using StoreApp.DAL.Context;
 namespace StoreApp.DAL.Migrations
 {
     [DbContext(typeof(StoreAppDbContext))]
-    [Migration("20260405174105_mig1")]
-    partial class mig1
+    [Migration("20260410151317_migq1")]
+    partial class migq1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -178,16 +178,16 @@ namespace StoreApp.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("BroughtDate")
+                    b.Property<DateTime?>("BroughtDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ChosenSeatId")
+                    b.Property<int?>("ChosenSeatId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("DeletedDate")
@@ -213,9 +213,6 @@ namespace StoreApp.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRoundTrip")
                         .HasColumnType("bit");
 
                     b.Property<int>("LuggageCount")
@@ -250,7 +247,7 @@ namespace StoreApp.DAL.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("VariantId")
+                    b.Property<int?>("VariantId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -323,16 +320,16 @@ namespace StoreApp.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("BroughtDate")
+                    b.Property<DateTime?>("BroughtDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ChosenSeatId")
+                    b.Property<int?>("ChosenSeatId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("DeletedDate")
@@ -354,9 +351,6 @@ namespace StoreApp.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRoundTrip")
                         .HasColumnType("bit");
 
                     b.Property<int>("LuggageCount")
@@ -391,7 +385,7 @@ namespace StoreApp.DAL.Migrations
                     b.Property<int>("VagonNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("VariantId")
+                    b.Property<int?>("VariantId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -553,14 +547,12 @@ namespace StoreApp.DAL.Migrations
                     b.HasOne("StoreApp.Domain.Entities.Seat", null)
                         .WithMany()
                         .HasForeignKey("ChosenSeatId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("StoreApp.Domain.Entities.User", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("StoreApp.Domain.Entities.Location", "From")
                         .WithMany()
@@ -577,8 +569,7 @@ namespace StoreApp.DAL.Migrations
                     b.HasOne("StoreApp.Domain.Entities.Variant", "Variant")
                         .WithMany()
                         .HasForeignKey("VariantId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Customer");
 
@@ -615,14 +606,12 @@ namespace StoreApp.DAL.Migrations
                     b.HasOne("StoreApp.Domain.Entities.Seat", null)
                         .WithMany()
                         .HasForeignKey("ChosenSeatId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("StoreApp.Domain.Entities.User", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("StoreApp.Domain.Entities.Location", "From")
                         .WithMany()
@@ -639,8 +628,7 @@ namespace StoreApp.DAL.Migrations
                     b.HasOne("StoreApp.Domain.Entities.Variant", "Variant")
                         .WithMany()
                         .HasForeignKey("VariantId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Customer");
 

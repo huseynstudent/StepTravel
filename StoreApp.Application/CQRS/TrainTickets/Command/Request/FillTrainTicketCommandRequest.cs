@@ -15,6 +15,6 @@ public class FillTrainTicketCommandRequest : IRequest<ResponseModel<FillTrainTic
     public bool HasChild { get; set; } = false;
     public int LuggageCount { get; set; } = 0;
     public double TotalLuggageKg { get; set; } = 0;
-    public bool IsRoundTrip { get; set; } = false;
     public string? Note { get; set; }
+    public State State { get; set; } 
 }

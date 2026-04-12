@@ -13,9 +13,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5174") // React-ın standart portu
+            // React portun 5173 və ya 5174 ola bilər, hər ikisini əlavə etmək daha təhlükəsizdir
+            policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 

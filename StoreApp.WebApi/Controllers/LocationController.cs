@@ -17,8 +17,8 @@ public class LocationController : BaseController
         return Ok(await Sender.Send(request));
     }
     [HttpDelete]
-    [Authorize(Roles = "Admin")] 
-    public async Task<IActionResult> DeleteLocation(DeleteLocationCommandRequest request)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteLocation([FromBody] DeleteLocationCommandRequest request)
     {
         return Ok(await Sender.Send(request));
     }

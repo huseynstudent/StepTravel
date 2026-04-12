@@ -81,7 +81,6 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         planeTicket.HasChild = request.HasChild;
         planeTicket.LuggageCount = request.LuggageCount;
         planeTicket.TotalLuggageKg = request.TotalLuggageKg;
-        planeTicket.IsRoundTrip = request.IsRoundTrip;
         planeTicket.Note = request.Note;
 
         seat.IsOccupied = true;
@@ -94,7 +93,7 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         var luggageFee = request.TotalLuggageKg > (variant?.AllowedLuggageKg ?? 0) ? 10.0 : 0.0;
         var isBirthday = user.Birthday.Month == DateTime.UtcNow.Month && user.Birthday.Day == DateTime.UtcNow.Day;
         var manualDiscount = planeTicket.Discount is > 0 and <= 1 ? planeTicket.Discount : 1.0;
-        planeTicket.Price = (basePrice * (planeTicket.IsRoundTrip ? 2 : 1) + luggageFee) * (isBirthday ? 0.5 : 1.0) * manualDiscount;
+        planeTicket.Price = (basePrice + luggageFee) * (isBirthday ? 0.5 : 1.0) * manualDiscount;
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -161,7 +160,6 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
             LuggageCount = planeTicket.LuggageCount,
             TotalLuggageKg = planeTicket.TotalLuggageKg,
             Discount = planeTicket.Discount,
-            IsRoundTrip = planeTicket.IsRoundTrip,
             Price = planeTicket.Price,
             Note = planeTicket.Note
         });

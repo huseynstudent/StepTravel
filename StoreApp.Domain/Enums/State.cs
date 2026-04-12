@@ -2,6 +2,7 @@
 
 public enum State
 {
+    Pending = 0,
     Available = 1,
     Booked = 2,
     Used = 3,
