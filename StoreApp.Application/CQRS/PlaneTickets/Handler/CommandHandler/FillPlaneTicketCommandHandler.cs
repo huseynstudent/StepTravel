@@ -123,7 +123,7 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
                             <tr><td style='padding:4px 12px 4px 0;color:#555;'>To</td>
                                 <td><strong>{to.Name}</strong></td></tr>
                             <tr><td style='padding:4px 12px 4px 0;color:#555;'>Seat</td>
-                                <td><strong>{seat.Id}</strong></td></tr>
+                                <td><strong>{seat.Name}</strong></td></tr>
                             <tr><td style='padding:4px 12px 4px 0;color:#555;'>Class</td>
                                 <td><strong>{variant?.Name ?? "Standard"}</strong></td></tr>
                             <tr><td style='padding:4px 12px 4px 0;color:#555;'>Luggage</td>
