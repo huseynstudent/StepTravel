@@ -126,8 +126,6 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
                                 <td><strong>{seat.Id}</strong></td></tr>
                             <tr><td style='padding:4px 12px 4px 0;color:#555;'>Class</td>
                                 <td><strong>{variant?.Name ?? "Standard"}</strong></td></tr>
-                            <tr><td style='padding:4px 12px 4px 0;color:#555;'>Round Trip</td>
-                                <td><strong>{(planeTicket.IsRoundTrip ? "Yes" : "No")}</strong></td></tr>
                             <tr><td style='padding:4px 12px 4px 0;color:#555;'>Luggage</td>
                                 <td><strong>{request.LuggageCount} bag(s), {request.TotalLuggageKg} kg</strong></td></tr>
                             <tr><td style='padding:4px 12px 4px 0;color:#555;'>Total Price</td>
