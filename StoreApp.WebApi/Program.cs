@@ -3,8 +3,9 @@ using StoreApp.Application;
 using StoreApp.DAL.Context;
 using StoreApp.DAL.UnitOfWork;
 using StoreApp.Repository.Comman;
-using StoreApp.WebApi.Infastructure.Middlewares;
+using StoreApp.WebApi.Infastructure.Middlewares; 
 using StoreApp.WebApi.Infrastructure.Security;
+using StoreApp.WebApi.Infrastructure.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,6 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            // React portun 5173 və ya 5174 ola bilər, hər ikisini əlavə etmək daha təhlükəsizdir
             policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
@@ -36,6 +36,8 @@ builder.Services.AddScoped<IUnitOfWork, SqlUnitOfWork>((provider) =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthenticationDependency(builder.Configuration);
+
+builder.Services.AddHostedService<ExpiredTicketCleanupService>();
 
 builder.Services.AddSwaggerGen(c => {
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
