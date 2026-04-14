@@ -34,7 +34,7 @@ public class PlaneTicketController : BaseController
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteTicket(int id)
-        => Ok(await Sender.Send(new DeletePlaneTicketGroupCommandRequest { }));
+        => Ok(await Sender.Send(new DeletePlaneTicketGroupCommandRequest { Id = id }));
 
     [HttpGet]
     [AllowAnonymous]
