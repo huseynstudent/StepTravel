@@ -10,9 +10,6 @@ namespace StoreApp.Application.Validations.PlaneTicketsValidations
                 .GreaterThan(0).WithMessage("The Id must be greater than zero !")
                 .NotEmpty().WithMessage("The Id cannot be empty !");
 
-            RuleFor(x => x.DueDate)
-                .GreaterThan(DateTime.Now).WithMessage("The due date must be in the future !")
-                .NotEmpty().WithMessage("The due date cannot be empty !");
 
             RuleFor(x => x.ChosenSeatId)
                 .GreaterThan(0).WithMessage("The seat ID must be greater than zero !")
@@ -21,9 +18,6 @@ namespace StoreApp.Application.Validations.PlaneTicketsValidations
             RuleFor(x => x.Note)
                 .MaximumLength(500).WithMessage("The note must not exceed 500 characters !");
 
-            RuleFor(x => x.State)
-                .IsInEnum().WithMessage("The state must be a valid enum value !")
-                .NotEmpty().WithMessage("The state cannot be empty !");
 
             RuleFor(x => x.LuggageCount)
                 .GreaterThanOrEqualTo(0).WithMessage("The luggage count must be greater than or equal to zero !")
