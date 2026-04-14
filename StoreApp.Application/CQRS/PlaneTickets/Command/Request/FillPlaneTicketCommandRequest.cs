@@ -17,5 +17,5 @@ public class FillPlaneTicketCommandRequest: IRequest<ResponseModel<FillPlaneTick
     public int LuggageCount { get; set; } = 0;
     public double TotalLuggageKg { get; set; } = 0;
     public string? Note { get; set; }
-    public State State { get; set; } // Bu sətiri əlavə et
+    public State State { get; set; }
 }

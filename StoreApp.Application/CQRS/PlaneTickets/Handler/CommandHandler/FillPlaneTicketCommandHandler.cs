@@ -99,7 +99,6 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
 
         _logger.LogInformation("Plane ticket {TicketId} booked by user {UserId}", planeTicket.Id, user.Id);
 
-        // Fire-and-forget: send ticket confirmation email
         _ = Task.Run(() =>
         {
             try
@@ -150,9 +149,9 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
             Id = planeTicket.Id,
             Customer = planeTicket.Customer,
             State = planeTicket.State,
-            BroughtDate = (DateTime)planeTicket.BroughtDate,
-            ChosenSeatId = (int)planeTicket.ChosenSeatId,
-            VariantId = (int)planeTicket.VariantId,
+            BroughtDate = planeTicket.BroughtDate,
+            ChosenSeatId = planeTicket.ChosenSeatId,
+            VariantId = planeTicket.VariantId,
             HasPet = planeTicket.HasPet,
             HasChild = planeTicket.HasChild,
             LuggageCount = planeTicket.LuggageCount,

@@ -7,9 +7,9 @@ public class FillPlaneTicketCommandResponse
     public Domain.Entities.User Customer { get; set; }
     public State State { get; set; } 
     public DateTime DueDate { get; set; }
-    public DateTime BroughtDate { get; set; }
-    public int ChosenSeatId { get; set; }
-    public int VariantId { get; set; }
+    public DateTime? BroughtDate { get; set; }
+    public int? ChosenSeatId { get; set; }
+    public int? VariantId { get; set; }
     public bool HasPet { get; set; } = false;
     public bool HasChild { get; set; } = false;
     public int LuggageCount { get; set; } = 0;
