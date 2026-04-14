@@ -1,83 +1,63 @@
 ﻿using MediatR;
+using StoreApp.Application.CQRS.PlaneTickets.Command.Request;
 using StoreApp.Application.CQRS.PlaneTickets.Command.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.Domain.Enums;
 using StoreApp.Repository.Comman;
 
-public class UpdatePlaneTicketGroupCommandHandler : IRequestHandler<UpdatePlaneTicketGroupCommandRequest, ResponseModel<List<UpdatePlaneTicketCommandResponse>>>
+namespace StoreApp.Application.CQRS.PlaneTickets.Handler.CommandHandler;
+
+public class UpdatePlaneTicketCommandHandler : IRequestHandler<UpdatePlaneTicketCommandRequest, ResponseModel<UpdatePlaneTicketCommandResponse>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    public UpdatePlaneTicketGroupCommandHandler(IUnitOfWork unitOfWork)
+    public UpdatePlaneTicketCommandHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<ResponseModel<List<UpdatePlaneTicketCommandResponse>>> Handle(UpdatePlaneTicketGroupCommandRequest request, CancellationToken cancellationToken)
+    public async Task<ResponseModel<UpdatePlaneTicketCommandResponse>> Handle(UpdatePlaneTicketCommandRequest request, CancellationToken cancellationToken)
     {
-        var tickets = _unitOfWork.PlaneTicketRepository.GetAll()
-            .Where(pt =>
-                pt.Airline == request.Airline &&
-                pt.Plane == request.Plane &&
-                pt.Gate == request.Gate &&
-                pt.Meal == request.Meal &&
-                pt.LuggageKg == request.LuggageKg &&
-                pt.DueDate.Date == request.DueDate.Date &&
-                pt.FromId == request.FromId &&
-                pt.ToId == request.ToId &&
-                (request.VariantId == null || pt.VariantId == request.VariantId) &&
-                pt.CustomerId == null)
-            .ToList();
+        var ticket = await _unitOfWork.PlaneTicketRepository.GetByIdAsync(request.Id);
 
-        if (!tickets.Any())
-            return new ResponseModel<List<UpdatePlaneTicketCommandResponse>>(null);
+        if (ticket == null)
+            return new ResponseModel<UpdatePlaneTicketCommandResponse>(null);
 
-        // Guard: skip groups that are in a terminal state
         var invalidStates = new[] { State.Used, State.Expired, State.Missed };
-        tickets = tickets.Where(pt => !invalidStates.Contains(pt.State)).ToList();
+        if (invalidStates.Contains(ticket.State))
+            return new ResponseModel<UpdatePlaneTicketCommandResponse>(null);
 
-        if (!tickets.Any())
-            return new ResponseModel<List<UpdatePlaneTicketCommandResponse>>(null);
-
-        var now = DateTime.UtcNow;
-        var responses = new List<UpdatePlaneTicketCommandResponse>();
-
-        foreach (var ticket in tickets)
+        // Handle cancellation: free seat
+        if (request.State == State.Canceled && ticket.State != State.Canceled)
         {
-            // Handle cancellation: free seats
-            if (request.NewState == State.Canceled && ticket.State != State.Canceled)
+            if (ticket.ChosenSeatId.HasValue)
             {
-                if (ticket.ChosenSeatId.HasValue)
-                {
-                    var seat = await _unitOfWork.SeatRepository.GetByIdAsync(ticket.ChosenSeatId.Value);
-                    if (seat != null)
-                        seat.IsOccupied = false;
-                }
-                ticket.CustomerId = null;
+                var seat = await _unitOfWork.SeatRepository.GetByIdAsync(ticket.ChosenSeatId.Value);
+                if (seat != null)
+                    seat.IsOccupied = false;
             }
-
-            ticket.Airline = request.NewAirline;
-            ticket.Gate = request.NewGate;
-            ticket.Meal = request.NewMeal;
-            ticket.LuggageKg = request.NewLuggageKg;
-            ticket.State = request.NewState;
-            ticket.UpdatedDate = now;
-
-            _unitOfWork.PlaneTicketRepository.Update(ticket);
-
-            responses.Add(new UpdatePlaneTicketCommandResponse
-            {
-                Id = ticket.Id,
-                Airline = ticket.Airline,
-                Gate = ticket.Gate,
-                Plane = ticket.Plane,
-                Meal = ticket.Meal,
-                LuggageKg = ticket.LuggageKg,
-                State = ticket.State
-            });
+            ticket.CustomerId = null;
         }
 
+        ticket.Airline = request.Airline;
+        ticket.Gate = request.Gate;
+        ticket.Meal = request.Meal;
+        ticket.LuggageKg = request.LuggageKg;
+        ticket.State = request.State;
+        ticket.UpdatedDate = DateTime.UtcNow;
+
+        _unitOfWork.PlaneTicketRepository.Update(ticket);
         await _unitOfWork.SaveChangesAsync();
-        return new ResponseModel<List<UpdatePlaneTicketCommandResponse>>(responses);
+
+        return new ResponseModel<UpdatePlaneTicketCommandResponse>(new UpdatePlaneTicketCommandResponse
+        {
+            Id = ticket.Id,
+            Airline = ticket.Airline,
+            Gate = ticket.Gate,
+            Plane = ticket.Plane,
+            Meal = ticket.Meal,
+            LuggageKg = ticket.LuggageKg,
+            State = ticket.State
+        });
     }
 }

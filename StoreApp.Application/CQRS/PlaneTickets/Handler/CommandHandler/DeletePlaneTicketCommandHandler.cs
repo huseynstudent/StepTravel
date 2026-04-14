@@ -33,7 +33,7 @@ public class DeletePlaneTicketGroupCommandHandler : IRequestHandler<DeletePlaneT
             return new ResponseModel<DeletePlaneTicketCommandResponse>(null);
 
         var first = tickets.First();
-        var ticketIds = tickets.Select(t => t.Id).ToHashSet();
+        var ticketIds = tickets.Select(t => (int?)t.Id).ToHashSet();
         var now = DateTime.UtcNow;
 
         // Soft-delete all seats belonging to any ticket in the group
