@@ -64,6 +64,7 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         var variant = await _unitOfWork.VariantRepository.GetByIdAsync(seat.VariantId);
         var from = await _unitOfWork.LocationRepository.GetByIdAsync(planeTicket.FromId);
         var to = await _unitOfWork.LocationRepository.GetByIdAsync(planeTicket.ToId);
+
         if (from == null || to == null)
         {
             _logger.LogWarning("FillPlaneTicket failed - Location not found for ticket {TicketId}", planeTicket.Id);
@@ -147,8 +148,10 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         return new ResponseModel<FillPlaneTicketCommandResponse>(new FillPlaneTicketCommandResponse
         {
             Id = planeTicket.Id,
-            Customer = planeTicket.Customer,
+            CustomerFullName = $"{user.Name} {user.Surname}", 
+            CustomerEmail = user.Email,             
             State = planeTicket.State,
+            DueDate = planeTicket.DueDate,                    
             BroughtDate = planeTicket.BroughtDate,
             ChosenSeatId = planeTicket.ChosenSeatId,
             VariantId = planeTicket.VariantId,

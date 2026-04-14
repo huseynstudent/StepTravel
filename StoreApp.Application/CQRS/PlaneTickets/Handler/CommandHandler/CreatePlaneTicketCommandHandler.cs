@@ -20,7 +20,6 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
     public async Task<ResponseModel<CreatePlaneTicketCommandResponse>> Handle(
         CreatePlaneTicketCommandRequest request, CancellationToken cancellationToken)
     {
-        // 1. Lokasiyaların mövcudluğunu yoxla (Navigation property set etmirik, sadəcə yoxlayırıq)
         var from = await _unitOfWork.LocationRepository.GetByIdAsync(request.FromId);
         if (from == null) return new ResponseModel<CreatePlaneTicketCommandResponse>(null);
 
@@ -30,7 +29,6 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
         var columns = "ABCDEFGHIJK";
         var createdTickets = new List<PlaneTicket>();
 
-        // --- MƏRHƏLƏ 1: Biletlərin (PlaneTicket) yaradılması ---
         foreach (var group in request.SeatGroups)
         {
             var variant = await _unitOfWork.VariantRepository.GetByIdAsync(group.VariantId);
@@ -48,11 +46,10 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
                         Meal = request.Meal,
                         LuggageKg = request.LuggageKg,
                         DueDate = request.DueDate,
-                        FromId = request.FromId, // Yalnız ID kifayətdir
-                        ToId = request.ToId,     // Yalnız ID kifayətdir
-                        // From = from,  <-- Xətaya səbəb olan sətir budur, sildik
-                        // To = to,      <-- Xətaya səbəb olan sətir budur, sildik
-                        State = State.Pending,
+                        FromId = request.FromId,
+                        ToId = request.ToId,
+                        State = State.Available,     
+                        VariantId = group.VariantId,
                         Price = variantPrice
                     };
 
@@ -62,18 +59,15 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
             }
         }
 
-        // Biletləri yadda saxlayırıq ki, ID-ləri yaransın (Seats üçün lazımdır)
         try
         {
             await _unitOfWork.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            // Xətanı daxildən görmək üçün (InnerException vacibdir)
             throw new Exception($"Biletləri yadda saxlayarkən xəta: {ex.InnerException?.Message ?? ex.Message}");
         }
 
-        // --- MƏRHƏLƏ 2: Oturacaqların (Seat) yaradılması ---
         int ticketIndex = 0;
         int currentTotalRowOffset = 0;
 
@@ -83,7 +77,6 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
             {
                 for (int col = 0; col < group.SeatsPerRow; col++)
                 {
-                    // Oturacaq nömrəsini hesabla (məsələn: 1A, 2B və s.)
                     var seatName = $"{row + currentTotalRowOffset}{columns[col]}";
 
                     if (ticketIndex < createdTickets.Count)
@@ -100,7 +93,6 @@ public class CreatePlaneTicketCommandHandler : IRequestHandler<CreatePlaneTicket
                     }
                 }
             }
-            // Hər qrup bitdikdən sonra row sayını offsetə əlavə et ki, növbəti qrup fərqli sıralardan başlasın
             currentTotalRowOffset += group.RowCount;
         }
 
