@@ -8,7 +8,7 @@ public class UpdatePlaneTicketGroupCommandRequest : IRequest<ResponseModel<List<
     public string Airline { get; set; }
     public string Plane { get; set; }
     public string Gate { get; set; }
-    public bool Meal { get; set; }
+    public string Meal { get; set; }
     public double LuggageKg { get; set; }
     public DateTime DueDate { get; set; }
     public int FromId { get; set; }
@@ -18,7 +18,7 @@ public class UpdatePlaneTicketGroupCommandRequest : IRequest<ResponseModel<List<
     // What to apply to all matched tickets
     public string NewAirline { get; set; }
     public string NewGate { get; set; }
-    public bool NewMeal { get; set; }
+    public string NewMeal { get; set; }
     public double NewLuggageKg { get; set; }
     public State NewState { get; set; }
 }

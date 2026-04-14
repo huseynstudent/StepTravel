@@ -2,6 +2,7 @@
 using StoreApp.Application.CQRS.PlaneTickets.Command.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
 using StoreApp.Repository.Comman;
+using System.Linq;
 
 public class DeletePlaneTicketGroupCommandHandler : IRequestHandler<DeletePlaneTicketGroupCommandRequest, ResponseModel<DeletePlaneTicketCommandResponse>>
 {
@@ -38,7 +39,7 @@ public class DeletePlaneTicketGroupCommandHandler : IRequestHandler<DeletePlaneT
 
         // Soft-delete all seats belonging to any ticket in the group
         var seats = _unitOfWork.SeatRepository.GetAll()
-            .Where(s => ticketIds.Contains(s.PlaneTicketId))
+            .Where(s => ticketIds.Contains((int)s.PlaneTicketId))
             .ToList();
 
         foreach (var seat in seats)

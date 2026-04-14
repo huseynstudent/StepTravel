@@ -7,7 +7,7 @@ public class DeletePlaneTicketGroupCommandRequest : IRequest<ResponseModel<Delet
     public string Airline { get; set; }
     public string Plane { get; set; }
     public string Gate { get; set; }
-    public bool Meal { get; set; }
+    public string Meal { get; set; }
     public double LuggageKg { get; set; }
     public DateTime DueDate { get; set; }
     public int FromId { get; set; }
