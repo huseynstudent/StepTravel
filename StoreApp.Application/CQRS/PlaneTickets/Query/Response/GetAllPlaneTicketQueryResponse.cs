@@ -14,4 +14,6 @@ public class GetAllPlaneTicketQueryResponse
     public decimal Price { get; set; }
     public int AvailableSeats { get; set; }
     public string State { get; set; }
+    public int? VariantId { get; set; }
+    public string VariantName { get; set; }
 }

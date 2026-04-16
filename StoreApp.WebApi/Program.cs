@@ -3,9 +3,9 @@ using StoreApp.Application;
 using StoreApp.DAL.Context;
 using StoreApp.DAL.UnitOfWork;
 using StoreApp.Repository.Comman;
-using StoreApp.WebApi.Infastructure.Middlewares; 
-using StoreApp.WebApi.Infrastructure.Security;
+using StoreApp.WebApi.Infastructure.Middlewares;
 using StoreApp.WebApi.Infrastructure.BackgroundServices;
+using StoreApp.WebApi.Infrastructure.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 

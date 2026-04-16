@@ -73,7 +73,9 @@ public class GetAllPlaneTicketQueryHandler : IRequestHandler<GetAllPlaneTicketQu
                     To = to != null ? to.Name + ", " + to.Country?.Name : null,
                     Price = (decimal)minPrice,
                     AvailableSeats = g.Count(),
-                    State = first.State.ToString()
+                    State = first.State.ToString(),
+                    VariantId = first.Variant?.Id,
+                    VariantName = first.Variant?.Name
                 };
             })
             .ToList();
