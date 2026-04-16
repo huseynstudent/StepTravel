@@ -55,9 +55,12 @@ public class UpdatePlaneTicketCommandHandler : IRequestHandler<UpdatePlaneTicket
 
         ticket.Airline = request.Airline;
         ticket.Gate = request.Gate;
+        ticket.Plane = request.Plane;
         ticket.Meal = request.Meal;
         ticket.LuggageKg = request.LuggageKg;
         ticket.State = request.State;
+        if (request.VariantId.HasValue)
+            ticket.VariantId = request.VariantId;
         ticket.UpdatedDate = DateTime.UtcNow;
 
         _unitOfWork.PlaneTicketRepository.Update(ticket);
@@ -142,7 +145,8 @@ public class UpdatePlaneTicketCommandHandler : IRequestHandler<UpdatePlaneTicket
             Plane = ticket.Plane,
             Meal = ticket.Meal,
             LuggageKg = ticket.LuggageKg,
-            State = ticket.State
+            State = ticket.State,
+            VariantId = ticket.VariantId
         });
     }
 }
