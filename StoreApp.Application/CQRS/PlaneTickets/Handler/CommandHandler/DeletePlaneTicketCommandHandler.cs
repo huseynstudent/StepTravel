@@ -31,8 +31,7 @@ public class DeletePlaneTicketGroupCommandHandler : IRequestHandler<DeletePlaneT
                 pt.DueDate.Date == targetTicket.DueDate.Date &&
                 pt.FromId == targetTicket.FromId &&
                 pt.ToId == targetTicket.ToId &&
-                pt.VariantId == targetTicket.VariantId &&
-                pt.CustomerId == null)
+                pt.VariantId == targetTicket.VariantId)
             .ToList();
 
         var ticketIds = groupTickets.Select(t => (int?)t.Id).ToHashSet();
