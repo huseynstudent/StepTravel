@@ -11,18 +11,18 @@ using StoreApp.Repository.Comman;
 
 namespace StoreApp.Application.CQRS.PlaneTickets.Handler.CommandHandler;
 
-public class UpdatePlaneTicketGroupCommandHandler : IRequestHandler<UpdatePlaneTicketGroupCommandRequest, ResponseModel<List<UpdatePlaneTicketCommandResponse>>>
+public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketCommandRequest, ResponseModel<FillPlaneTicketCommandResponse>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly StoreAppDbContext _db;
     private readonly IConfiguration _configuration;
-    private readonly ILogger<UpdatePlaneTicketGroupCommandHandler> _logger;
+    private readonly ILogger<FillPlaneTicketCommandHandler> _logger;
 
-    public UpdatePlaneTicketGroupCommandHandler(
+    public FillPlaneTicketCommandHandler(
         IUnitOfWork unitOfWork,
         StoreAppDbContext db,
         IConfiguration configuration,
-        ILogger<UpdatePlaneTicketGroupCommandHandler> logger)
+        ILogger<FillPlaneTicketCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _db = db;
@@ -30,168 +30,123 @@ public class UpdatePlaneTicketGroupCommandHandler : IRequestHandler<UpdatePlaneT
         _logger = logger;
     }
 
-    public async Task<ResponseModel<List<UpdatePlaneTicketCommandResponse>>> Handle(UpdatePlaneTicketGroupCommandRequest request, CancellationToken cancellationToken)
+    public async Task<ResponseModel<FillPlaneTicketCommandResponse>> Handle(
+        FillPlaneTicketCommandRequest request,
+        CancellationToken cancellationToken)
     {
-        // Match the group by the same key used in delete
-        var tickets = _unitOfWork.PlaneTicketRepository.GetAll()
-            .Where(pt =>
-                pt.Airline == request.Airline &&
-                pt.Plane == request.Plane &&
-                pt.Gate == request.Gate &&
-                pt.Meal == request.Meal &&
-                pt.LuggageKg == request.LuggageKg &&
-                pt.DueDate.Date == request.DueDate.Date &&
-                pt.FromId == request.FromId &&
-                pt.ToId == request.ToId &&
-                (request.VariantId == null || pt.VariantId == request.VariantId))
-            .ToList();
+        // 1. Ticket-i tap
+        var ticket = await _unitOfWork.PlaneTicketRepository.GetByIdAsync(request.Id);
+        if (ticket == null || ticket.IsDeleted)
+            return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
-        if (!tickets.Any())
-            return new ResponseModel<List<UpdatePlaneTicketCommandResponse>>(null);
+        // 2. Ticket artıq alınıbsa rədd et
+        if (ticket.CustomerId != null || ticket.State == State.Used || ticket.State == State.Expired)
+            return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
-        var invalidStates = new[] { State.Used, State.Expired, State.Missed };
-        var ticketIds = tickets.Select(t => (int?)t.Id).ToHashSet();
+        // 3. Oturacağı tap və yoxla
+        var seat = await _unitOfWork.SeatRepository.GetByIdAsync(request.ChosenSeatId);
+        if (seat == null || seat.IsOccupied)
+            return new ResponseModel<FillPlaneTicketCommandResponse>(null);
+
+        // 4. İstifadəçini tap
+        var user = await _db.Users
+            .FirstOrDefaultAsync(u => u.Id == request.UserId && !u.IsDeleted, cancellationToken);
+        if (user == null)
+            return new ResponseModel<FillPlaneTicketCommandResponse>(null);
+
         var now = DateTime.UtcNow;
 
-        // Pre-fetch all seats for the group in one query
-        var seats = _unitOfWork.SeatRepository.GetAll()
-            .Where(s => ticketIds.Contains((int)s.PlaneTicketId))
-            .ToList();
+        // 5. Oturacağı işğal et
+        seat.IsOccupied = true;
+        _unitOfWork.SeatRepository.Update(seat);
 
-        var responses = new List<UpdatePlaneTicketCommandResponse>();
-        var emailTasks = new List<(string email, string name, string surname, string fromName, string toName, string seatName, string variantName, double price, DateTime broughtDate)>();
+        // 6. Ticket-i doldur
+        ticket.CustomerId = request.UserId;
+        ticket.ChosenSeatId = request.ChosenSeatId;
+        ticket.HasPet = request.HasPet;
+        ticket.HasChild = request.HasChild;
+        ticket.LuggageCount = request.LuggageCount;
+        ticket.TotalLuggageKg = request.TotalLuggageKg;
+        ticket.Note = request.Note;
+        ticket.State = State.Used;
+        ticket.BroughtDate = now;
+        ticket.UpdatedDate = now;
 
-        foreach (var ticket in tickets)
-        {
-            if (invalidStates.Contains(ticket.State))
-                continue;
-
-            // Handle cancellation: free seat
-            if (request.NewState == State.Canceled && ticket.State != State.Canceled)
-            {
-                if (ticket.ChosenSeatId.HasValue)
-                {
-                    var seat = seats.FirstOrDefault(s => s.Id == ticket.ChosenSeatId.Value);
-                    if (seat != null)
-                        seat.IsOccupied = false;
-                }
-                ticket.CustomerId = null;
-            }
-
-            ticket.Airline = request.NewAirline;
-            ticket.Gate = request.NewGate;
-            ticket.Meal = request.NewMeal;
-            ticket.LuggageKg = request.NewLuggageKg;
-            ticket.State = request.NewState;
-            ticket.UpdatedDate = now;
-
-            _unitOfWork.PlaneTicketRepository.Update(ticket);
-
-            responses.Add(new UpdatePlaneTicketCommandResponse
-            {
-                Id = ticket.Id,
-                Airline = ticket.Airline,
-                Gate = ticket.Gate,
-                Plane = ticket.Plane,
-                Meal = ticket.Meal,
-                LuggageKg = ticket.LuggageKg,
-                State = ticket.State
-            });
-        }
-
+        _unitOfWork.PlaneTicketRepository.Update(ticket);
         await _unitOfWork.SaveChangesAsync();
 
-        // Fetch email data after save — only for tickets that have a customer
-        var customerTickets = tickets.Where(t => t.CustomerId.HasValue).ToList();
-        if (customerTickets.Any())
+        // 7. Response hazırla
+        var response = new FillPlaneTicketCommandResponse
         {
-            var customerIds = customerTickets.Select(t => t.CustomerId.Value).Distinct().ToList();
-            var users = await _db.Users
-                .Where(u => customerIds.Contains(u.Id) && !u.IsDeleted)
-                .ToListAsync(cancellationToken);
+            Id = ticket.Id,
+            CustomerFullName = $"{user.Name} {user.Surname}".Trim(),
+            CustomerEmail = user.Email,
+            State = ticket.State,
+            DueDate = ticket.DueDate,
+            BroughtDate = ticket.BroughtDate,
+            ChosenSeatId = ticket.ChosenSeatId,
+            VariantId = ticket.VariantId,
+            HasPet = ticket.HasPet,
+            HasChild = ticket.HasChild,
+            LuggageCount = ticket.LuggageCount,
+            TotalLuggageKg = ticket.TotalLuggageKg,
+            Discount = ticket.Discount,
+            Price = ticket.Price,
+            Note = ticket.Note,
+        };
 
-            var from = await _unitOfWork.LocationRepository.GetByIdAsync(request.FromId);
-            var to = await _unitOfWork.LocationRepository.GetByIdAsync(request.ToId);
-
-            foreach (var ticket in customerTickets)
+        // 8. Təsdiq e-poçtu göndər (arxa fonda)
+        _ = Task.Run(() =>
+        {
+            try
             {
-                var user = users.FirstOrDefault(u => u.Id == ticket.CustomerId.Value);
-                if (user == null) continue;
-
-                var seat = ticket.ChosenSeatId.HasValue
-                    ? seats.FirstOrDefault(s => s.Id == ticket.ChosenSeatId.Value)
-                    : null;
-
+                var from = _unitOfWork.LocationRepository.GetByIdAsync(ticket.FromId).GetAwaiter().GetResult();
+                var to = _unitOfWork.LocationRepository.GetByIdAsync(ticket.ToId).GetAwaiter().GetResult();
                 var variant = ticket.VariantId.HasValue
-                    ? await _unitOfWork.VariantRepository.GetByIdAsync(ticket.VariantId.Value)
+                    ? _unitOfWork.VariantRepository.GetByIdAsync(ticket.VariantId.Value).GetAwaiter().GetResult()
                     : null;
 
-                emailTasks.Add((
-                    user.Email,
-                    user.Name,
-                    user.Surname,
-                    from?.Name ?? "N/A",
-                    to?.Name ?? "N/A",
-                    seat?.Name ?? "N/A",
-                    variant?.Name ?? "Standard",
-                    ticket.Price,
-                    ticket.BroughtDate ?? now
-                ));
-            }
-
-            _ = Task.Run(() =>
-            {
                 string sender = _configuration["EmailSettings:SenderEmail"];
                 string appPass = _configuration["EmailSettings:AppPassword"];
                 var emailService = new Service.Email();
 
-                foreach (var e in emailTasks)
-                {
-                    try
-                    {
-                        emailService.Send(
-                            sender,
-                            appPass,
-                            e.email,
-                            "Your Flight Ticket Update – StepTravel",
-                            $@"
-                                <p>Dear <strong>{e.name} {e.surname}</strong>,</p>
-                                <p>Your flight ticket has been successfully updated.</p>
-                                <br/>
-                                <table style='border-collapse:collapse;'>
-                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>From</td>
-                                        <td><strong>{e.fromName}</strong></td></tr>
-                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>To</td>
-                                        <td><strong>{e.toName}</strong></td></tr>
-                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>Seat</td>
-                                        <td><strong>{e.seatName}</strong></td></tr>
-                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>Class</td>
-                                        <td><strong>{e.variantName}</strong></td></tr>
-                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>Airline</td>
-                                        <td><strong>{request.NewAirline}</strong></td></tr>
-                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>Gate</td>
-                                        <td><strong>{request.NewGate}</strong></td></tr>
-                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>Status</td>
-                                        <td><strong>{request.NewState}</strong></td></tr>
-                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>Total Price</td>
-                                        <td><strong>${e.price:F2}</strong></td></tr>
-                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>Booked On</td>
-                                        <td><strong>{e.broughtDate:dd MMM yyyy, HH:mm} UTC</strong></td></tr>
-                                </table>
-                                <br/>
-                                <p style='color:#555;font-size:13px;'>Thank you for choosing StepTravel. Have a great flight!</p>
-                            "
-                        );
-                        _logger.LogInformation("Ticket update email sent to: {Email}", e.email);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Failed to send ticket update email to {Email}", e.email);
-                    }
-                }
-            });
-        }
+                emailService.Send(
+                    sender,
+                    appPass,
+                    user.Email,
+                    "Your Flight Ticket Booking Confirmation – StepTravel",
+                    $@"
+                        <p>Dear <strong>{user.Name} {user.Surname}</strong>,</p>
+                        <p>Your flight ticket has been successfully booked.</p>
+                        <br/>
+                        <table style='border-collapse:collapse;'>
+                            <tr><td style='padding:4px 12px 4px 0;color:#555;'>From</td>
+                                <td><strong>{from?.Name ?? "N/A"}</strong></td></tr>
+                            <tr><td style='padding:4px 12px 4px 0;color:#555;'>To</td>
+                                <td><strong>{to?.Name ?? "N/A"}</strong></td></tr>
+                            <tr><td style='padding:4px 12px 4px 0;color:#555;'>Seat</td>
+                                <td><strong>{seat.Name}</strong></td></tr>
+                            <tr><td style='padding:4px 12px 4px 0;color:#555;'>Class</td>
+                                <td><strong>{variant?.Name ?? "Standard"}</strong></td></tr>
+                            <tr><td style='padding:4px 12px 4px 0;color:#555;'>Flight Date</td>
+                                <td><strong>{ticket.DueDate:dd MMM yyyy, HH:mm} UTC</strong></td></tr>
+                            <tr><td style='padding:4px 12px 4px 0;color:#555;'>Total Price</td>
+                                <td><strong>{ticket.Price:F2} ₼</strong></td></tr>
+                            <tr><td style='padding:4px 12px 4px 0;color:#555;'>Booked On</td>
+                                <td><strong>{now:dd MMM yyyy, HH:mm} UTC</strong></td></tr>
+                        </table>
+                        <br/>
+                        <p style='color:#555;font-size:13px;'>Thank you for choosing StepTravel. Have a great flight!</p>
+                    "
+                );
+                _logger.LogInformation("Booking confirmation email sent to: {Email}", user.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send booking confirmation email to {Email}", user.Email);
+            }
+        });
 
-        return new ResponseModel<List<UpdatePlaneTicketCommandResponse>>(responses);
+        return new ResponseModel<FillPlaneTicketCommandResponse>(response);
     }
 }
