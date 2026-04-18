@@ -72,20 +72,20 @@ public class AuthController : BaseController
 
     [Authorize]
     [HttpPut("edit-profile")]
-    public async Task<IActionResult> EditProfile([FromBody] EditProfileCommandRequest request)
-    {
-        var uidClaim = User.FindFirst("uid")?.Value;
-        if (!int.TryParse(uidClaim, out int userId))
-            return Unauthorized();
+public async Task<IActionResult> EditProfile([FromForm] EditProfileCommandRequest request)
+{
+    var uidClaim = User.FindFirst("uid")?.Value;
+    if (!int.TryParse(uidClaim, out int userId))
+        return Unauthorized();
 
-        request.UserId = userId;
-        var result = await Sender.Send(request);
+    request.UserId = userId;
+    var result = await Sender.Send(request);
 
-        if (result.Data is null)
-            return BadRequest(new { message = "Profile update failed. Email may already be in use." });
+    if (result.Data is null)
+        return BadRequest(new { message = "Profile update failed." });
 
-        return Ok(result);
-    }
+    return Ok(result);
+}
 
     [Authorize]
     [HttpPut("change-password")]

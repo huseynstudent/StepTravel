@@ -35,6 +35,7 @@ public class GetMeQueryHandler : IRequestHandler<GetMeQueryRequest, ResponseMode
             Id = user.Id,
             Name = user.Name,
             Surname = user.Surname,
+            ProfilePicture = user.ProfilePicture,
             Email = user.Email,
             Fin = user.Fin,
             Birthday = user.Birthday,

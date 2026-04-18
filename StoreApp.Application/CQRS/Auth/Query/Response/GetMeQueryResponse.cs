@@ -9,4 +9,5 @@ public class GetMeQueryResponse
     public string Fin { get; set; }
     public DateOnly Birthday { get; set; }
     public string Role { get; set; }
+    public string? ProfilePicture { get; set; }
 }
