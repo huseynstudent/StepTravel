@@ -18,7 +18,6 @@ public class EditProfileCommandHandler
     private readonly ILogger<EditProfileCommandHandler> _logger;
     private readonly IWebHostEnvironment _env;
 
-    // Konstruktora IUnitOfWork əlavə edildi və mənimsədildi
     public EditProfileCommandHandler(
         StoreAppDbContext db,
         ILogger<EditProfileCommandHandler> logger,
@@ -44,7 +43,7 @@ public class EditProfileCommandHandler
             return new ResponseModel<EditProfileCommandResponse>(null);
         }
 
-        // 2. Əgər email dəyişdirilirsə, yeni emailin başqası tərəfindən istifadə edilib-edilmədiyini yoxlayırıq
+        // 2. Email unikallıq yoxlaması
         if (!string.Equals(user.Email, request.Email, StringComparison.OrdinalIgnoreCase))
         {
             bool emailTaken = await _db.Users
@@ -57,42 +56,48 @@ public class EditProfileCommandHandler
             }
         }
 
+        // 3. Şəkil yüklənməsi
         if (request.ProfilePicture is not null)
         {
-            var uploads = Path.Combine(_env.WebRootPath, "uploads", "avatars");
-            Directory.CreateDirectory(uploads);
+            // FIX: WebRootPath null ola bilər — wwwroot qovluğu mövcud deyilsə
+            // ContentRootPath həmişə mövcuddur, onun altında wwwroot yaradırıq
+            var webRoot = _env.WebRootPath
+                          ?? Path.Combine(_env.ContentRootPath, "wwwroot");
 
-            var fileName = $"{user.Id}_{Guid.NewGuid()}{Path.GetExtension(request.ProfilePicture.FileName)}";
+            var uploads = Path.Combine(webRoot, "uploads", "avatars");
+            Directory.CreateDirectory(uploads); // qovluq yoxdursa avtomatik yarat
+
+            var ext = Path.GetExtension(request.ProfilePicture.FileName);
+            var fileName = $"{user.Id}_{Guid.NewGuid()}{ext}";
             var filePath = Path.Combine(uploads, fileName);
 
-            using var stream = new FileStream(filePath, FileMode.Create);
+            await using var stream = new FileStream(filePath, FileMode.Create);
             await request.ProfilePicture.CopyToAsync(stream, cancellationToken);
 
-            // Delete old file if it exists
+            // Köhnə faylı sil
             if (!string.IsNullOrEmpty(user.ProfilePicture))
             {
-                var oldPath = Path.Combine(_env.WebRootPath, user.ProfilePicture.TrimStart('/'));
+                var oldPath = Path.Combine(webRoot, user.ProfilePicture.TrimStart('/'));
                 if (File.Exists(oldPath)) File.Delete(oldPath);
             }
 
             user.ProfilePicture = $"/uploads/avatars/{fileName}";
         }
-        // 3. Məlumatları yeniləyirik
+
+        // 4. Məlumatları yeniləyirik
         user.Name = request.Name;
         user.Surname = request.Surname;
         user.Email = request.Email;
         user.Birthday = request.Birthday;
         user.Fin = request.Fin;
 
-        // 4. Repozitoriya vasitəsilə update (İndi _unitOfWork null deyil)
+        // 5. Update + SaveChanges
         _unitOfWork.UserRepository.Update(user);
-
-        // 5. Dəyişiklikləri yadda saxlayırıq
         await _db.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("EditProfile: user {UserId} updated.", user.Id);
 
-        // 6. Cavab modelini qaytarırıq
+        // 6. Cavab — ProfilePicture daxil olmaqla
         return new ResponseModel<EditProfileCommandResponse>(new EditProfileCommandResponse
         {
             Id = user.Id,
@@ -101,6 +106,7 @@ public class EditProfileCommandHandler
             Email = user.Email,
             Birthday = user.Birthday,
             Fin = user.Fin,
+            ProfilePicture = user.ProfilePicture, 
         });
     }
 }
