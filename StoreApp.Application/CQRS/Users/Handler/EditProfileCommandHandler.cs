@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StoreApp.Repository.Comman;
+using Microsoft.AspNetCore.Hosting;
 
 namespace StoreApp.Application.CQRS.Users.Handler;
 
@@ -15,16 +16,19 @@ public class EditProfileCommandHandler
     private readonly StoreAppDbContext _db;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<EditProfileCommandHandler> _logger;
+    private readonly IWebHostEnvironment _env;
 
     // Konstruktora IUnitOfWork əlavə edildi və mənimsədildi
     public EditProfileCommandHandler(
         StoreAppDbContext db,
         ILogger<EditProfileCommandHandler> logger,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IWebHostEnvironment env)
     {
         _db = db;
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _env = env;
     }
 
     public async Task<ResponseModel<EditProfileCommandResponse>> Handle(
@@ -53,6 +57,26 @@ public class EditProfileCommandHandler
             }
         }
 
+        if (request.ProfilePicture is not null)
+        {
+            var uploads = Path.Combine(_env.WebRootPath, "uploads", "avatars");
+            Directory.CreateDirectory(uploads);
+
+            var fileName = $"{user.Id}_{Guid.NewGuid()}{Path.GetExtension(request.ProfilePicture.FileName)}";
+            var filePath = Path.Combine(uploads, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await request.ProfilePicture.CopyToAsync(stream, cancellationToken);
+
+            // Delete old file if it exists
+            if (!string.IsNullOrEmpty(user.ProfilePicture))
+            {
+                var oldPath = Path.Combine(_env.WebRootPath, user.ProfilePicture.TrimStart('/'));
+                if (File.Exists(oldPath)) File.Delete(oldPath);
+            }
+
+            user.ProfilePicture = $"/uploads/avatars/{fileName}";
+        }
         // 3. Məlumatları yeniləyirik
         user.Name = request.Name;
         user.Surname = request.Surname;
