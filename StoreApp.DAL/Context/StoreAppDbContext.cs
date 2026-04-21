@@ -17,6 +17,8 @@ public class StoreAppDbContext : DbContext
     public DbSet<TrainTicket> TrainTickets { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<UserToken> UserTokens { get; set; }
+    public DbSet<Message> Messages { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -100,6 +102,11 @@ public class StoreAppDbContext : DbContext
             .WithMany()
             .HasForeignKey(s => s.TrainTicketId)
             .OnDelete(DeleteBehavior.NoAction).IsRequired(false);
-
+        //message
+        modelBuilder.Entity<Message>()
+    .HasOne(m => m.Sender)
+    .WithMany()
+    .HasForeignKey(m => m.SenderId)
+    .OnDelete(DeleteBehavior.NoAction);
     }
 }

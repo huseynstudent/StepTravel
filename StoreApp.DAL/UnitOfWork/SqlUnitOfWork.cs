@@ -39,6 +39,9 @@ public class SqlUnitOfWork : IUnitOfWork
     public IVariantRepository VariantRepository => _variantRepository ??= new SqlVariantRepository(_context, _connectionString);
     public SqlBonusProductRepository _bonusProductRepository;
     public IBonusProductRepository BonusProductRepository => _bonusProductRepository ??= new SqlBonusProductRepository(_context, _connectionString);
+    public SqlMessageRepository _messageRepository;
+    public IMessageRepository MessageRepository => _messageRepository ??= new SqlMessageRepository(_context, _connectionString);
+
     public Task SaveChangesAsync()
     {
         return _context.SaveChangesAsync();
