@@ -17,9 +17,12 @@ public class PlaneTicketController : BaseController
 
     [HttpPut]
     [Authorize(Roles = "Admin,Company")]
-    public async Task<IActionResult> UpdateTicket( [FromBody] UpdatePlaneTicketGroupCommandRequest request)
+    public async Task<IActionResult> UpdateTicket([FromBody] UpdatePlaneTicketGroupCommandRequest request)
     {
-        return Ok(await Sender.Send(request));
+        var result = await Sender.Send(request);
+        if (result?.Data == null)
+            return BadRequest(new { message = "Ticket group not found or cannot be updated." });
+        return Ok(result);
     }
 
     [HttpPut("fill")]
@@ -27,7 +30,7 @@ public class PlaneTicketController : BaseController
     {
         var result = await Sender.Send(request);
         if (result.Data == null)
-            return BadRequest(new { message = "Bilet artıq alınıb və ya oturacaq doludur." });
+            return BadRequest(new { message = "Bilet artiq alinib ve ya oturacaq doludur." });
         return Ok(result);
     }
 

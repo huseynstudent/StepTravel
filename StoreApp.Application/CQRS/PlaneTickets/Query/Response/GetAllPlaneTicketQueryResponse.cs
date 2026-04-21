@@ -12,6 +12,8 @@ public class GetAllPlaneTicketQueryResponse
     public DateTime? ArrivalDate { get; set; }
     public string From { get; set; }
     public string To { get; set; }
+    public int FromId { get; set; }
+    public int ToId { get; set; }  
     public decimal Price { get; set; }
     public int AvailableSeats { get; set; }
     public string State { get; set; }
