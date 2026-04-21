@@ -72,6 +72,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// FIX: wwwroot qovlu?u yoxdursa yarat (??kil upload üçün laz?md?r)
+var wwwrootPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
+if (!Directory.Exists(wwwrootPath)) Directory.CreateDirectory(wwwrootPath);
+
 app.UseStaticFiles();
 app.UseCors("AllowReactApp");
 app.UseMiddleware<ExceptionHandlerMiddleware>();

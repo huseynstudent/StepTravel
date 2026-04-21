@@ -3,12 +3,13 @@ using StoreApp.Domain.Enums;
 
 namespace StoreApp.Domain.BaseEntities;
 
-public class BaseTicket: BaseEntity
+public class BaseTicket : BaseEntity
 {
     public User? Customer { get; set; }
     public int? CustomerId { get; set; }
-    public State State { get; set; } //State enum-"Canceled", "Delayed","Available","Expired"
+    public State State { get; set; }
     public DateTime DueDate { get; set; }
+    public DateTime? ArrivalDate { get; set; }
     public DateTime? BroughtDate { get; set; }
     public Location From { get; set; }
     public Location To { get; set; }
