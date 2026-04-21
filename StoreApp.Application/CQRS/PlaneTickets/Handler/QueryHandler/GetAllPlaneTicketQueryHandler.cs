@@ -48,7 +48,6 @@ public class GetAllPlaneTicketQueryHandler : IRequestHandler<GetAllPlaneTicketQu
                 var from = first.From;
                 var to = first.To;
 
-                // Qiymet hesabı (köhnə formula saxlanır)
                 double minPrice = g.Select(pt =>
                 {
                     var variantAddition = pt.Variant?.Price ?? 0.0;
@@ -58,15 +57,11 @@ public class GetAllPlaneTicketQueryHandler : IRequestHandler<GetAllPlaneTicketQu
                     return basePrice;
                 }).DefaultIfEmpty(0).Min();
 
-                // Məsafəyə görə uçuş müddəti hesabla:
-                // eyni ölkə → 1 saat
-                // fərqli ölkə → distanceToken fərqi * 0.5 saat (min 1h, max 18h)
                 double distanceDiff = Math.Abs((from?.DistanceToken ?? 0) - (to?.DistanceToken ?? 0));
                 double flightHours = (from != null && to != null && from.CountryId == to.CountryId)
                     ? 1.0
                     : Math.Min(Math.Max(distanceDiff * 0.5, 1.0), 18.0);
 
-                // ArrivalDate: DB-də varsa onu istifadə et, yoxdursa məsafədən hesabla
                 DateTime calculatedArrival = g.Key.DueDate.AddHours(flightHours);
 
                 return new GetAllPlaneTicketQueryResponse
@@ -81,6 +76,8 @@ public class GetAllPlaneTicketQueryHandler : IRequestHandler<GetAllPlaneTicketQu
                     ArrivalDate = first.ArrivalDate ?? calculatedArrival,
                     From = from != null ? from.Name + ", " + from.Country?.Name : null,
                     To = to != null ? to.Name + ", " + to.Country?.Name : null,
+                    FromId = g.Key.FromId,
+                    ToId = g.Key.ToId,
                     Price = (decimal)minPrice,
                     AvailableSeats = g.Count(),
                     State = first.State.ToString(),
