@@ -21,6 +21,7 @@ public class UpdateTrainTicketCommandHandler : IRequestHandler<UpdateTrainTicket
 
     public async Task<ResponseModel<UpdateTrainTicketCommandResponse>> Handle(UpdateTrainTicketCommandRequest request, CancellationToken cancellationToken)
     {
+        // Hədəf bileti tap
         var trainTicket = await _db.TrainTickets
             .FirstOrDefaultAsync(t => t.Id == request.Id && !t.IsDeleted, cancellationToken);
 
@@ -30,24 +31,60 @@ public class UpdateTrainTicketCommandHandler : IRequestHandler<UpdateTrainTicket
         if (trainTicket.State == State.Used || trainTicket.State == State.Expired || trainTicket.State == State.Missed)
             return new ResponseModel<UpdateTrainTicketCommandResponse>(null);
 
-        if (request.State == State.Canceled && trainTicket.State != State.Canceled)
-        {
-            if (trainTicket.ChosenSeatId.HasValue)
-            {
-                var seat = await _db.Seats.FirstOrDefaultAsync(s => s.Id == trainTicket.ChosenSeatId.Value, cancellationToken);
-                if (seat != null)
-                    seat.IsOccupied = false;
-            }
-            trainTicket.CustomerId = null;
-        }
+        // ✅ FIX: Eyni qrupa aid BÜTÜN biletləri tap
+        // (eyni TrainCompany + TrainNumber + VagonNumber + DueDate.Date + From + To)
+        var groupTickets = await _db.TrainTickets
+            .Where(t =>
+                t.TrainCompany == trainTicket.TrainCompany &&
+                t.TrainNumber == trainTicket.TrainNumber &&
+                t.VagonNumber == trainTicket.VagonNumber &&
+                t.DueDate.Date == trainTicket.DueDate.Date &&
+                t.FromId == trainTicket.FromId &&
+                t.ToId == trainTicket.ToId &&
+                !t.IsDeleted)
+            .ToListAsync(cancellationToken);
 
-        trainTicket.TrainCompany = request.TrainCompany;
-        trainTicket.TrainNumber = request.TrainNumber;
-        trainTicket.VagonNumber = request.VagonNumber;
-        trainTicket.State = request.State;
-        if (request.DueDate.HasValue)
-            trainTicket.DueDate = request.DueDate.Value;
-        trainTicket.UpdatedDate = DateTime.UtcNow;
+        var invalidStates = new[] { State.Used, State.Expired, State.Missed };
+
+        foreach (var ticket in groupTickets)
+        {
+            // Used/Expired/Missed biletlərə toxunma
+            if (invalidStates.Contains(ticket.State))
+                continue;
+
+            // Cancel əməliyyatı — oturacağı azad et
+            if (request.State == State.Canceled && ticket.State != State.Canceled)
+            {
+                if (ticket.ChosenSeatId.HasValue)
+                {
+                    var seat = await _db.Seats.FirstOrDefaultAsync(s => s.Id == ticket.ChosenSeatId.Value, cancellationToken);
+                    if (seat != null)
+                        seat.IsOccupied = false;
+                }
+                ticket.CustomerId = null;
+            }
+
+            // Booked biletdə state dəyişmə (yalnız tarix/şirkət/nömrə update et)
+            if (ticket.State == State.Booked && request.State != State.Canceled)
+            {
+                ticket.TrainCompany = request.TrainCompany;
+                ticket.TrainNumber = request.TrainNumber;
+                ticket.VagonNumber = request.VagonNumber;
+                if (request.DueDate.HasValue)
+                    ticket.DueDate = request.DueDate.Value;
+                ticket.UpdatedDate = DateTime.UtcNow;
+                continue;
+            }
+
+            // Normal update
+            ticket.TrainCompany = request.TrainCompany;
+            ticket.TrainNumber = request.TrainNumber;
+            ticket.VagonNumber = request.VagonNumber;
+            ticket.State = request.State;
+            if (request.DueDate.HasValue)
+                ticket.DueDate = request.DueDate.Value;
+            ticket.UpdatedDate = DateTime.UtcNow;
+        }
 
         await _db.SaveChangesAsync(cancellationToken);
 
@@ -63,7 +100,7 @@ public class UpdateTrainTicketCommandHandler : IRequestHandler<UpdateTrainTicket
     }
 }
 
-// Qrup yeniləmə
+// Qrup yeniləmə (dəyişmədi)
 public class UpdateTrainTicketGroupCommandHandler
     : IRequestHandler<UpdateTrainTicketGroupCommandRequest, ResponseModel<List<UpdateTrainTicketCommandResponse>>>
 {
