@@ -19,6 +19,31 @@ public class AuthController : BaseController
     public async Task<IActionResult> GetMe()
     {
         var uidClaim = User.FindFirst("uid")?.Value;
+        var roleClaim = User.FindFirst("role")?.Value
+                     ?? User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
+        // Admin tokeni uid daşımır — birbaşa admin məlumatı qaytar
+        if (string.IsNullOrEmpty(uidClaim) && roleClaim == "Admin")
+        {
+            var emailClaim = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+                          ?? User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+                          ?? "";
+
+            return Ok(new
+            {
+                data = new
+                {
+                    id = (int?)null,
+                    name = "Admin",
+                    surname = "",
+                    email = emailClaim,
+                    fin = "",
+                    birthday = (object?)null,
+                    role = "Admin",
+                    profilePicture = (string?)null,
+                }
+            });
+        }
 
         if (string.IsNullOrEmpty(uidClaim) || !int.TryParse(uidClaim, out int userId))
         {
@@ -72,20 +97,20 @@ public class AuthController : BaseController
 
     [Authorize]
     [HttpPut("edit-profile")]
-public async Task<IActionResult> EditProfile([FromForm] EditProfileCommandRequest request)
-{
-    var uidClaim = User.FindFirst("uid")?.Value;
-    if (!int.TryParse(uidClaim, out int userId))
-        return Unauthorized();
+    public async Task<IActionResult> EditProfile([FromForm] EditProfileCommandRequest request)
+    {
+        var uidClaim = User.FindFirst("uid")?.Value;
+        if (!int.TryParse(uidClaim, out int userId))
+            return Unauthorized();
 
-    request.UserId = userId;
-    var result = await Sender.Send(request);
+        request.UserId = userId;
+        var result = await Sender.Send(request);
 
-    if (result.Data is null)
-        return BadRequest(new { message = "Profile update failed." });
+        if (result.Data is null)
+            return BadRequest(new { message = "Profile update failed." });
 
-    return Ok(result);
-}
+        return Ok(result);
+    }
 
     [Authorize]
     [HttpPut("change-password")]

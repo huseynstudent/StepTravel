@@ -1,4 +1,4 @@
-using MediatR;
+﻿using MediatR;
 using StoreApp.Application.CQRS.Messages.Command.Request;
 using StoreApp.Application.CQRS.Messages.Command.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
@@ -18,15 +18,16 @@ class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommandRequest,
 
     public async Task<ResponseModel<CreateMessageCommandResponse>> Handle(CreateMessageCommandRequest request, CancellationToken cancellationToken)
     {
-        var sender = await _unitOfWork.UserRepository.GetByIdAsync(request.SenderId);
-        if (sender == null)
-            return new ResponseModel<CreateMessageCommandResponse>(null);
+        // Admin-in id-si 0 ola bilər (hardcoded), DB-də record olmaya bilər
+        var sender = request.SenderId > 0
+            ? await _unitOfWork.UserRepository.GetByIdAsync(request.SenderId)
+            : null;
 
         var message = new Message
         {
-            SenderId  = request.SenderId,
-            Content   = request.Content,
-            ForAdmin  = request.ForAdmin,
+            SenderId = request.SenderId > 0 ? (int?)request.SenderId : null,
+            Content = request.Content,
+            ForAdmin = request.ForAdmin,
             HasBeenRead = false,
         };
 
@@ -35,13 +36,13 @@ class CreateMessageCommandHandler : IRequestHandler<CreateMessageCommandRequest,
 
         var response = new CreateMessageCommandResponse
         {
-            Id             = message.Id,
-            SenderId       = message.SenderId,
-            SenderFullName = $"{sender.Name} {sender.Surname}",
-            Content        = message.Content,
-            ForAdmin       = message.ForAdmin,
-            HasBeenRead    = message.HasBeenRead,
-            Response       = message.Response,
+            Id = message.Id,
+            SenderId = message.SenderId,
+            SenderFullName = sender != null ? $"{sender.Name} {sender.Surname}" : "Admin",
+            Content = message.Content,
+            ForAdmin = message.ForAdmin,
+            HasBeenRead = message.HasBeenRead,
+            Response = message.Response,
         };
 
         return new ResponseModel<CreateMessageCommandResponse>(response);

@@ -1,7 +1,11 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StoreApp.Application.CQRS.Messages.Command.Request;
 using StoreApp.Application.CQRS.Messages.Query.Request;
+using StoreApp.Application.CQRS.Messages.Query.Response;
+using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
+using StoreApp.DAL.Context;
 using StoreApp.Domain.Auth;
 
 namespace StoreApp.WebApi.Controllers;
@@ -56,6 +60,50 @@ public class MessageController : BaseController
     public async Task<IActionResult> MarkAsRead(int id)
     {
         return Ok(await Sender.Send(new MarkMessageAsReadCommandRequest { Id = id }));
+    }
+
+    /// <summary>
+    /// Customer: öz göndərdiyi mesajları görür.
+    /// </summary>
+    [HttpGet("my")]
+    [Authorize(Roles = Roles.Customer)]
+    public async Task<IActionResult> GetMyMessages(
+        [FromQuery] GetAllMessageQueryRequest request,
+        [FromServices] StoreAppDbContext db)
+    {
+        var uidClaim = User.FindFirst("uid")?.Value;
+        if (!int.TryParse(uidClaim, out int userId))
+            return Unauthorized();
+
+        var query = db.Messages
+            .Where(m => !m.IsDeleted && m.SenderId == userId)
+            .Include(m => m.Sender)
+            .AsQueryable();
+
+        if (request.ForAdmin.HasValue)
+            query = query.Where(m => m.ForAdmin == request.ForAdmin.Value);
+
+        var total = query.Count();
+
+        var paged = query
+            .OrderByDescending(m => m.CreatedDate)
+            .Skip((request.Page - 1) * request.Limit)
+            .Take(request.Limit)
+            .ToList();
+
+        var data = paged.Select(m => new GetAllMessageQueryResponse
+        {
+            Id = m.Id,
+            SenderId = m.SenderId,
+            SenderFullName = m.Sender != null ? $"{m.Sender.Name} {m.Sender.Surname}" : "",
+            Content = m.Content,
+            ForAdmin = m.ForAdmin,
+            HasBeenRead = m.HasBeenRead,
+            Response = m.Response,
+            CreatedDate = m.CreatedDate,
+        }).ToList();
+
+        return Ok(new Pagination<GetAllMessageQueryResponse>(data, total, request.Page, request.Limit));
     }
 
     /// <summary>

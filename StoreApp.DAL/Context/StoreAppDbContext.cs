@@ -104,9 +104,10 @@ public class StoreAppDbContext : DbContext
             .OnDelete(DeleteBehavior.NoAction).IsRequired(false);
         //message
         modelBuilder.Entity<Message>()
-    .HasOne(m => m.Sender)
-    .WithMany()
-    .HasForeignKey(m => m.SenderId)
-    .OnDelete(DeleteBehavior.NoAction);
+            .HasOne(m => m.Sender)
+            .WithMany()
+            .HasForeignKey(m => m.SenderId)
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired(false);
     }
 }

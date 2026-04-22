@@ -41,8 +41,16 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
         {
             if (PasswordHelper.Verify(request.Password, PasswordHelper.Hash(adminPassword)))
             {
-                var token = GenerateJwtToken(adminEmail, "Admin", 0);
-                var adminAuth = new AuthResponse { Email = adminEmail, Role = "Admin", Token = token };
+                var token = GenerateJwtToken(adminEmail, "Admin", null);
+                var adminAuth = new AuthResponse
+                {
+                    Id = null,
+                    Email = adminEmail,
+                    Role = "Admin",
+                    Token = token,
+                    FirstName = "Admin",
+                    LastName = "",
+                };
 
                 return new ResponseModel<AuthResponse>(adminAuth);
             }
@@ -75,7 +83,9 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
             Id = user.Id,
             Email = user.Email,
             Role = user.Role.ToString(),
-            Token = jwt
+            Token = jwt,
+            FirstName = user.Name,
+            LastName = user.Surname,
         };
 
         return new ResponseModel<AuthResponse>(response);
@@ -97,7 +107,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
             new Claim("role", role)
         };
 
-        if (userId.HasValue)
+        if (userId.HasValue && userId.Value > 0)
             claims.Add(new Claim("uid", userId.Value.ToString()));
 
         var token = new JwtSecurityToken(
