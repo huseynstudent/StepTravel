@@ -9,5 +9,6 @@ namespace StoreApp.Application.CQRS.TrainTickets.Command.Response
         public string TrainNumber { get; set; }
         public int VagonNumber { get; set; }
         public State State { get; set; }
+        public DateTime DueDate { get; set; }
     }
 }

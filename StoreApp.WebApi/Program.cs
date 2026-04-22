@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+ï»¿using Microsoft.EntityFrameworkCore;
 using StoreApp.Application;
 using StoreApp.DAL.Context;
 using StoreApp.DAL.UnitOfWork;
@@ -14,7 +14,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
+            policy.WithOrigins("http://localhost:5173", "http://localhost:5174", "http://localhost:5251")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -72,7 +72,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// FIX: wwwroot qovlu?u yoxdursa yarat (??kil upload üçün laz?md?r)
+// FIX: wwwroot qovlu?u yoxdursa yarat (??kil upload ï¿½ï¿½ï¿½n laz?md?r)
 var wwwrootPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
 if (!Directory.Exists(wwwrootPath)) Directory.CreateDirectory(wwwrootPath);
 

@@ -15,10 +15,28 @@ public class TrainTicketController : BaseController
     public async Task<IActionResult> CreateTicket(CreateTrainTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 
-    [HttpPut]
+    // Tək bilet yeniləmə — ID URL-dən gəlir, qarışıqlıq olmur
+    [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin,Company")]
-    public async Task<IActionResult> UpdateTicket(UpdateTrainTicketCommandRequest request)
-        => Ok(await Sender.Send(request));
+    public async Task<IActionResult> UpdateTicket(int id, [FromBody] UpdateTrainTicketCommandRequest request)
+    {
+        request.Id = id;
+        var result = await Sender.Send(request);
+        if (result?.Data == null)
+            return BadRequest(new { message = "Ticket not found or cannot be updated." });
+        return Ok(result);
+    }
+
+    // Qrup yeniləmə — eyni qatar/vaqon/tarixdəki bütün biletlər
+    [HttpPut("group")]
+    [Authorize(Roles = "Admin,Company")]
+    public async Task<IActionResult> UpdateTicketGroup([FromBody] UpdateTrainTicketGroupCommandRequest request)
+    {
+        var result = await Sender.Send(request);
+        if (result?.Data == null)
+            return BadRequest(new { message = "Ticket group not found or cannot be updated." });
+        return Ok(result);
+    }
 
     [HttpPut("fill")]
     public async Task<IActionResult> FillTicket(FillTrainTicketCommandRequest request)
