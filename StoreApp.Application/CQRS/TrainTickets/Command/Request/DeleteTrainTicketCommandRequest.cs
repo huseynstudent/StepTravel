@@ -7,4 +7,9 @@ namespace StoreApp.Application.CQRS.TrainTickets.Command.Request
     {
         public int Id { get; set; }
     }
+
+    public class DeleteTrainTicketGroupCommandRequest : IRequest<ResponseModel<DeleteTrainTicketCommandResponse>>
+    {
+        public int Id { get; set; }
+    }
 }

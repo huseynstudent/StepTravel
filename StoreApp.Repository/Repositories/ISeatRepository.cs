@@ -7,6 +7,7 @@ public interface ISeatRepository
     Task AddAsync(Seat seat);
     void Update(Seat seat);
     Task DeleteAsync(int id);
+    void DeleteRange(IEnumerable<Seat> seats);   // ← YENİ: toplu silmə
     Task<Seat> GetByIdAsync(int id);
     IQueryable<Seat> GetAll();
 }

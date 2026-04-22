@@ -29,10 +29,10 @@ public class TrainTicketController : BaseController
         return Ok(result);
     }
 
-    [HttpDelete]
-    [Authorize(Roles = "Admin,Company")]
-    public async Task<IActionResult> DeleteTicket(DeleteTrainTicketCommandRequest request)
-        => Ok(await Sender.Send(request));
+    [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteTicket(int id)
+        => Ok(await Sender.Send(new DeleteTrainTicketGroupCommandRequest { Id = id }));
 
     [HttpGet]
     [AllowAnonymous]
