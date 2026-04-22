@@ -88,6 +88,10 @@ namespace StoreApp.Application.Validations.PlaneTicketsValidations
 
             RuleFor(x => x.NewState)
                 .IsInEnum().WithMessage("The new state is not a valid value!");
+
+            RuleFor(x => x.NewDueDate)
+                .GreaterThan(DateTime.UtcNow).WithMessage("The new due date must be in the future!")
+                .When(x => x.NewDueDate.HasValue);
         }
     }
 }

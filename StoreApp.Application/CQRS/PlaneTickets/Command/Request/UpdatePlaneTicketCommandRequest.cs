@@ -21,6 +21,7 @@ public class UpdatePlaneTicketGroupCommandRequest : IRequest<ResponseModel<List<
     public string NewMeal { get; set; }
     public double NewLuggageKg { get; set; }
     public State NewState { get; set; }
+    public DateTime? NewDueDate { get; set; }
 }
 
 public class UpdatePlaneTicketCommandRequest : IRequest<ResponseModel<UpdatePlaneTicketCommandResponse>>

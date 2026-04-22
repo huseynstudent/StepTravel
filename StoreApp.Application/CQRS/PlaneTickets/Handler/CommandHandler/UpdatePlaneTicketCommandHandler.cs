@@ -50,6 +50,8 @@ public class UpdatePlaneTicketGroupCommandHandler
                 ticket.Gate = request.NewGate;
                 ticket.Meal = request.NewMeal;
                 ticket.LuggageKg = request.NewLuggageKg;
+                if (request.NewDueDate.HasValue)
+                    ticket.DueDate = request.NewDueDate.Value;
                 if (request.VariantId.HasValue)
                     ticket.VariantId = request.VariantId;
                 ticket.UpdatedDate = DateTime.UtcNow;
@@ -72,6 +74,8 @@ public class UpdatePlaneTicketGroupCommandHandler
             ticket.Meal = request.NewMeal;
             ticket.LuggageKg = request.NewLuggageKg;
             ticket.State = request.NewState;
+            if (request.NewDueDate.HasValue)
+                ticket.DueDate = request.NewDueDate.Value;
             if (request.VariantId.HasValue)
                 ticket.VariantId = request.VariantId;
             ticket.UpdatedDate = DateTime.UtcNow;
@@ -90,7 +94,8 @@ public class UpdatePlaneTicketGroupCommandHandler
             Meal = t.Meal,
             LuggageKg = t.LuggageKg,
             State = t.State,
-            VariantId = t.VariantId
+            VariantId = t.VariantId,
+            DueDate = t.DueDate
         }).ToList();
 
         return new ResponseModel<List<UpdatePlaneTicketCommandResponse>>(responses);

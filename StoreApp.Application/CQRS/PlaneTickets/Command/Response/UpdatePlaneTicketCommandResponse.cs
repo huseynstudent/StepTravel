@@ -12,4 +12,5 @@ public class UpdatePlaneTicketCommandResponse
     public double LuggageKg { get; set; }
     public State State { get; set; }
     public int? VariantId { get; set; }
+    public DateTime DueDate { get; set; }
 }
