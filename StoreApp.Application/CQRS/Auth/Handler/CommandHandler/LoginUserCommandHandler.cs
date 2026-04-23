@@ -35,7 +35,6 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, 
         var adminEmail = _configuration["Admin:Email"];
         var adminPassword = _configuration["Admin:Password"];
 
-        // Admin girişi
         if (!string.IsNullOrWhiteSpace(adminEmail) &&
             string.Equals(request.Email.Trim(), adminEmail.Trim(), StringComparison.OrdinalIgnoreCase))
         {
