@@ -40,13 +40,13 @@ public class ForgotPasswordCommandHandler
         if (user is null)
         {
             _logger.LogWarning("ForgotPassword: email {Email} not found.", request.Email);
-            return Ok();
+            return Fail("No account found with this email address.");
         }
 
         if (!user.IsConfirmed)
         {
             _logger.LogWarning("ForgotPassword: email {Email} is not confirmed.", request.Email);
-            return Ok();
+            return Fail("This email address has not been confirmed yet.");
         }
 
         string code = GenerateRandomCode();
@@ -75,7 +75,6 @@ public class ForgotPasswordCommandHandler
         {
             _logger.LogError("ForgotPassword email error: {Message}", ex.Message);
         }
-
         return Ok();
     }
 
@@ -83,6 +82,13 @@ public class ForgotPasswordCommandHandler
         new(new ForgotPasswordCommandResponse
         {
             Success = true,
-            Message = "If that email exists, a reset code has been sent."
+            Message = "A reset code has been sent to your email address."
+        });
+
+    private static ResponseModel<ForgotPasswordCommandResponse> Fail(string message) =>
+        new(new ForgotPasswordCommandResponse
+        {
+            Success = false,
+            Message = message
         });
 }

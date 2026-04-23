@@ -22,7 +22,6 @@ public class AuthController : BaseController
         var roleClaim = User.FindFirst("role")?.Value
                      ?? User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
 
-        // Admin tokeni uid daşımır — birbaşa admin məlumatı qaytar
         if (string.IsNullOrEmpty(uidClaim) && roleClaim == "Admin")
         {
             var emailClaim = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
@@ -59,6 +58,7 @@ public class AuthController : BaseController
 
         return Ok(result);
     }
+
     [Authorize(Roles = "Admin")]
     [HttpPost("create-executive")]
     public async Task<IActionResult> CreateExecutive([FromBody] CreateExecutiveCommandRequest request)
@@ -70,6 +70,7 @@ public class AuthController : BaseController
 
         return Ok(result);
     }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterUserCommandRequest request)
     {
@@ -85,6 +86,10 @@ public class AuthController : BaseController
     public async Task<IActionResult> Login([FromBody] LoginUserCommandRequest request)
     {
         var result = await Sender.Send(request);
+
+        if (result?.Data == null)
+            return Unauthorized(new { message = "The email or password is incorrect. Please try again." });
+
         return Ok(result);
     }
 
