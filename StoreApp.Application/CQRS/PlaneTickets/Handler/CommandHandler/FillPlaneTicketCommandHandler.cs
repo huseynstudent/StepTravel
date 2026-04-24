@@ -34,60 +34,60 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         FillPlaneTicketCommandRequest request,
         CancellationToken cancellationToken)
     {
-        // 1. Bileti tap
         var ticket = await _unitOfWork.PlaneTicketRepository.GetByIdAsync(request.Id);
         if (ticket == null || ticket.IsDeleted)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
-        // 2. Bilet artiq alinibsa redd et
         if (ticket.CustomerId != null || ticket.State == State.Used || ticket.State == State.Expired)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
-        // 3. Oturacagi tap ve yoxla
         var seat = await _unitOfWork.SeatRepository.GetByIdAsync(request.ChosenSeatId);
         if (seat == null || seat.IsOccupied)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
-        // 4. Istifadecini tap
         var user = await _db.Users
             .FirstOrDefaultAsync(u => u.Id == request.UserId && !u.IsDeleted, cancellationToken);
         if (user == null)
             return new ResponseModel<FillPlaneTicketCommandResponse>(null);
 
-        // 5. Variant, from, to - email ve qiymeti hazirlamaq ucun
         var variant = await _unitOfWork.VariantRepository.GetByIdAsync(seat.VariantId);
         var fromLoc = await _unitOfWork.LocationRepository.GetByIdAsync(ticket.FromId);
         var toLoc = await _unitOfWork.LocationRepository.GetByIdAsync(ticket.ToId);
 
         var now = DateTime.UtcNow;
 
-        // 6. Qiymeti hesabla
-        double basePrice = Number(ticket.Price);   // admin terefinden qoyulmus qiymet
         double variantExtra = variant?.Price ?? 0;
+        double distanceDiff = Math.Abs((fromLoc?.DistanceToken ?? 0) - (toLoc?.DistanceToken ?? 0));
+        bool sameCountry = fromLoc != null && toLoc != null && fromLoc.CountryId == toLoc.CountryId;
+
+        double basePrice = sameCountry
+            ? 100.0 + variantExtra
+            : distanceDiff * 40.0 + variantExtra;
+
         double includedLuggage = variant?.AllowedLuggageKg ?? 20;
         double luggageExtra = request.TotalLuggageKg > includedLuggage
                                     ? (request.TotalLuggageKg - includedLuggage) * 2
                                     : 0;
+
         bool isBirthday = user.Birthday.Month == now.Month && user.Birthday.Day == now.Day;
+
         double manualDiscount = ticket.Discount is > 0 and <= 1 ? ticket.Discount : 1.0;
-        double finalPrice = (basePrice + variantExtra + luggageExtra)
+        double finalPrice = (basePrice + luggageExtra)
                             * (isBirthday ? 0.5 : 1.0)
                             * manualDiscount;
 
-        // 7. Oturacagi isgal et
         seat.IsOccupied = true;
         _unitOfWork.SeatRepository.Update(seat);
 
-        // 8. Bileti doldur
         ticket.CustomerId = request.UserId;
         ticket.ChosenSeatId = request.ChosenSeatId;
-        ticket.VariantId = seat.VariantId;          // seçilmiş oturacaqdan variant
+        ticket.VariantId = seat.VariantId;
         ticket.HasPet = request.HasPet;
         ticket.HasChild = request.HasChild;
         ticket.LuggageCount = request.LuggageCount;
         ticket.TotalLuggageKg = request.TotalLuggageKg;
         ticket.Note = request.Note;
-        ticket.State = State.Booked;            // Booked — my-tickets-de gorunsun
+        ticket.State = State.Booked;
         ticket.Price = finalPrice;
         ticket.BroughtDate = now;
         ticket.UpdatedDate = now;
@@ -95,7 +95,6 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
         _unitOfWork.PlaneTicketRepository.Update(ticket);
         await _unitOfWork.SaveChangesAsync();
 
-        // 9. Response
         var response = new FillPlaneTicketCommandResponse
         {
             Id = ticket.Id,
@@ -115,7 +114,6 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
             Note = ticket.Note,
         };
 
-        // 10. Tesдiq emaili arxa fonda gonder
         _ = Task.Run(() =>
         {
             try
@@ -130,16 +128,28 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
                 }
 
                 var extras = new System.Text.StringBuilder();
-                if (request.HasPet) extras.Append("<tr><td style='padding:4px 12px 4px 0;color:#555;'>Pet</td><td><strong>Yes</strong></td></tr>");
-                if (request.HasChild) extras.Append("<tr><td style='padding:4px 12px 4px 0;color:#555;'>Child</td><td><strong>Yes</strong></td></tr>");
+                if (request.HasPet)
+                    extras.Append("<tr><td style='padding:4px 12px 4px 0;color:#555;'>Pet</td><td><strong>Yes</strong></td></tr>");
+                if (request.HasChild)
+                    extras.Append("<tr><td style='padding:4px 12px 4px 0;color:#555;'>Child</td><td><strong>Yes</strong></td></tr>");
                 if (request.TotalLuggageKg > 0)
                     extras.Append($"<tr><td style='padding:4px 12px 4px 0;color:#555;'>Luggage</td><td><strong>{request.TotalLuggageKg} kg</strong></td></tr>");
+                if (luggageExtra > 0)
+                    extras.Append($"<tr><td style='padding:4px 12px 4px 0;color:#e67e22;'>Luggage Surcharge</td><td><strong style='color:#e67e22;'>+{luggageExtra:F2} ₼</strong></td></tr>");
                 if (!string.IsNullOrEmpty(request.Note))
                     extras.Append($"<tr><td style='padding:4px 12px 4px 0;color:#555;'>Note</td><td><em>{request.Note}</em></td></tr>");
 
                 string discountRow = isBirthday
                     ? "<tr><td style='padding:4px 12px 4px 0;color:#27ae60;'>🎂 Birthday Discount</td><td><strong style='color:#27ae60;'>–50%</strong></td></tr>"
                     : "";
+
+                string manualDiscountRow = manualDiscount < 1.0
+                    ? $"<tr><td style='padding:4px 12px 4px 0;color:#2980b9;'>🏷 Discount</td><td><strong style='color:#2980b9;'>–{(1 - manualDiscount) * 100:F0}%</strong></td></tr>"
+                    : "";
+
+                string priceBreakdown = sameCountry
+                    ? $"100.00 ₼ (base) + {variantExtra:F2} ₼ ({variant?.Name ?? "class"})"
+                    : $"{distanceDiff * 40.0:F2} ₼ (distance) + {variantExtra:F2} ₼ ({variant?.Name ?? "class"})";
 
                 var emailService = new Service.Email();
                 emailService.Send(
@@ -198,8 +208,13 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
                               {ticket.DueDate:dd MMM yyyy, HH:mm} UTC
                             </td>
                           </tr>
+                          <tr>
+                            <td style='padding:8px 14px;color:#64748b;'>Price Breakdown</td>
+                            <td style='padding:8px 14px;font-size:12px;color:#475569;'>{priceBreakdown}</td>
+                          </tr>
                           {extras}
                           {discountRow}
+                          {manualDiscountRow}
                           <tr style='background:#0f172a;'>
                             <td style='padding:10px 14px;color:#94a3b8;border-radius:6px 0 0 6px;font-size:13px;'>
                               Total Paid
@@ -226,6 +241,4 @@ public class FillPlaneTicketCommandHandler : IRequestHandler<FillPlaneTicketComm
 
         return new ResponseModel<FillPlaneTicketCommandResponse>(response);
     }
-
-    private static double Number(double v) => double.IsNaN(v) || double.IsInfinity(v) ? 0 : v;
 }
