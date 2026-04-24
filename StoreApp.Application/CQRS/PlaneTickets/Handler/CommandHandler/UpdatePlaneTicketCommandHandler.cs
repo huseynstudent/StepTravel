@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using StoreApp.Application.CQRS.PlaneTickets.Command.Request;
 using StoreApp.Application.CQRS.PlaneTickets.Command.Response;
 using StoreApp.Comman.GlobalResponse.Generics.ResponseModel;
@@ -11,10 +13,17 @@ public class UpdatePlaneTicketGroupCommandHandler
     : IRequestHandler<UpdatePlaneTicketGroupCommandRequest, ResponseModel<List<UpdatePlaneTicketCommandResponse>>>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<UpdatePlaneTicketGroupCommandHandler> _logger;
 
-    public UpdatePlaneTicketGroupCommandHandler(IUnitOfWork unitOfWork)
+    public UpdatePlaneTicketGroupCommandHandler(
+        IUnitOfWork unitOfWork,
+        IConfiguration configuration,
+        ILogger<UpdatePlaneTicketGroupCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task<ResponseModel<List<UpdatePlaneTicketCommandResponse>>> Handle(
@@ -39,6 +48,11 @@ public class UpdatePlaneTicketGroupCommandHandler
 
         var invalidStates = new[] { State.Used, State.Expired, State.Missed };
 
+        // Tarix/saat deyisikliyi varmi?
+        bool dateChanged = request.NewDueDate.HasValue && request.NewDueDate.Value != request.DueDate;
+        DateTime oldDueDate = request.DueDate;
+        var notifyList = new List<(string Email, string FullName, string From, string To, DateTime OldDate, DateTime NewDate)>();
+
         foreach (var ticket in groupTickets)
         {
             if (invalidStates.Contains(ticket.State))
@@ -46,6 +60,25 @@ public class UpdatePlaneTicketGroupCommandHandler
 
             if (ticket.State == State.Booked && request.NewState != State.Canceled)
             {
+                // Tarix deyisibse Booked musteri email siyahisina elave et
+                if (dateChanged && ticket.CustomerId.HasValue)
+                {
+                    var customer = await _unitOfWork.UserRepository.GetByIdAsync(ticket.CustomerId.Value);
+                    var from = await _unitOfWork.LocationRepository.GetByIdAsync(ticket.FromId);
+                    var to = await _unitOfWork.LocationRepository.GetByIdAsync(ticket.ToId);
+                    if (customer != null && !string.IsNullOrEmpty(customer.Email))
+                    {
+                        notifyList.Add((
+                            customer.Email,
+                            $"{customer.Name} {customer.Surname}".Trim(),
+                            from?.Name ?? "N/A",
+                            to?.Name ?? "N/A",
+                            oldDueDate,
+                            request.NewDueDate!.Value
+                        ));
+                    }
+                }
+
                 ticket.Airline = request.NewAirline;
                 ticket.Gate = request.NewGate;
                 ticket.Meal = request.NewMeal;
@@ -84,6 +117,50 @@ public class UpdatePlaneTicketGroupCommandHandler
         }
 
         await _unitOfWork.SaveChangesAsync();
+
+        // Email bildirisleri arxa fonda gonder
+        if (notifyList.Any())
+        {
+            var senderEmail = _configuration["EmailSettings:SenderEmail"];
+            var appPassword = _configuration["EmailSettings:AppPassword"];
+            var emailService = new Service.Email();
+
+            _ = Task.Run(() =>
+            {
+                foreach (var n in notifyList)
+                {
+                    try
+                    {
+                        emailService.Send(
+                            senderEmail,
+                            appPassword,
+                            n.Email,
+                            "Flight Schedule Change - StepTravel",
+                            $@"
+                                <p>Dear <strong>{n.FullName}</strong>,</p>
+                                <p>We would like to inform you that your flight schedule has been updated.</p>
+                                <br/>
+                                <table style='border-collapse:collapse;'>
+                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>Route</td>
+                                        <td><strong>{n.From} &rarr; {n.To}</strong></td></tr>
+                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>Previous Departure</td>
+                                        <td><strong style='color:#c0392b;'>{n.OldDate:dd MMM yyyy, HH:mm} UTC</strong></td></tr>
+                                    <tr><td style='padding:4px 12px 4px 0;color:#555;'>New Departure</td>
+                                        <td><strong style='color:#27ae60;'>{n.NewDate:dd MMM yyyy, HH:mm} UTC</strong></td></tr>
+                                </table>
+                                <br/>
+                                <p style='color:#555;font-size:13px;'>Please check your updated ticket in the StepTravel app. We apologize for any inconvenience.</p>
+                            "
+                        );
+                        _logger.LogInformation("Flight schedule change email sent to: {Email}", n.Email);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to send flight schedule change email to {Email}", n.Email);
+                    }
+                }
+            });
+        }
 
         var responses = groupTickets.Select(t => new UpdatePlaneTicketCommandResponse
         {

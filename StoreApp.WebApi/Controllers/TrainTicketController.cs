@@ -15,7 +15,6 @@ public class TrainTicketController : BaseController
     public async Task<IActionResult> CreateTicket(CreateTrainTicketCommandRequest request)
         => Ok(await Sender.Send(request));
 
-    // Tək bilet yeniləmə — ID URL-dən gəlir, qarışıqlıq olmur
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin,Company")]
     public async Task<IActionResult> UpdateTicket(int id, [FromBody] UpdateTrainTicketCommandRequest request)
@@ -27,7 +26,6 @@ public class TrainTicketController : BaseController
         return Ok(result);
     }
 
-    // Qrup yeniləmə — eyni qatar/vaqon/tarixdəki bütün biletlər
     [HttpPut("group")]
     [Authorize(Roles = "Admin,Company")]
     public async Task<IActionResult> UpdateTicketGroup([FromBody] UpdateTrainTicketGroupCommandRequest request)
@@ -44,6 +42,29 @@ public class TrainTicketController : BaseController
         var result = await Sender.Send(request);
         if (result.Data == null)
             return BadRequest(new { message = "Bilet artıq alınıb və ya oturacaq doludur." });
+        return Ok(result);
+    }
+
+    [HttpPost("return/{id:int}")]
+    public async Task<IActionResult> ReturnTicket(int id)
+    {
+        var uidClaim = User.FindFirst("uid")?.Value;
+        if (!int.TryParse(uidClaim, out int userId))
+            return Unauthorized();
+
+        var ticket = await HttpContext.RequestServices
+            .GetRequiredService<StoreAppDbContext>()
+            .TrainTickets
+            .FirstOrDefaultAsync(t => t.Id == id && t.CustomerId == userId && !t.IsDeleted);
+
+        if (ticket == null)
+            return NotFound(new { message = "Ticket not found or does not belong to you." });
+
+        var result = await Sender.Send(new ReturnTrainTicketCommandRequest { Id = id });
+
+        if (result?.Data == null)
+            return BadRequest(new { message = "Ticket cannot be returned. It may have already departed or been cancelled." });
+
         return Ok(result);
     }
 

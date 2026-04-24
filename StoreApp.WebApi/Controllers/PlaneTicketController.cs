@@ -34,6 +34,29 @@ public class PlaneTicketController : BaseController
         return Ok(result);
     }
 
+    [HttpPost("return/{id:int}")]
+    public async Task<IActionResult> ReturnTicket(int id)
+    {
+        var uidClaim = User.FindFirst("uid")?.Value;
+        if (!int.TryParse(uidClaim, out int userId))
+            return Unauthorized();
+
+        var ticket = await HttpContext.RequestServices
+            .GetRequiredService<StoreAppDbContext>()
+            .PlaneTickets
+            .FirstOrDefaultAsync(t => t.Id == id && t.CustomerId == userId && !t.IsDeleted);
+
+        if (ticket == null)
+            return NotFound(new { message = "Ticket not found or does not belong to you." });
+
+        var result = await Sender.Send(new ReturnPlaneTicketCommandRequest { Id = id });
+
+        if (result?.Data == null)
+            return BadRequest(new { message = "Ticket cannot be returned. It may have already departed or been cancelled." });
+
+        return Ok(result);
+    }
+
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteTicket(int id)
